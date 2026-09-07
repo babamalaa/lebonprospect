@@ -1,0 +1,35 @@
+name: cron-daily
+
+on:
+  schedule:
+    # 05:00 UTC = 07:00 Paris (CEST, été) / 06:00 Paris (CET, hiver)
+    # On garde 05:00 UTC fixe: digest à 7h ou 8h Paris selon saison, toujours avant 8h30.
+    - cron: "0 5 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Ingest yesterday (+catch-up) and load to Supabase
+        env:
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_TOKEN: ${{ secrets.SUPABASE_TOKEN }}
+        run: |
+          cd pipeline
+          python3 cron_github.py
+
+      - name: Upload artifacts (JSONL du jour, debug)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cessions-${{ github.run_id }}
+          path: data/cessions/*.jsonl
+          retention-days: 7
