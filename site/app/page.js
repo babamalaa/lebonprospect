@@ -1,30 +1,9 @@
-const Mark = () => (
-  <span className="mark">
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-      <path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="16" cy="3" r="2.2" fill="#d64a2e" />
-    </svg>
-  </span>
-);
+import Header from "./components/Header";
 
 export default function Home() {
   return (
     <>
-      <header>
-        <div className="wrap nav">
-          <a className="logo" href="/">
-            <Mark />
-            LeBonProspect
-          </a>
-          <nav className="links">
-            <a href="#feed">Publiées hier</a>
-            <a href="#tarifs">Tarifs</a>
-            <a className="btn inv" style={{ marginLeft: 24, padding: "10px 20px", fontSize: 13.5 }} href="#tarifs">
-              Voir ma zone
-            </a>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       <section className="hero wrap">
         <div className="stamp">
@@ -245,7 +224,7 @@ export default function Home() {
       <footer>
         <div className="wrap">
           <span>© 2026 LeBonProspect · données publiques BODACC (licence ouverte)</span>
-          <span>Mentions légales · CGV · Contact</span>
+          <span><a href="/mentions-legales" style={{ color: "inherit" }}>Mentions légales</a> · <a href="/cgv" style={{ color: "inherit" }}>CGV</a> · <a href="mailto:contact@lebonprospect.fr" style={{ color: "inherit" }}>Contact</a></span>
         </div>
       </footer>
     </>
