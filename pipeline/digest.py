@@ -78,13 +78,11 @@ def lead_block(r):
     if fresh:
         rows.append(f'<tr><td style="padding:3px 0 0;font-size:12px;color:{RED};font-weight:bold;">{fresh}</td></tr>')
     return f"""
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-bottom:1px dashed {LINE};">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="border-bottom:1px dashed {LINE};background:#ffffff;">
 <tr><td style="padding:14px 18px;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-    <tr>
-      <td style="font-size:15px;font-weight:bold;color:{INK};font-family:Arial,Helvetica,sans-serif;">{nom}</td>
-      <td align="right" style="font-size:12px;color:{TEAL};font-weight:bold;white-space:nowrap;">{ville} · {dept}</td>
-    </tr>
+    <tr><td style="font-size:15.5px;font-weight:bold;color:{INK};font-family:Arial,Helvetica,sans-serif;">{nom}</td></tr>
+    <tr><td style="font-size:12.5px;color:{TEAL};font-weight:bold;padding:1px 0 5px;font-family:Arial,Helvetica,sans-serif;">{ville} · {dept}</td></tr>
     {''.join(rows)}
   </table>
 </td></tr>
@@ -103,7 +101,7 @@ def render_digest(verticale, leads, region=None, departement=None, date=None):
     for dept in sorted(by_dept):
         blocks = "".join(lead_block(r) for r in by_dept[dept])
         sections.append(f"""
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:18px;border:2px solid {INK};border-radius:12px;background:#ffffff;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="margin-top:18px;border:2px solid {INK};border-radius:12px;background:#ffffff;">
 <tr><td style="background:{TEAL};padding:9px 18px;border-radius:10px 10px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;color:#ffffff;letter-spacing:.4px;">
   {html.escape(dept.upper())} · {len(by_dept[dept])} reprise{'s' if len(by_dept[dept]) > 1 else ''}
 </td></tr>
@@ -114,9 +112,9 @@ def render_digest(verticale, leads, region=None, departement=None, date=None):
 <html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>LeBonProspect · {n} reprise{plural}</title></head>
-<body style="margin:0;padding:0;background:{PAPER};">
+<body style="margin:0;padding:0;background:#ffffff;" bgcolor="#ffffff">
 <div style="display:none;max-height:0;overflow:hidden;">{n} reprise{plural} de {label} · {html.escape(zone)} · {date_str}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:{PAPER};">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="background:#ffffff;">
 <tr><td align="center" style="padding:24px 12px;">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
 

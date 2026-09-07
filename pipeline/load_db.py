@@ -75,7 +75,14 @@ def main():
         for i in range(0, len(rows), args.batch):
             chunk = rows[i:i + args.batch]
             values = ",\n".join(row_values(r) for r in chunk)
-            q = f"insert into cessions ({COLS}) values {values} on conflict (bodacc_id) do nothing;"
+            q = (f"insert into cessions ({COLS}) values {values} "
+                 "on conflict (bodacc_id) do update set "
+                 "acheteur_naf=excluded.acheteur_naf, acheteur_nom=excluded.acheteur_nom, "
+                 "acheteur_date_creation=excluded.acheteur_date_creation, "
+                 "acheteur_dirigeants=excluded.acheteur_dirigeants, acheteur_adresse=excluded.acheteur_adresse, "
+                 "vendeur_nom=excluded.vendeur_nom, vendeur_naf=excluded.vendeur_naf, "
+                 "naf_fonds=excluded.naf_fonds, verticale=excluded.verticale "
+                 "where cessions.verticale = 'inconnu' and excluded.verticale <> 'inconnu';")
             sql_exec(q)
             total += len(chunk)
             time.sleep(0.1)

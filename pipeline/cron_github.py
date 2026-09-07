@@ -39,6 +39,10 @@ def main():
         print(rr.stderr[-2000:])
         sys.exit(1)
     sql_exec("refresh materialized view stats_verticale_region;")
+    # Enrichissement téléphones (Places) sur les jours fraîchement ingérés
+    rr = subprocess.run([sys.executable, "enrich_places.py", "--days", "3"],
+                        capture_output=True, text=True, cwd=HERE)
+    print("places:", (rr.stdout or "").strip().splitlines()[-1] if rr.stdout else rr.stderr[-300:])
     print(f"OK: {total} cessions ingérées, stats rafraîchies.")
 
 if __name__ == "__main__":
