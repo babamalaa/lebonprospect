@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeBonProspect — Le radar des commerces qui changent de mains</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #101418; --bg-2: #161c22; --card: #1a2129; --line: #263038;
+  --fg: #e8edf2; --muted: #8a98a5; --green: #3ddc84; --green-dim: #2aa562; --amber: #ffb454;
+}
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--fg); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+header { position: sticky; top: 0; background: rgba(16,20,24,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); z-index: 10; }
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; color: var(--fg); text-decoration: none; letter-spacing: -.01em; }
+.nav .links a { color: var(--muted); text-decoration: none; font-size: 14px; margin-left: 24px; }
+.nav .links a:hover { color: var(--fg); }
+.btn { display: inline-block; background: var(--green); color: #0c1116; padding: 12px 22px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: none; border: none; transition: all .15s; }
+.btn:hover { background: #4ce892; transform: translateY(-1px); }
+.btn.ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); font-weight: 600; }
+.btn.ghost:hover { border-color: var(--muted); transform: none; }
+.hero { padding: 80px 0 40px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; }
+.pill { display: inline-flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--line); border-radius: 30px; padding: 6px 14px; font-size: 12.5px; color: var(--muted); margin-bottom: 22px; }
+.pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 1.8s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(61,220,132,.4) } 50% { opacity: .5; box-shadow: 0 0 0 5px rgba(61,220,132,0) } }
+h1 { font-size: 44px; line-height: 1.08; font-weight: 800; letter-spacing: -.02em; }
+h1 .g { color: var(--green); }
+.sub { color: var(--muted); font-size: 17px; margin: 20px 0 28px; max-width: 520px; }
+.cta-row { display: flex; gap: 12px; }
+.ticker-stats { display: flex; gap: 34px; margin-top: 44px; }
+.ts .n { font-family: 'JetBrains Mono', monospace; font-size: 26px; font-weight: 600; color: var(--green); }
+.ts .l { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+/* Radar visual */
+.radar-box { position: relative; aspect-ratio: 1; max-width: 420px; margin: 0 auto; }
+.radar { position: absolute; inset: 0; border-radius: 50%; border: 1px solid var(--line); background: radial-gradient(circle, rgba(61,220,132,.06) 0%, transparent 70%); }
+.radar::before, .radar::after { content: ''; position: absolute; border-radius: 50%; border: 1px solid var(--line); }
+.radar::before { inset: 18%; } .radar::after { inset: 36%; }
+.sweep { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, rgba(61,220,132,.35), transparent 70deg); animation: spin 4s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg) } }
+.blip { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px rgba(61,220,132,.8); }
+.blip.b1 { top: 26%; left: 62%; animation: blink 3s infinite .5s; }
+.blip.b2 { top: 58%; left: 30%; animation: blink 3s infinite 1.2s; }
+.blip.b3 { top: 44%; left: 74%; animation: blink 3s infinite 2s; }
+.blip.b4 { top: 70%; left: 55%; animation: blink 3s infinite 2.6s; }
+@keyframes blink { 0%,100% { opacity: .25 } 15% { opacity: 1 } }
+.blip .tip { position: absolute; left: 14px; top: -6px; background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 4px 9px; font-size: 10.5px; white-space: nowrap; color: var(--fg); font-family: 'JetBrains Mono', monospace; }
+/* Terminal feed */
+.term { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin: 26px 0 60px; }
+.term-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--bg-2); }
+.term-bar .c { width: 11px; height: 11px; border-radius: 50%; }
+.term-bar .t { margin-left: 10px; font-size: 12.5px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+.term-body { padding: 8px 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+.tr { display: grid; grid-template-columns: 110px 90px 1fr auto; gap: 14px; padding: 10px 18px; border-bottom: 1px solid rgba(38,48,56,.5); align-items: baseline; }
+.tr:last-child { border: none; }
+.tr:hover { background: rgba(61,220,132,.04); }
+.tr .d { color: var(--muted); font-size: 12px; }
+.tr .v { color: var(--amber); font-size: 11.5px; font-weight: 600; }
+.tr .who b { color: var(--green); font-weight: 600; }
+.tr .who { color: var(--fg); }
+.tr .who .sub2 { color: var(--muted); font-size: 11.5px; display: block; margin-top: 2px; }
+.tr .dept { color: var(--muted); font-size: 11.5px; }
+.tr.locked .who, .tr.locked .dept { filter: blur(5px); user-select: none; }
+.term-foot { padding: 12px 18px; font-size: 12.5px; color: var(--muted); background: var(--bg-2); border-top: 1px solid var(--line); font-family: 'JetBrains Mono', monospace; }
+.term-foot a { color: var(--green); text-decoration: none; font-weight: 600; }
+/* How */
+.how { padding: 30px 0 60px; }
+h2 { font-size: 30px; font-weight: 800; letter-spacing: -.01em; margin-bottom: 8px; }
+.ssub { color: var(--muted); margin-bottom: 32px; max-width: 560px; }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 26px; position: relative; }
+.step .num { font-family: 'JetBrains Mono', monospace; color: var(--green); font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+.step h3 { font-size: 16px; margin-bottom: 8px; }
+.step p { font-size: 13.5px; color: var(--muted); }
+/* Pricing */
+.pricing { padding: 40px 0 70px; }
+.plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 34px; }
+.plan { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 28px 24px; }
+.plan.hot { border-color: var(--green); box-shadow: 0 0 40px rgba(61,220,132,.08); }
+.plan .name { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+.plan .price { font-size: 40px; font-weight: 800; margin: 12px 0 0; }
+.plan .price small { font-size: 14px; color: var(--muted); font-weight: 500; }
+.plan .vol { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--green); margin: 6px 0 18px; }
+.plan ul { list-style: none; margin-bottom: 22px; }
+.plan li { font-size: 13.5px; color: var(--muted); padding: 6px 0 6px 22px; position: relative; }
+.plan li::before { content: '→'; position: absolute; left: 0; color: var(--green); }
+.plan .btn { width: 100%; text-align: center; }
+.engage { text-align: center; color: var(--muted); font-size: 13px; margin-top: 20px; }
+.engage b { color: var(--fg); }
+footer { border-top: 1px solid var(--line); padding: 28px 0; color: var(--muted); font-size: 13px; }
+footer .wrap { display: flex; justify-content: space-between; }
+@media (max-width: 900px) { .hero { grid-template-columns: 1fr; } .steps, .plans { grid-template-columns: 1fr; } h1 { font-size: 32px; } .tr { grid-template-columns: 90px 1fr; } .tr .v, .tr .dept { display: none; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3ddc84" stroke-width="1.6"/><circle cx="12" cy="12" r="5.5" stroke="#263038" stroke-width="1.2"/><path d="M12 12 L19 5.5" stroke="#3ddc84" stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="8.6" r="1.7" fill="#3ddc84"/></svg>
+      lebonprospect
+    </a>
+    <nav class="links" style="display:flex;align-items:center">
+      <a href="#how">Fonctionnement</a>
+      <a href="#tarifs">Tarifs</a>
+      <a class="btn ghost" style="margin-left:24px;padding:9px 18px" href="#">Connexion</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero wrap">
+  <div>
+    <div class="pill"><span class="dot"></span>17 nouvelles cessions détectées aujourd'hui</div>
+    <h1>Un commerce change de mains.<br><span class="g">Vous le savez avant tout le monde.</span></h1>
+    <p class="sub">Chaque reprise de fonds de commerce publiée au Journal officiel, détectée, enrichie et livrée dans votre boîte mail. Le repreneur rééquipe tout en 90 jours — soyez son premier appel.</p>
+    <div class="cta-row">
+      <a class="btn" href="#tarifs">Activer mon radar</a>
+      <a class="btn ghost" href="#flux">Voir le flux en direct</a>
+    </div>
+    <div class="ticker-stats">
+      <div class="ts"><div class="n">3 950</div><div class="l">cessions / mois</div></div>
+      <div class="ts"><div class="n">≤ 24h</div><div class="l">de délai</div></div>
+      <div class="ts"><div class="n">0,70 €</div><div class="l">le prospect en national</div></div>
+    </div>
+  </div>
+  <div class="radar-box">
+    <div class="radar"></div>
+    <div class="sweep"></div>
+    <span class="blip b1"><span class="tip">resto · Lyon 3e</span></span>
+    <span class="blip b2"><span class="tip">coiffure · Nantes</span></span>
+    <span class="blip b3"><span class="tip">garage · Metz</span></span>
+    <span class="blip b4"><span class="tip">boulangerie · Aix</span></span>
+  </div>
+</section>
+
+<section class="wrap" id="flux">
+  <div class="term">
+    <div class="term-bar">
+      <span class="c" style="background:#ff5f57"></span><span class="c" style="background:#ffbd2e"></span><span class="c" style="background:#28c840"></span>
+      <span class="t">bodacc://ventes-cessions — édition du 06/09/2026</span>
+    </div>
+    <div class="term-body">
+      <div class="tr">
+        <span class="d">06/09 08:00</span><span class="v">COMMERCE</span>
+        <span class="who"><b>KRISNO</b> (SARL) reprend un fonds — Aucamville<span class="sub2">cédant: SARL DILOMATE · greffe: Toulouse · SIREN 514 241 751</span></span>
+        <span class="dept">31 · Occitanie</span>
+      </div>
+      <div class="tr">
+        <span class="d">06/09 08:00</span><span class="v">COMMERCE</span>
+        <span class="who"><b>POP & MOM</b> (SAS) reprend un fonds — Saint-Gaudens<span class="sub2">acte SSP 09/07 · enregistré SIE Toulouse</span></span>
+        <span class="dept">31 · Occitanie</span>
+      </div>
+      <div class="tr">
+        <span class="d">06/09 08:00</span><span class="v">OPTIQUE</span>
+        <span class="who"><b>NOP</b> (SAS · prés. SD OPTIQUE) reprend un fonds — Montpellier<span class="sub2">acte authentique 21/08/2026</span></span>
+        <span class="dept">34 · Occitanie</span>
+      </div>
+      <div class="tr locked">
+        <span class="d">06/09 08:00</span><span class="v">CHR</span>
+        <span class="who"><b>LA BELLE ÉPOQUE</b> reprend un restaurant — Lyon 3e<span class="sub2">réservé aux abonnés</span></span>
+        <span class="dept">69 · AURA</span>
+      </div>
+      <div class="tr locked">
+        <span class="d">06/09 08:00</span><span class="v">COIFFURE</span>
+        <span class="who"><b>STUDIO KMÈCHE</b> reprend un salon — Marseille 6e<span class="sub2">réservé aux abonnés</span></span>
+        <span class="dept">13 · PACA</span>
+      </div>
+    </div>
+    <div class="term-foot">+ 14 cessions aujourd'hui · <a href="#tarifs">déverrouiller le flux complet →</a></div>
+  </div>
+</section>
+
+<section class="how wrap" id="how">
+  <h2>Trois étapes. Zéro saisie.</h2>
+  <p class="ssub">Vous choisissez un métier et une zone. Le reste est automatique, chaque matin, 7 j/7.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="num">01 / DÉTECTION</div>
+      <h3>Le Journal officiel est scanné</h3>
+      <p>Chaque annonce de vente ou cession de fonds de commerce publiée au BODACC est captée le jour même. Source officielle, exhaustive, incontestable.</p>
+    </div>
+    <div class="step">
+      <div class="num">02 / ENRICHISSEMENT</div>
+      <h3>Le repreneur est identifié</h3>
+      <p>SIREN, dirigeant, activité, adresse du fonds repris : chaque annonce est croisée avec les registres d'entreprises pour vous donner un prospect complet, pas une ligne de journal.</p>
+    </div>
+    <div class="step">
+      <div class="num">03 / LIVRAISON</div>
+      <h3>Votre email de 8 h</h3>
+      <p>Les reprises de votre métier, dans votre zone, triées et prêtes à appeler. Export CSV pour votre CRM. Un commerce signé rembourse deux ans d'abonnement.</p>
+    </div>
+  </div>
+</section>
+
+<section class="pricing wrap" id="tarifs">
+  <h2 style="text-align:center">Votre territoire, votre rythme</h2>
+  <div class="plans">
+    <div class="plan">
+      <div class="name">Départemental</div>
+      <div class="price">149 € <small>/ mois</small></div>
+      <div class="vol">~15-40 leads / mois selon dept</div>
+      <ul>
+        <li>1 département au choix</li>
+        <li>Email quotidien 8h</li>
+        <li>Fiche repreneur enrichie</li>
+      </ul>
+      <a class="btn ghost" href="#">Choisir</a>
+    </div>
+    <div class="plan hot">
+      <div class="name">Régional</div>
+      <div class="price">299 € <small>/ mois</small></div>
+      <div class="vol">jusqu'à 180 leads CHR / mois en IDF</div>
+      <ul>
+        <li>1 région complète</li>
+        <li>Toutes les verticales de votre métier</li>
+        <li>Export CSV illimité</li>
+        <li>Support prioritaire</li>
+      </ul>
+      <a class="btn" href="#">Choisir</a>
+    </div>
+    <div class="plan">
+      <div class="name">National</div>
+      <div class="price">499 € <small>/ mois</small></div>
+      <div class="vol">~820 leads CHR / mois France entière</div>
+      <ul>
+        <li>France entière, votre secteur</li>
+        <li>0,70 € le prospect nominatif</li>
+        <li>API & intégration CRM</li>
+      </ul>
+      <a class="btn ghost" href="#">Choisir</a>
+    </div>
+  </div>
+  <p class="engage">Sans engagement · <b>6 mois : 1 mois offert</b> · <b>12 mois : 2 mois offerts</b></p>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 lebonprospect.fr — données BODACC, licence ouverte</span>
+    <span>Mentions · CGV · Contact</span>
+  </div>
+</footer>
+</body>
+</html>

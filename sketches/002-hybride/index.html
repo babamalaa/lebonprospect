@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeBonProspect · Ils viennent de racheter un commerce. Ils ont besoin de vous.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --gold: #31777A; --gold-soft: #e3efef; --gold-light: #a9d2d3; --ink: #14181d; --paper: #fdfbf5; --line: #e6e0d0;
+  --muted: #6f6a5c; --blue: #1450a3; --red: #d64a2e; --ok: #1e7a4d; --card: #ffffff;
+}
+body { font-family: 'Inter', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+.disp { font-family: 'Archivo', sans-serif; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+header { background: var(--paper); border-bottom: 3px solid var(--ink); position: sticky; top: 0; z-index: 20; }
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; }
+.logo { font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 20px; color: var(--ink); text-decoration: none; letter-spacing: -.02em; display: flex; align-items: center; gap: 9px; }
+.logo .mark { background: var(--gold); border: 2.5px solid var(--ink); border-radius: 8px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; }
+.logo .mark svg path { stroke: #fff; }
+.nav .links a { color: var(--ink); text-decoration: none; font-size: 14.5px; font-weight: 600; margin-left: 24px; }
+.nav .links a.btn.inv { color: #fff; }
+.btn { display: inline-block; font-family: 'Archivo', sans-serif; background: var(--ink); color: #fff; padding: 14px 26px; border-radius: 10px; font-weight: 800; font-size: 15px; text-decoration: none; border: 2.5px solid var(--ink); transition: all .12s; }
+.btn:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--gold); }
+.btn.inv { background: var(--gold); color: #fff; }
+.btn.inv:hover { box-shadow: 4px 4px 0 var(--ink); }
+/* HERO */
+.hero { padding: 64px 0 46px; text-align: center; }
+.stamp { display: inline-flex; align-items: center; gap: 8px; background: var(--card); border: 2px solid var(--ink); border-radius: 30px; padding: 8px 18px; font-weight: 700; font-size: 13px; margin-bottom: 26px; }
+.stamp .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+h1 { font-family: 'Archivo', sans-serif; font-size: 50px; line-height: 1.05; font-weight: 900; letter-spacing: -.025em; max-width: 830px; margin: 0 auto; }
+h1 .hl { background: linear-gradient(transparent 62%, var(--gold-light) 62%); padding: 0 4px; }
+.sub { font-size: 18px; color: #4a4a42; max-width: 640px; margin: 22px auto 30px; }
+.cta-row { display: flex; gap: 14px; justify-content: center; margin-bottom: 14px; }
+.small-note { font-size: 13px; color: #8a8578; }
+/* V1 counters */
+.proof { display: flex; justify-content: center; gap: 48px; margin: 44px auto 0; padding-top: 28px; border-top: 1.5px solid var(--line); max-width: 860px; }
+.proof .item .n { font-family: 'Archivo', sans-serif; font-size: 32px; font-weight: 900; color: var(--ink); }
+.proof .item .n.gold { color: var(--red); }
+.proof .item .l { font-size: 12.5px; color: var(--muted); margin-top: 2px; max-width: 150px; }
+/* Story strip (V3) */
+.story { padding: 50px 0; }
+.story-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 2.5px solid var(--ink); border-radius: 16px; overflow: hidden; background: var(--card); }
+.story-cell { padding: 30px 26px; border-right: 2.5px solid var(--ink); }
+.story-cell:last-child { border-right: none; }
+.story-cell .day { font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 12.5px; color: var(--red); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+.story-cell h3 { font-family: 'Archivo', sans-serif; font-size: 19px; font-weight: 800; margin-bottom: 8px; line-height: 1.25; }
+.story-cell p { font-size: 14px; color: #55524a; }
+.story-cell.mid { background: var(--gold-soft); }
+/* V1 feed, hybrid-styled */
+.feed-sec { padding: 30px 0 60px; }
+h2.disp { font-size: 34px; font-weight: 900; letter-spacing: -.02em; text-align: center; margin-bottom: 10px; }
+.center-sub { text-align: center; color: #55524a; max-width: 600px; margin: 0 auto 34px; }
+.feed { max-width: 780px; margin: 0 auto; border: 2.5px solid var(--ink); border-radius: 14px; overflow: hidden; background: var(--card); box-shadow: 8px 8px 0 var(--gold); }
+.feed-head { display: flex; justify-content: space-between; align-items: center; padding: 13px 20px; background: var(--gold-soft); border-bottom: 2px solid var(--ink); font-size: 13px; }
+.feed-head .live { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; color: var(--ok); }
+.feed-head .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); animation: pulse 2s infinite; }
+.row { display: grid; grid-template-columns: 96px 1fr auto; gap: 16px; padding: 15px 20px; border-bottom: 1.5px dashed var(--line); align-items: center; }
+.row:last-of-type { border-bottom: none; }
+.row:hover { background: #fdf9ef; }
+.row .date { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+.row .what { font-size: 14.5px; }
+.row .what b { font-weight: 700; }
+.row .what .meta { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.tag { font-size: 11.5px; font-weight: 700; padding: 4px 10px; border-radius: 20px; background: var(--gold-soft); border: 1.5px solid var(--ink); white-space: nowrap; }
+.blurred { filter: blur(5px); user-select: none; pointer-events: none; }
+.feed-foot { padding: 13px 20px; text-align: center; font-size: 13.5px; background: var(--gold-soft); border-top: 2px solid var(--ink); }
+.feed-foot a { color: var(--red); font-weight: 700; text-decoration: none; }
+.verify { text-align: center; margin-top: 18px; font-size: 12.5px; color: var(--muted); }
+.verify a { color: var(--blue); }
+/* Dark proof (V3) */
+.proof-sec { background: var(--ink); color: var(--paper); padding: 58px 0; }
+.nums { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 34px; }
+.num-card { border: 2px solid #333b44; border-radius: 14px; padding: 24px; text-align: center; }
+.num-card .n { font-family: 'Archivo', sans-serif; font-size: 32px; font-weight: 900; color: var(--gold-light); }
+.num-card .l { font-size: 13px; color: #a8b0b8; margin-top: 4px; }
+/* Pricing: V3 skin + V2 content */
+.pricing { padding: 62px 0 70px; }
+.plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 38px; }
+.plan { border: 2.5px solid var(--ink); border-radius: 16px; padding: 30px 26px; background: var(--card); position: relative; transition: transform .12s; }
+.plan:hover { transform: translateY(-4px); }
+.plan.mid { background: var(--gold-soft); box-shadow: 8px 8px 0 var(--gold); }
+.plan .tag2 { position: absolute; top: -14px; right: 20px; background: var(--red); color: #fff; font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 12px; padding: 5px 14px; border-radius: 20px; border: 2px solid var(--ink); transform: rotate(2deg); }
+.plan h3 { font-family: 'Archivo', sans-serif; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: .03em; }
+.plan .price { font-family: 'Archivo', sans-serif; font-size: 46px; font-weight: 900; margin: 12px 0 0; }
+.plan .price small { font-size: 15px; color: var(--muted); font-weight: 600; }
+.plan .vol { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--ok); margin: 8px 0 16px; }
+.plan ul { list-style: none; margin: 0 0 24px; }
+.plan li { padding: 7px 0 7px 28px; font-size: 14px; position: relative; }
+.plan li::before { content: '✓'; position: absolute; left: 2px; font-weight: 900; color: var(--blue); }
+.plan .btn { width: 100%; text-align: center; }
+.engage { text-align: center; margin-top: 26px; font-size: 14px; color: #55524a; }
+.engage b { background: linear-gradient(transparent 62%, var(--gold-light) 62%); }
+footer { border-top: 3px solid var(--ink); padding: 26px 0; font-size: 13px; color: var(--muted); }
+footer .wrap { display: flex; justify-content: space-between; }
+@media (max-width: 880px) { h1 { font-size: 33px; } .story-grid, .plans, .nums { grid-template-columns: 1fr; } .story-cell { border-right: none; border-bottom: 2.5px solid var(--ink); } .story-cell:last-child { border-bottom: none; } .proof { flex-wrap: wrap; gap: 24px; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#">
+      <span class="mark"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 13 L7 5 L11 10 L16 3" stroke="#14181d" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="3" r="2.2" fill="#d64a2e"/></svg></span>
+      LeBonProspect
+    </a>
+    <nav class="links" style="display:flex;align-items:center">
+      <a href="#feed">Publiées hier</a>
+      <a href="#tarifs">Tarifs</a>
+      <a class="btn inv" style="margin-left:24px;padding:10px 20px;font-size:13.5px" href="#tarifs">Voir ma zone</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero wrap">
+  <div class="stamp"><span class="dot"></span>Chaque reprise est un acte officiel, vérifiable, jamais inventé</div>
+  <h1>Quelqu'un vient de racheter <span class="hl">un commerce près de chez vous.</span><br>Il a besoin de vous. Maintenant.</h1>
+  <p class="sub">Nouvelle enseigne, travaux, matériel, caisse, contrats… Un repreneur refait tout dans les 90 jours. LeBonProspect vous donne son nom, son adresse <b>et le numéro où l'appeler</b> dès la publication officielle. À vous de décrocher le téléphone.</p>
+  <div class="cta-row">
+    <a class="btn" href="#tarifs">Voir les reprises de ma zone</a>
+    <a class="btn inv" href="#feed">Publiées hier au Journal officiel</a>
+  </div>
+  <div class="small-note">Sans engagement · Données 100 % officielles · Aucun lead revendu</div>
+  <div class="proof">
+    <div class="item"><div class="n">3 950</div><div class="l">cessions publiées chaque mois en France</div></div>
+    <div class="item"><div class="n">47 382</div><div class="l">sur les 12 derniers mois</div></div>
+    <div class="item"><div class="n">24 h</div><div class="l">entre la publication et votre email</div></div>
+    <div class="item"><div class="n gold">0</div><div class="l">donnée inventée : tout est vérifiable au BODACC</div></div>
+  </div>
+</section>
+
+<section class="story wrap">
+  <div class="story-grid">
+    <div class="story-cell">
+      <div class="day">Lundi · jour J</div>
+      <h3>Le rachat est signé chez le notaire</h3>
+      <p>Un restaurateur reprend « Le Petit Zinc » à Lyon. La cession est publiée au Journal officiel : c'est une obligation légale, personne n'y échappe.</p>
+    </div>
+    <div class="story-cell mid">
+      <div class="day">Mardi · 8h00</div>
+      <h3>Le nom du repreneur est dans votre email</h3>
+      <p>Sur les 89 pages de jargon juridique publiées ce matin-là, 3 reprises concernent votre métier et votre zone. On les a trouvées, identifiées, enrichies : société, dirigeant, adresse, et le téléphone de l'établissement.</p>
+    </div>
+    <div class="story-cell">
+      <div class="day">Mardi · 9h15</div>
+      <h3>Vous êtes le premier à appeler</h3>
+      <p>« Félicitations pour la reprise ! » Le repreneur a mille choses à acheter et zéro fournisseur attitré. Le premier qui appelle prend une longueur d'avance.</p>
+    </div>
+  </div>
+</section>
+
+<section class="feed-sec wrap" id="feed">
+  <h2 class="disp">Publiées hier au Journal officiel</h2>
+  <p class="center-sub">Annonces réelles du 6 septembre 2026 : chaque ligne est vérifiable publiquement au BODACC, gratuitement, pour toujours.</p>
+  <div class="feed">
+    <div class="feed-head">
+      <span class="live"><span class="dot"></span>Flux quotidien</span>
+      <span class="mono" style="font-size:12px">édition du 06/09/2026</span>
+    </div>
+    <div class="row">
+      <div class="date">06/09<br>Paris 5e</div>
+      <div class="what"><b>LE PIANO VACHE</b> reprend le bar Le Piano Vache, rue Laplace<br><span class="meta">Repreneur identifié · ☎ 01 46 33 ██ ██ · Paris 5e</span></div>
+      <span class="tag">75 · Île-de-France</span>
+    </div>
+    <div class="row">
+      <div class="date">06/09<br>Bordeaux</div>
+      <div class="what"><b>DOLCE VITA</b> reprend un restaurant rue du Pas Saint-Georges<br><span class="meta">Repreneur identifié · ☎ 06 46 68 ██ ██ · Bordeaux centre</span></div>
+      <span class="tag">33 · Nouvelle-Aquitaine</span>
+    </div>
+    <div class="row">
+      <div class="date">06/09<br>Ploërmel</div>
+      <div class="what"><b>LA HALTE CELTIQUE</b> reprend un fonds rue des Primevères<br><span class="meta">Repreneur identifié · ☎ 06 41 88 ██ ██ · Morbihan</span></div>
+      <span class="tag">56 · Bretagne</span>
+    </div>
+    <div class="row blurred">
+      <div class="date">06/09<br>Annecy</div>
+      <div class="what"><b>████████</b> reprend un restaurant place des Rhododendrons<br><span class="meta">Détails réservés aux abonnés</span></div>
+      <span class="tag">74 · AURA</span>
+    </div>
+    <div class="row blurred">
+      <div class="date">06/09<br>Marseille</div>
+      <div class="what"><b>████████</b> reprend un restaurant rue Marengo<br><span class="meta">Détails réservés aux abonnés</span></div>
+      <span class="tag">13 · PACA</span>
+    </div>
+    <div class="feed-foot">108 autres cessions publiées le même jour partout en France. <a href="#tarifs">débloquer le flux complet →</a></div>
+  </div>
+  <p class="verify">Envie de vérifier une annonce ? Chacune reste consultable au Journal officiel. Ce que vous ne trouverez pas là-bas : le tri par métier, l'identité complète du repreneur, sa fiche entreprise. Ça, c'est notre travail.</p>
+</section>
+
+<section class="proof-sec">
+  <div class="wrap">
+    <h2 class="disp" style="text-align:center">Le gisement est officiel, énorme, et personne ne le regarde</h2>
+    <div class="nums">
+      <div class="num-card"><div class="n">3 950</div><div class="l">commerces changent de mains chaque mois</div></div>
+      <div class="num-card"><div class="n">90 j</div><div class="l">de fenêtre d'achat après la reprise</div></div>
+      <div class="num-card"><div class="n">24 h</div><div class="l">entre la publication et votre email</div></div>
+      <div class="num-card"><div class="n">1 seul</div><div class="l">client signé rembourse 2 ans d'abonnement</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing wrap" id="tarifs">
+  <h2 class="disp">Choisissez votre terrain de chasse</h2>
+  <div class="plans">
+    <div class="plan">
+      <h3>Mon département</h3>
+      <div class="price">149 € <small>/mois</small></div>
+      <div class="vol">~15-40 reprises / mois selon dept</div>
+      <ul>
+        <li>1 département au choix</li>
+        <li>Email chaque matin à 8h</li>
+        <li>Nom, société et adresse du repreneur</li>
+        <li>Numéro de téléphone de l'établissement</li>
+      </ul>
+      <a class="btn inv" href="#">C'est parti</a>
+    </div>
+    <div class="plan mid">
+      <span class="tag2">Le plus choisi</span>
+      <h3>Ma région</h3>
+      <div class="price">299 € <small>/mois</small></div>
+      <div class="vol">jusqu'à 180 reprises resto / mois en IDF</div>
+      <ul>
+        <li>1 région complète</li>
+        <li>Toutes les verticales de votre métier</li>
+        <li>Export CSV pour votre CRM</li>
+        <li>Support prioritaire</li>
+      </ul>
+      <a class="btn" href="#">C'est parti</a>
+    </div>
+    <div class="plan">
+      <h3>Toute la France</h3>
+      <div class="price">499 € <small>/mois</small></div>
+      <div class="vol">~820 reprises resto / mois · 0,70 € le prospect</div>
+      <ul>
+        <li>France entière, votre secteur</li>
+        <li>Prospect nominatif à moins de 0,70 €</li>
+        <li>API &amp; intégration CRM</li>
+      </ul>
+      <a class="btn inv" href="#">C'est parti</a>
+    </div>
+  </div>
+  <p class="engage">Sans engagement · 6 mois : <b>1 mois offert</b> · 12 mois : <b>2 mois offerts</b></p>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 LeBonProspect · données publiques BODACC (licence ouverte)</span>
+    <span>Mentions légales · CGV · Contact</span>
+  </div>
+</footer>
+</body>
+</html>
