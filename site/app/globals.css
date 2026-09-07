@@ -116,67 +116,83 @@ footer { border-top: 3px solid var(--ink); padding: 26px 0; font-size: 13px; col
 footer .wrap { display: flex; justify-content: space-between; }
 
 @media (max-width: 880px) {
-  .wrap { padding: 0 16px; }
+  .wrap { padding: 0 22px; }
 
-  /* Header compact : les liens texte disparaissent, le CTA reste */
+  /* Header compact */
   .nav { padding: 12px 0; }
   .nav .links a:not(.btn) { display: none; }
-  .nav .links a.btn.inv { margin-left: 0 !important; }
+  .nav .links a.btn.inv { margin-left: 0 !important; padding: 9px 16px !important; font-size: 13px !important; }
   .logo { font-size: 17px; }
   .logo .mark { width: 30px; height: 30px; }
 
-  /* Hero */
-  .hero { padding: 40px 0 36px; }
-  .stamp { font-size: 11px; padding: 6px 12px; margin-bottom: 20px; max-width: 100%; text-align: left; }
-  h1 { font-size: 30px; line-height: 1.12; }
+  /* Hero : un seul bouton fort, le secondaire devient un lien discret */
+  .hero { padding: 38px 0 34px; }
+  .stamp { font-size: 10.5px; padding: 6px 14px; margin-bottom: 18px; }
+  h1 { font-size: 27px; line-height: 1.15; letter-spacing: -.015em; }
   h1 br { display: none; }
-  .sub { font-size: 15.5px; margin: 16px auto 24px; }
-  .cta-row { flex-direction: column; align-items: stretch; gap: 10px; }
-  .cta-row .btn { text-align: center; padding: 15px 18px; font-size: 14.5px; }
-  .small-note { font-size: 12px; }
+  .sub { font-size: 15px; line-height: 1.6; margin: 16px auto 22px; }
+  .cta-row { flex-direction: column; align-items: center; gap: 14px; }
+  .cta-row .btn { width: auto; min-width: 240px; max-width: 320px; text-align: center; padding: 15px 26px; font-size: 15px; }
+  .cta-row .btn.inv {
+    background: transparent; border: none; color: var(--teal);
+    font-family: 'Inter', sans-serif; font-weight: 700; font-size: 14px;
+    padding: 0; min-width: 0; text-decoration: underline; text-underline-offset: 4px;
+  }
+  .cta-row .btn.inv:hover { box-shadow: none; transform: none; }
+  .small-note { font-size: 11.5px; margin-top: 4px; }
 
-  /* Compteurs : grille 2×2 */
-  .proof { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 14px; margin-top: 32px; padding-top: 22px; }
-  .proof .n { font-size: 26px; }
-  .proof .l { max-width: none; font-size: 12px; }
+  /* Compteurs 2×2 aérés */
+  .proof { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 18px; margin-top: 30px; padding-top: 24px; text-align: center; }
+  .proof .n { font-size: 27px; }
+  .proof .l { max-width: none; font-size: 11.5px; margin: 3px auto 0; }
 
-  /* Story */
-  .story { padding: 34px 0; }
-  .story-grid { grid-template-columns: 1fr; }
-  .story-cell { border-right: none; border-bottom: 2.5px solid var(--ink); padding: 22px 18px; }
-  .story-cell:last-child { border-bottom: none; }
+  /* Story : cartes séparées, respirantes */
+  .story { padding: 30px 0; }
+  .story-grid { grid-template-columns: 1fr; border: none; border-radius: 0; background: transparent; overflow: visible; display: flex; flex-direction: column; gap: 14px; }
+  .story-cell { border: 2px solid var(--ink) !important; border-radius: 14px; padding: 20px; }
+  .story-cell h3 { font-size: 17px; }
+  .story-cell p { font-size: 13.5px; }
 
   /* Feed */
-  h2.disp { font-size: 25px; }
-  .center-sub { font-size: 14px; }
-  .feed { box-shadow: 5px 5px 0 var(--teal); }
-  .feed-head { flex-wrap: wrap; gap: 6px; }
-  .row { grid-template-columns: 1fr; gap: 6px; padding: 13px 14px; }
+  h2.disp { font-size: 24px; }
+  .center-sub { font-size: 13.5px; margin-bottom: 26px; }
+  .feed { border-width: 2px; box-shadow: 4px 4px 0 var(--teal); border-radius: 12px; }
+  .feed-head { flex-wrap: wrap; gap: 6px; padding: 11px 16px; }
+  .row { grid-template-columns: 1fr; gap: 7px; padding: 14px 16px; }
   .row .date { display: none; }
   .row .what { font-size: 13.5px; }
-  .row .what .meta { font-size: 12px; }
-  .row .tag { justify-self: start; }
+  .row .what .meta { font-size: 11.5px; }
+  .row .tag { justify-self: start; font-size: 10.5px; }
+  .feed-foot { font-size: 12.5px; padding: 12px 16px; }
+  .verify { font-size: 11.5px; margin-top: 16px; }
 
-  /* Section sombre : grille 2×2 */
-  .proof-sec { padding: 40px 0; }
-  .nums { grid-template-columns: 1fr 1fr; gap: 12px; }
-  .num-card { padding: 16px 10px; }
-  .num-card .n { font-size: 24px; }
-  .num-card .l { font-size: 11.5px; }
+  /* Section sombre */
+  .proof-sec { padding: 38px 0; }
+  .proof-sec h2 { font-size: 22px; }
+  .nums { grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 26px; }
+  .num-card { padding: 18px 10px; border-radius: 12px; }
+  .num-card .n { font-size: 23px; }
+  .num-card .l { font-size: 11px; }
 
-  /* Tarifs */
-  .pricing { padding: 44px 0 50px; }
-  .plans { grid-template-columns: 1fr; gap: 26px; }
-  .plan.mid { box-shadow: 5px 5px 0 var(--teal); }
-  .plan .price { font-size: 38px; }
+  /* Tarifs : cartes centrées, plus étroites, plus douces */
+  .pricing { padding: 40px 0 48px; }
+  .plans { grid-template-columns: 1fr; gap: 22px; margin-top: 30px; }
+  .plan { width: 100%; max-width: 360px; margin: 0 auto; border-width: 2px; border-radius: 14px; padding: 26px 22px; }
+  .plan.mid { box-shadow: 4px 4px 0 var(--teal); }
+  .plan .price { font-size: 36px; }
+  .plan .vol { font-size: 11px; }
+  .plan li { font-size: 13.5px; padding: 6px 0 6px 26px; }
   .plan .btn { font-size: 14px; padding: 14px 12px; }
-  .engage { font-size: 13px; }
+  .plan .tag2 { font-size: 11px; right: 14px; }
+  .engage { font-size: 12.5px; padding: 0 10px; }
 
+  footer { padding: 20px 0; font-size: 11.5px; }
   footer .wrap { flex-direction: column; gap: 6px; text-align: center; }
 }
 
 @media (max-width: 380px) {
-  h1 { font-size: 26px; }
-  .proof { grid-template-columns: 1fr 1fr; }
-  .nav .links a.btn.inv { padding: 8px 12px !important; font-size: 12.5px !important; }
+  .wrap { padding: 0 18px; }
+  h1 { font-size: 24px; }
+  .cta-row .btn { min-width: 0; width: 100%; }
+  .plan { max-width: none; }
 }
