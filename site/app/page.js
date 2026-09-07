@@ -206,7 +206,7 @@ export default function Home() {
               <li>Nom, société et adresse du repreneur</li>
               <li>Numéro de téléphone de l&apos;établissement</li>
             </ul>
-            <a className="btn inv" href="https://buy.stripe.com/fZu28recd6SP3r57Bu7bW07">C&apos;est parti</a>
+            <a className="btn inv" href="https://buy.stripe.com/fZu28recd6SP3r57Bu7bW07">Surveiller mon département</a>
           </div>
           <div className="plan mid">
             <span className="tag2">Le plus choisi</span>
@@ -221,7 +221,7 @@ export default function Home() {
               <li>Export CSV pour votre CRM</li>
               <li>Support prioritaire</li>
             </ul>
-            <a className="btn" href="https://buy.stripe.com/28EfZh4BDdhdf9NaNG7bW08">C&apos;est parti</a>
+            <a className="btn" href="https://buy.stripe.com/28EfZh4BDdhdf9NaNG7bW08">Prendre ma région</a>
           </div>
           <div className="plan">
             <h3>Toute la France</h3>
@@ -234,7 +234,7 @@ export default function Home() {
               <li>Prospect nominatif à moins de 0,70 €</li>
               <li>API &amp; intégration CRM</li>
             </ul>
-            <a className="btn inv" href="https://buy.stripe.com/3cI6oHd89fplf9Nf3W7bW09">C&apos;est parti</a>
+            <a className="btn inv" href="https://buy.stripe.com/3cI6oHd89fplf9Nf3W7bW09">Couvrir toute la France</a>
           </div>
         </div>
         <p className="engage">

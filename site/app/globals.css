@@ -116,13 +116,67 @@ footer { border-top: 3px solid var(--ink); padding: 26px 0; font-size: 13px; col
 footer .wrap { display: flex; justify-content: space-between; }
 
 @media (max-width: 880px) {
-  h1 { font-size: 33px; }
-  .story-grid, .plans, .nums { grid-template-columns: 1fr; }
-  .story-cell { border-right: none; border-bottom: 2.5px solid var(--ink); }
+  .wrap { padding: 0 16px; }
+
+  /* Header compact : les liens texte disparaissent, le CTA reste */
+  .nav { padding: 12px 0; }
+  .nav .links a:not(.btn) { display: none; }
+  .nav .links a.btn.inv { margin-left: 0 !important; }
+  .logo { font-size: 17px; }
+  .logo .mark { width: 30px; height: 30px; }
+
+  /* Hero */
+  .hero { padding: 40px 0 36px; }
+  .stamp { font-size: 11px; padding: 6px 12px; margin-bottom: 20px; max-width: 100%; text-align: left; }
+  h1 { font-size: 30px; line-height: 1.12; }
+  h1 br { display: none; }
+  .sub { font-size: 15.5px; margin: 16px auto 24px; }
+  .cta-row { flex-direction: column; align-items: stretch; gap: 10px; }
+  .cta-row .btn { text-align: center; padding: 15px 18px; font-size: 14.5px; }
+  .small-note { font-size: 12px; }
+
+  /* Compteurs : grille 2×2 */
+  .proof { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 14px; margin-top: 32px; padding-top: 22px; }
+  .proof .n { font-size: 26px; }
+  .proof .l { max-width: none; font-size: 12px; }
+
+  /* Story */
+  .story { padding: 34px 0; }
+  .story-grid { grid-template-columns: 1fr; }
+  .story-cell { border-right: none; border-bottom: 2.5px solid var(--ink); padding: 22px 18px; }
   .story-cell:last-child { border-bottom: none; }
-  .proof { flex-wrap: wrap; gap: 24px; }
-  .cta-row { flex-direction: column; align-items: center; }
-  .row { grid-template-columns: 1fr auto; }
+
+  /* Feed */
+  h2.disp { font-size: 25px; }
+  .center-sub { font-size: 14px; }
+  .feed { box-shadow: 5px 5px 0 var(--teal); }
+  .feed-head { flex-wrap: wrap; gap: 6px; }
+  .row { grid-template-columns: 1fr; gap: 6px; padding: 13px 14px; }
   .row .date { display: none; }
-  footer .wrap { flex-direction: column; gap: 6px; }
+  .row .what { font-size: 13.5px; }
+  .row .what .meta { font-size: 12px; }
+  .row .tag { justify-self: start; }
+
+  /* Section sombre : grille 2×2 */
+  .proof-sec { padding: 40px 0; }
+  .nums { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .num-card { padding: 16px 10px; }
+  .num-card .n { font-size: 24px; }
+  .num-card .l { font-size: 11.5px; }
+
+  /* Tarifs */
+  .pricing { padding: 44px 0 50px; }
+  .plans { grid-template-columns: 1fr; gap: 26px; }
+  .plan.mid { box-shadow: 5px 5px 0 var(--teal); }
+  .plan .price { font-size: 38px; }
+  .plan .btn { font-size: 14px; padding: 14px 12px; }
+  .engage { font-size: 13px; }
+
+  footer .wrap { flex-direction: column; gap: 6px; text-align: center; }
+}
+
+@media (max-width: 380px) {
+  h1 { font-size: 26px; }
+  .proof { grid-template-columns: 1fr 1fr; }
+  .nav .links a.btn.inv { padding: 8px 12px !important; font-size: 12.5px !important; }
 }
