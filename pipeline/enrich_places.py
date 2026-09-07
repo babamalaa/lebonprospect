@@ -85,10 +85,12 @@ def main():
             conf = confiance(tel)
             pname = (place.get("displayName") or {}).get("text", "").replace("'", "''")
             sql_exec(f"update cessions set telephone = '{tel}', telephone_confiance = '{conf}', "
-                     f"place_name = '{pname}', enrichi_places = true where id = {row['id']};")
+                     f"place_name = '{pname}', enrichi_places = true, "
+                     f"places_tentatives = places_tentatives + 1 where id = {row['id']};")
             found += 1
         else:
-            sql_exec(f"update cessions set enrichi_places = true where id = {row['id']};")
+            sql_exec(f"update cessions set enrichi_places = true, "
+                     f"places_tentatives = places_tentatives + 1 where id = {row['id']};")
         if (i + 1) % 50 == 0:
             print(f"  {i+1}/{len(rows)} traités, {found} téléphones", flush=True)
         time.sleep(0.06)  # ~15 req/s max
