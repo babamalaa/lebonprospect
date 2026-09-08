@@ -53,6 +53,10 @@ def main():
     rr = subprocess.run([sys.executable, "enrich_places.py", "--days", "30"],
                         capture_output=True, text=True, cwd=HERE)
     print("places-retry:", (rr.stdout or "").strip().splitlines()[-1] if rr.stdout else "rien")
+    # ENVOI DES DIGESTS aux abonnés actifs
+    rr = subprocess.run([sys.executable, "send_digests.py"],
+                        capture_output=True, text=True, cwd=HERE)
+    print("digests:", (rr.stdout or "").strip().splitlines()[-1] if rr.stdout else rr.stderr[-300:])
     print(f"OK: {total} cessions ingérées, stats rafraîchies.")
 
 if __name__ == "__main__":
