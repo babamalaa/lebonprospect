@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<title>Fiche de suivi — LeBonProspect</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --teal: #31777A; --teal-soft: #e3efef; --ink: #14181d; --red: #d64a2e; --muted: #6f6a5c; --line: #e6e0d0; }
+body { font-family: 'Inter', sans-serif; color: var(--ink); font-size: 11px; line-height: 1.45; }
+.page { padding: 30px 38px; page-break-after: always; }
+.page:last-child { page-break-after: auto; }
+.head { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid var(--ink); padding-bottom: 10px; margin-bottom: 14px; }
+.logo { font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 17px; display: flex; align-items: center; gap: 8px; }
+.logo .mark { background: var(--teal); border: 2px solid var(--ink); border-radius: 7px; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; }
+.head .tag { font-size: 9.5px; color: var(--muted); text-align: right; font-weight: 600; }
+h1 { font-family: 'Archivo', sans-serif; font-size: 20px; font-weight: 900; margin-bottom: 3px; }
+.sub { color: var(--muted); font-size: 10px; margin-bottom: 12px; }
+.card { border: 2.5px solid var(--ink); border-radius: 14px; padding: 14px 18px 10px; margin-bottom: 16px; background: #fff; box-shadow: 4px 4px 0 var(--teal); }
+.row1 { display: flex; gap: 18px; margin-bottom: 9px; align-items: flex-end; }
+.f { min-width: 0; }
+.f.grow { flex: 1; }
+label { display: block; font-family: 'Archivo', sans-serif; font-size: 8.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--teal); margin-bottom: 3px; }
+.line { border-bottom: 1.5px solid var(--line); height: 17px; }
+.line.sm { width: 130px; }
+.line + .line { margin-top: 6px; }
+.st { display: inline-block; font-size: 10px; font-weight: 600; border: 1.5px solid var(--line); border-radius: 9px; padding: 2px 8px; margin: 1px 3px 1px 0; white-space: nowrap; }
+.st.hot { border-color: var(--red); color: var(--red); }
+.st.ok { border-color: #1e7a4d; color: #1e7a4d; font-weight: 800; }
+.st.no { color: var(--muted); }
+.remind { display: flex; gap: 12px; margin-top: 2px; }
+.remind > div { flex: 1; background: var(--teal-soft); border: 1.5px solid #a9d2d3; border-radius: 10px; padding: 9px 12px; font-size: 9px; color: #2e4a4b; }
+.remind b { font-family: 'Archivo', sans-serif; font-size: 10px; color: var(--teal); }
+.foot { margin-top: 10px; padding-top: 7px; border-top: 1.5px solid var(--line); font-size: 9px; color: var(--muted); display: flex; justify-content: space-between; }
+</style></head>
+<body>
+<div class="page">
+  <div class="head">
+    <div class="logo"><span class="mark"><svg width="15" height="15" viewBox="0 0 18 18" fill="none"><path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="3" r="2.2" fill="#d64a2e"/></svg></span>LeBonProspect</div>
+    <div class="tag">FICHE DE SUIVI · APRÈS CHAQUE CALL<br>usage interne</div>
+  </div>
+  <h1>Suivi des calls</h1><p class="sub">Une fiche par call. Remplir À CHAUD, juste après avoir raccroché — les verbatims d&apos;objections valent de l&apos;or pour affiner le script. Imprimer autant d&apos;exemplaires que nécessaire.</p>
+  
+  <div class="card">
+    <div class="row1">
+      <div class="f grow"><label>Société</label><div class="line"></div></div>
+      <div class="f"><label>Date / heure</label><div class="line sm"></div></div>
+      <div class="f"><label>Interlocuteur</label><div class="line sm"></div></div>
+    </div>
+    <div class="row1">
+      <div class="f statuts"><label>Statut</label>
+        <span class="st">☐ répondeur</span><span class="st">☐ barrage</span><span class="st">☐ à rappeler</span><span class="st hot">☐ chaud</span><span class="st ok">☐ SIGNÉ</span><span class="st no">☐ non</span>
+      </div>
+      <div class="f"><label>Teaser envoyé ?</label><span class="st">☐ SMS</span><span class="st">☐ WhatsApp</span><span class="st">☐ email</span></div>
+    </div>
+    <div class="row1">
+      <div class="f grow"><label>Comment il trouve ses clients aujourd'hui / prix payé au lead</label><div class="line"></div></div>
+    </div>
+    <div class="row1">
+      <div class="f grow"><label>Objections entendues (verbatim, pour enrichir le script)</label><div class="line"></div><div class="line"></div></div>
+    </div>
+    <div class="row1">
+      <div class="f grow"><label>Prochaine action + date (rappel J+2 avec une reprise fraîche de sa zone)</label><div class="line"></div></div>
+      <div class="f"><label>Si signé : plan</label><span class="st">☐ 149</span><span class="st">☐ 299</span><span class="st">☐ 499</span></div>
+    </div>
+    <div class="row1">
+      <div class="f grow"><label>Si signé : email + zone exacte (transmettre à Baptiste pour activation immédiate)</label><div class="line"></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="row1">
+      <div class="f grow"><label>Société</label><div class="line"></div></div>
+      <div class="f"><label>Date / heure</label><div class="line sm"></div></div>
+      <div class="f"><label>Interlocuteur</label><div class="line sm"></div></div>
+    </div>
+    <div class="row1">
+      <div class="f statuts"><label>Statut</label>
+        <span class="st">☐ répondeur</span><span class="st">☐ barrage</span><span class="st">☐ à rappeler</span><span class="st hot">☐ chaud</span><span class="st ok">☐ SIGNÉ</span><span class="st no">☐ non</span>
+      </div>
+      <div class="f"><label>Teaser envoyé ?</label><span class="st">☐ SMS</span><span class="st">☐ WhatsApp</span><span class="st">☐ email</span></div>
+    </div>
+    <div class="row1">
+      <div class="f grow"><label>Comment il trouve ses clients aujourd'hui / prix payé au lead</label><div class="line"></div></div>
+    </div>
+    <div class="row1">
+      <div class="f grow"><label>Objections entendues (verbatim, pour enrichir le script)</label><div class="line"></div><div class="line"></div></div>
+    </div>
+    <div class="row1">
+      <div class="f grow"><label>Prochaine action + date (rappel J+2 avec une reprise fraîche de sa zone)</label><div class="line"></div></div>
+      <div class="f"><label>Si signé : plan</label><span class="st">☐ 149</span><span class="st">☐ 299</span><span class="st">☐ 499</span></div>
+    </div>
+    <div class="row1">
+      <div class="f grow"><label>Si signé : email + zone exacte (transmettre à Baptiste pour activation immédiate)</label><div class="line"></div></div>
+    </div>
+  </div>
+  
+  <div class="foot"><span>LeBonProspect · fiche de suivi V1</span><span>page 1/2</span></div>
+</div>
+<div class="page">
+  <div class="head">
+    <div class="logo"><span class="mark"><svg width="15" height="15" viewBox="0 0 18 18" fill="none"><path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="3" r="2.2" fill="#d64a2e"/></svg></span>LeBonProspect</div>
+    <div class="tag">FICHE DE SUIVI · APRÈS CHAQUE CALL<br>usage interne</div>
+  </div>
+  
+  
+  <div class="card">
+    <div class="row1">
+      <div class="f grow"><label>Société</label><div class="line"></div></div>
+      <div class="f"><label>Date / heure</label><div class="line sm"></div></div>
+      <div class="f"><label>Interlocuteur</label><div class="line sm"></div></div>
+    </div>
+    <div class="row1">
+      <div class="f statuts"><label>Statut</label>
+        <span class="st">☐ répondeur</span><span class="st">☐ barrage</span><span class="st">☐ à rappeler</span><span class="st hot">☐ chaud</span><span class="st ok">☐ SIGNÉ</span><span class="st no">☐ non</span>
+      </div>
+      <div class="f"><label>Teaser envoyé ?</label><span class="st">☐ SMS</span><span class="st">☐ WhatsApp</span><span class="st">☐ email</span></div>
+    </div>
+    <div class="row1">
+      <div class="f grow"><label>Comment il trouve ses clients aujourd'hui / prix payé au lead</label><div class="line"></div></div>
+    </div>
+    <div class="row1">
+      <div class="f grow"><label>Objections entendues (verbatim, pour enrichir le script)</label><div class="line"></div><div class="line"></div></div>
+    </div>
+    <div class="row1">
+      <div class="f grow"><label>Prochaine action + date (rappel J+2 avec une reprise fraîche de sa zone)</label><div class="line"></div></div>
+      <div class="f"><label>Si signé : plan</label><span class="st">☐ 149</span><span class="st">☐ 299</span><span class="st">☐ 499</span></div>
+    </div>
+    <div class="row1">
+      <div class="f grow"><label>Si signé : email + zone exacte (transmettre à Baptiste pour activation immédiate)</label><div class="line"></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="row1">
+      <div class="f grow"><label>Société</label><div class="line"></div></div>
+      <div class="f"><label>Date / heure</label><div class="line sm"></div></div>
+      <div class="f"><label>Interlocuteur</label><div class="line sm"></div></div>
+    </div>
+    <div class="row1">
+      <div class="f statuts"><label>Statut</label>
+        <span class="st">☐ répondeur</span><span class="st">☐ barrage</span><span class="st">☐ à rappeler</span><span class="st hot">☐ chaud</span><span class="st ok">☐ SIGNÉ</span><span class="st no">☐ non</span>
+      </div>
+      <div class="f"><label>Teaser envoyé ?</label><span class="st">☐ SMS</span><span class="st">☐ WhatsApp</span><span class="st">☐ email</span></div>
+    </div>
+    <div class="row1">
+      <div class="f grow"><label>Comment il trouve ses clients aujourd'hui / prix payé au lead</label><div class="line"></div></div>
+    </div>
+    <div class="row1">
+      <div class="f grow"><label>Objections entendues (verbatim, pour enrichir le script)</label><div class="line"></div><div class="line"></div></div>
+    </div>
+    <div class="row1">
+      <div class="f grow"><label>Prochaine action + date (rappel J+2 avec une reprise fraîche de sa zone)</label><div class="line"></div></div>
+      <div class="f"><label>Si signé : plan</label><span class="st">☐ 149</span><span class="st">☐ 299</span><span class="st">☐ 499</span></div>
+    </div>
+    <div class="row1">
+      <div class="f grow"><label>Si signé : email + zone exacte (transmettre à Baptiste pour activation immédiate)</label><div class="line"></div></div>
+    </div>
+  </div>
+  <div class="remind">
+    <div><b>Les 3 phrases en or</b><br>« Le repreneur qui arrive n'a pas encore de fournisseur attitré. Dans 6 mois, si. » · « Vous ne payez pas de la donnée, vous payez d'être le premier au courant. » · « Un seul client signé rembourse deux ans d'abonnement. »</div>
+    <div><b>Rituel du soir</b><br>Reporter les statuts dans le Sheet · nouvelles objections → Baptiste (mise à jour du script) · signés → activation le jour même · chauds → rappel programmé J+2.</div>
+  </div>
+  <div class="foot"><span>LeBonProspect · fiche de suivi V1</span><span>page 2/2</span></div>
+</div></body></html>

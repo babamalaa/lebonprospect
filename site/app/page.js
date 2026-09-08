@@ -181,7 +181,7 @@ export default function Home() {
             <div className="price">
               149 € <small>/mois</small>
             </div>
-            <div className="vol">~15-40 reprises / mois selon dept</div>
+            <div className="vol">soit environ 5,50 € le prospect nominatif</div>
             <ul>
               <li>1 département au choix</li>
               <li>Email chaque matin à 8h</li>
@@ -196,7 +196,7 @@ export default function Home() {
             <div className="price">
               299 € <small>/mois</small>
             </div>
-            <div className="vol">jusqu&apos;à 180 reprises resto / mois en IDF</div>
+            <div className="vol">soit environ 3,50 € le prospect nominatif</div>
             <ul>
               <li>1 région complète</li>
               <li>Toutes les verticales de votre métier</li>
@@ -207,20 +207,19 @@ export default function Home() {
           </div>
           <div className="plan">
             <h3>Toute la France</h3>
-            <div className="price">
-              499 € <small>/mois</small>
-            </div>
-            <div className="vol">~820 reprises resto / mois · 0,70 € le prospect</div>
+            <div className="price price-devis">Sur devis</div>
+            <div className="vol">multi-régions, équipes commerciales, national</div>
             <ul>
-              <li>France entière, votre secteur</li>
-              <li>Prospect nominatif à moins de 0,70 €</li>
-              <li>API &amp; intégration CRM</li>
+              <li>France entière ou multi-régions</li>
+              <li>Un digest par commercial, par secteur</li>
+              <li>Export CSV &amp; intégration CRM</li>
+              <li>Interlocuteur dédié</li>
             </ul>
-            <a className="btn inv" href="https://buy.stripe.com/5kQeVdaZj4ugddjcXT8N202">Couvrir toute la France</a>
+            <a className="btn inv" href="mailto:contact@lebonprospect.fr?subject=Offre%20nationale%20LeBonProspect">Parler à un humain</a>
           </div>
         </div>
         <p className="engage">
-          Sans engagement · 6 mois : <b>1 mois offert</b> · 12 mois : <b>2 mois offerts</b>
+          Sans engagement, résiliable en 1 clic · engagement 6 mois : <b>1 mois offert</b> · engagement 12 mois : <b>2 mois offerts</b>
         </p>
       </section>
 
