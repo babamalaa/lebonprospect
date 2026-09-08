@@ -172,6 +172,42 @@ footer .wrap { display: flex; justify-content: space-between; }
 .dpoint.lit b { color: #fff; }
 .dpoint.lit .dpoint-n { background: var(--teal); border-color: var(--teal-light); color: #fff; }
 
+/* ============ TEASER PAGES /pour/[slug] ============ */
+.tz-band { background: var(--ink); color: #fff; padding: 11px 0; }
+.tz-band-in { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.tz-logo { font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+.tz-logo .mark { background: var(--teal); border: 2px solid rgba(255,255,255,.25); border-radius: 7px; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; }
+.tz-for { font-size: 12.5px; color: #a8b0b8; }
+.tz-for b { color: #fff; }
+.tz-hero { padding-top: 48px; }
+.tz-hero h1 { font-size: 38px; }
+.tz-proof .n { color: var(--teal); }
+.tz-badge { font-size: 10px; font-weight: 800; color: var(--red); border: 1px solid var(--red); background: #fdeae4; border-radius: 9px; padding: 1px 7px; margin-left: 8px; vertical-align: 2px; white-space: nowrap; }
+.tz-badge.exp { color: var(--teal); border-color: var(--teal); background: var(--teal-soft); }
+.tz-tel { margin-top: 5px; font-size: 12.5px; }
+.tz-tel-num { font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+.tz-pill { font-size: 10.5px; font-weight: 700; background: #e7f5ec; color: #1e7a4d; border: 1px solid #1e7a4d; padding: 1px 8px; border-radius: 10px; margin-left: 5px; }
+.tz-pill.soft { background: var(--teal-soft); color: var(--teal); border-color: var(--teal-light); margin-left: 0; }
+.tz-depts { padding: 52px 0; text-align: center; }
+.tz-dept-grid { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
+.tz-dept { border: 2px solid var(--ink); border-radius: 12px; padding: 16px 22px; background: #fff; min-width: 120px; }
+.tz-dept .n { font-family: 'Archivo', sans-serif; font-size: 26px; font-weight: 900; color: var(--teal); }
+.tz-dept .l { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.tz-team { margin: 26px auto 0; max-width: 480px; font-size: 14px; background: var(--teal-soft); border: 1.5px solid var(--teal-light); border-radius: 12px; padding: 14px 18px; }
+.tz-offer { text-align: center; }
+.tz-maths { display: flex; gap: 18px; justify-content: center; margin: 30px 0; flex-wrap: wrap; }
+.tz-math { border: 2.5px solid var(--ink); border-radius: 14px; padding: 22px; max-width: 290px; background: #fff; font-size: 13.5px; color: #4a4a42; }
+.tz-math .big { font-family: 'Archivo', sans-serif; font-size: 34px; font-weight: 900; color: var(--teal); margin-bottom: 6px; }
+.tz-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+@media (max-width: 880px) {
+  .tz-hero h1 { font-size: 27px; }
+  .tz-band-in { flex-direction: column; gap: 3px; text-align: center; }
+  .tz-maths { flex-direction: column; align-items: center; }
+  .tz-cta { flex-direction: column; align-items: center; }
+  .tz-cta .btn { min-width: 250px; text-align: center; }
+  .tz-cta .btn.inv { background: transparent; border: none; color: var(--teal); text-decoration: underline; text-underline-offset: 4px; font-size: 14px; padding: 4px; }
+}
+
 @media (max-width: 880px) {
   .wrap { padding-left: 20px !important; padding-right: 20px !important; }
 
