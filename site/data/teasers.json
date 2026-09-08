@@ -1,0 +1,535 @@
+{
+ "genere_le": "2026-09-08",
+ "national_n90": 2951,
+ "regions": {
+  "Auvergne-Rhône-Alpes": {
+   "n90": 378,
+   "n30": 91,
+   "n90_tel": 317,
+   "pct_tel": 84,
+   "leads": [
+    {
+     "nom": "Les Glougloutons",
+     "ville": "Lyon",
+     "dept": "Rhône",
+     "date": "2026-09-06",
+     "dirigeants": [
+      "Shelly Chrystelle Bernicot"
+     ],
+     "tel_masque": "04 72 13 ## ##",
+     "badge": "budgets ouverts"
+    },
+    {
+     "nom": "MexiKebab",
+     "ville": "Ambérieu-en-Bugey",
+     "dept": "Ain",
+     "date": "2026-09-06",
+     "dirigeants": [
+      "Serkan Tuna",
+      "Yasin Tuna"
+     ],
+     "tel_masque": "04 74 61 ## ##",
+     "badge": "en expansion"
+    },
+    {
+     "nom": "l'Épicerie du Bonheur - Tabac Presse Jeux",
+     "ville": "Optevoz",
+     "dept": "Isère",
+     "date": "2026-09-06",
+     "dirigeants": [
+      "Teddy Pierre Belnand",
+      "Anne-Laure Belnand"
+     ],
+     "tel_masque": "09 61 60 ## ##",
+     "badge": "budgets ouverts"
+    },
+    {
+     "nom": "Pizz’Alif Firminy",
+     "ville": "Firminy",
+     "dept": "Loire",
+     "date": "2026-09-06",
+     "dirigeants": [],
+     "tel_masque": "04 77 35 ## ##",
+     "badge": "budgets ouverts"
+    },
+    {
+     "nom": "L'Ixo café",
+     "ville": "Saint-Symphorien-sur-Coise",
+     "dept": "Rhône",
+     "date": "2026-09-04",
+     "dirigeants": [],
+     "tel_masque": "04 78 19 ## ##",
+     "badge": "en expansion"
+    },
+    {
+     "nom": "Bee's Café",
+     "ville": "Mirabel-et-Blacons",
+     "dept": "Drôme",
+     "date": "2026-09-04",
+     "dirigeants": [
+      "Didier Roger Denis Millier",
+      "Nolan Roger Michel Millier"
+     ],
+     "tel_masque": "04 75 40 ## ##",
+     "badge": "budgets ouverts"
+    }
+   ],
+   "depts": [
+    {
+     "nom": "Rhône",
+     "n": 86
+    },
+    {
+     "nom": "Isère",
+     "n": 54
+    },
+    {
+     "nom": "Haute-Savoie",
+     "n": 49
+    },
+    {
+     "nom": "Savoie",
+     "n": 44
+    },
+    {
+     "nom": "Loire",
+     "n": 34
+    }
+   ]
+  },
+  "Provence-Alpes-Côte d'Azur": {
+   "n90": 388,
+   "n30": 88,
+   "n90_tel": 323,
+   "pct_tel": 83,
+   "leads": [
+    {
+     "nom": "Le Bousti",
+     "ville": "Marseille 6e Arrondissement",
+     "dept": "Bouches-du-Rhône",
+     "date": "2026-09-06",
+     "dirigeants": [
+      "Arthur Julio Georges Brineau",
+      "Thibaud Louis Emile Tisne"
+     ],
+     "tel_masque": "06 43 51 ## ##",
+     "badge": "budgets ouverts"
+    },
+    {
+     "nom": "ARPEJ",
+     "ville": "Grasse",
+     "dept": "Alpes-Maritimes",
+     "date": "2026-09-06",
+     "dirigeants": [
+      "Nicolas Romain Charbonnel",
+      "Boris Benjamin Leon Renaud"
+     ],
+     "tel_masque": "01 58 64 ## ##",
+     "badge": "budgets ouverts"
+    },
+    {
+     "nom": "Le Quai-sausset",
+     "ville": "Sausset-les-Pins",
+     "dept": "Bouches-du-Rhône",
+     "date": "2026-09-06",
+     "dirigeants": [
+      "Anaïs Aïci"
+     ],
+     "tel_masque": "04 86 68 ## ##",
+     "badge": "budgets ouverts"
+    },
+    {
+     "nom": "Bar Tabac Brasserie la Bourgade",
+     "ville": "La Penne-sur-Huveaune",
+     "dept": "Bouches-du-Rhône",
+     "date": "2026-09-04",
+     "dirigeants": [
+      "Charlotte Caroline Patricia Helvin",
+      "Jimmy John Maestro"
+     ],
+     "tel_masque": "04 91 44 ## ##",
+     "badge": "budgets ouverts"
+    },
+    {
+     "nom": "La Fabrik Restaurant Brasserie",
+     "ville": "Chorges",
+     "dept": "Hautes-Alpes",
+     "date": "2026-09-04",
+     "dirigeants": [
+      "David Alessio",
+      "Sébastien Baudin"
+     ],
+     "tel_masque": "04 92 23 ## ##",
+     "badge": "en expansion"
+    },
+    {
+     "nom": "Hôtel Le Provence",
+     "ville": "Gémenos",
+     "dept": "Bouches-du-Rhône",
+     "date": "2026-09-03",
+     "dirigeants": [
+      "Natacha Minodier"
+     ],
+     "tel_masque": "04 42 32 ## ##",
+     "badge": "en expansion"
+    }
+   ],
+   "depts": [
+    {
+     "nom": "Bouches-du-Rhône",
+     "n": 136
+    },
+    {
+     "nom": "Alpes-Maritimes",
+     "n": 126
+    },
+    {
+     "nom": "Var",
+     "n": 69
+    },
+    {
+     "nom": "Vaucluse",
+     "n": 27
+    },
+    {
+     "nom": "Hautes-Alpes",
+     "n": 22
+    }
+   ]
+  },
+  "Île-de-France": {
+   "n90": 515,
+   "n30": 134,
+   "n90_tel": 415,
+   "pct_tel": 81,
+   "leads": [
+    {
+     "nom": "UKIYO RAMEN PIGALLE",
+     "ville": "Paris",
+     "dept": "Paris",
+     "date": "2026-09-06",
+     "dirigeants": [
+      "Guillaume Lam"
+     ],
+     "tel_masque": "01 73 74 ## ##",
+     "badge": "en expansion"
+    },
+    {
+     "nom": "JML serrurerie",
+     "ville": "Paris",
+     "dept": "Paris",
+     "date": "2026-09-06",
+     "dirigeants": [
+      "Elisabeth Roussel"
+     ],
+     "tel_masque": "01 43 40 ## ##",
+     "badge": "budgets ouverts"
+    },
+    {
+     "nom": "Burger King France",
+     "ville": "Clichy",
+     "dept": "Hauts-de-Seine",
+     "date": "2026-09-04",
+     "dirigeants": [],
+     "tel_masque": "01 49 51 ## ##",
+     "badge": "en expansion"
+    },
+    {
+     "nom": "Yumy Bowl",
+     "ville": "Paris",
+     "dept": "Paris",
+     "date": "2026-09-04",
+     "dirigeants": [
+      "Xiaozhong Jiang"
+     ],
+     "tel_masque": "09 88 50 ## ##",
+     "badge": "budgets ouverts"
+    },
+    {
+     "nom": "Café du Centre",
+     "ville": "Combs-la-Ville",
+     "dept": "Seine-et-Marne",
+     "date": "2026-09-04",
+     "dirigeants": [],
+     "tel_masque": "06 87 50 ## ##",
+     "badge": "budgets ouverts"
+    },
+    {
+     "nom": "Burger King France",
+     "ville": "Clichy",
+     "dept": "Hauts-de-Seine",
+     "date": "2026-09-04",
+     "dirigeants": [
+      "Alexandre Pierre Jacques Simon"
+     ],
+     "tel_masque": "01 49 51 ## ##",
+     "badge": "en expansion"
+    }
+   ],
+   "depts": [
+    {
+     "nom": "Paris",
+     "n": 231
+    },
+    {
+     "nom": "Hauts-de-Seine",
+     "n": 82
+    },
+    {
+     "nom": "Val-de-Marne",
+     "n": 41
+    },
+    {
+     "nom": "Seine-Saint-Denis",
+     "n": 40
+    },
+    {
+     "nom": "Yvelines",
+     "n": 36
+    }
+   ]
+  }
+ },
+ "cibles": [
+  {
+   "slug": "proinox-cuisto-depot",
+   "societe": "ProInox Cuisto Dépôt",
+   "categorie": "agenceur",
+   "metier": "l'agencement CHR",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Grenoble"
+  },
+  {
+   "slug": "manelli",
+   "societe": "Manelli",
+   "categorie": "materiel_cuisine",
+   "metier": "l'équipement de cuisine professionnelle",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Nice"
+  },
+  {
+   "slug": "toc-trouble-obsessionnel-culinaire-paris",
+   "societe": "TOC - Trouble Obsessionnel Culinaire - Paris",
+   "categorie": "materiel_cuisine",
+   "metier": "l'équipement de cuisine professionnelle",
+   "region": "Île-de-France",
+   "ville": "Paris"
+  },
+  {
+   "slug": "toporder-by-mypos",
+   "societe": "Toporder by myPOS",
+   "categorie": "caisse",
+   "metier": "les solutions d'encaissement",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Lyon"
+  },
+  {
+   "slug": "dream-neon",
+   "societe": "Dream Néon",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Île-de-France",
+   "ville": "Paris"
+  },
+  {
+   "slug": "clyo-systems-caisse-enregistreuse-intell",
+   "societe": "Clyo Systems - Caisse enregistreuse intelligente",
+   "categorie": "caisse",
+   "metier": "les solutions d'encaissement",
+   "region": "Île-de-France",
+   "ville": "Paris"
+  },
+  {
+   "slug": "euromat-equipements-pour-chr-gms-euromat",
+   "societe": "EUROMAT - Equipements pour CHR & GMS - euromatchr.fr",
+   "categorie": "materiel_cuisine",
+   "metier": "l'équipement de cuisine professionnelle",
+   "region": "Île-de-France",
+   "ville": "Paris"
+  },
+  {
+   "slug": "dgsys-caisse-enregistreuse",
+   "societe": "DGsys caisse enregistreuse",
+   "categorie": "caisse",
+   "metier": "les solutions d'encaissement",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Saint-Étienne"
+  },
+  {
+   "slug": "decograph-funky-creation-enseignes-lumin",
+   "societe": "Décograph funky création | Enseignes Lumineuses & Supports Publicitaires - Toulon - Var",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Toulon"
+  },
+  {
+   "slug": "smart-enseignes-nice-enseignes-lumineuse",
+   "societe": "Smart Enseignes (Nice) : Enseignes Lumineuses",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Nice"
+  },
+  {
+   "slug": "atelier-gambetta-enseignes-lumineuses-st",
+   "societe": "Atelier Gambetta | Enseignes Lumineuses, Stores & Stickers",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Île-de-France",
+   "ville": "Paris"
+  },
+  {
+   "slug": "enseigne-plus",
+   "societe": "Enseigne Plus",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Lyon"
+  },
+  {
+   "slug": "deco-relief",
+   "societe": "Déco Relief",
+   "categorie": "materiel_cuisine",
+   "metier": "l'équipement de cuisine professionnelle",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Lyon"
+  },
+  {
+   "slug": "stock-direct-chr",
+   "societe": "Stock Direct CHR",
+   "categorie": "materiel_cuisine",
+   "metier": "l'équipement de cuisine professionnelle",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Clermont-Ferrand"
+  },
+  {
+   "slug": "dimensions-groupe-enseigne-habillage-de-",
+   "societe": "Dimensions Groupe - Enseigne/ Habillage de facade/ Signalétique",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Aix-en-Provence"
+  },
+  {
+   "slug": "caisse-enregistreuse-2018-certifiee-nf52",
+   "societe": "Caisse enregistreuse 2018 certifiée NF525 - SAS EA SOFT",
+   "categorie": "caisse",
+   "metier": "les solutions d'encaissement",
+   "region": "Île-de-France",
+   "ville": "Paris"
+  },
+  {
+   "slug": "arthur-froid",
+   "societe": "Arthur Froid",
+   "categorie": "materiel_cuisine",
+   "metier": "l'équipement de cuisine professionnelle",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Marseille"
+  },
+  {
+   "slug": "culinarion-aix-en-provence",
+   "societe": "Culinarion | AIX-EN-PROVENCE",
+   "categorie": "materiel_cuisine",
+   "metier": "l'équipement de cuisine professionnelle",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Aix-en-Provence"
+  },
+  {
+   "slug": "3e-tech-caisse-enregistreuse-certifiee-n",
+   "societe": "3E Tech - Caisse enregistreuse certifiée NF525 - Solution commande en ligne - Web Création",
+   "categorie": "caisse",
+   "metier": "les solutions d'encaissement",
+   "region": "Île-de-France",
+   "ville": "Paris"
+  },
+  {
+   "slug": "techni-contact",
+   "societe": "Techni-Contact",
+   "categorie": "caisse",
+   "metier": "les solutions d'encaissement",
+   "region": "Île-de-France",
+   "ville": "Boulogne-Billancourt"
+  },
+  {
+   "slug": "emb-service",
+   "societe": "Emb Service",
+   "categorie": "agenceur",
+   "metier": "l'agencement CHR",
+   "region": "Île-de-France",
+   "ville": "Versailles"
+  },
+  {
+   "slug": "bee-tech-caisse-enregistreuse-tactile-lo",
+   "societe": "Bee'Tech - Caisse Enregistreuse Tactile - Logiciel de Caisse",
+   "categorie": "caisse",
+   "metier": "les solutions d'encaissement",
+   "region": "Île-de-France",
+   "ville": "Paris"
+  },
+  {
+   "slug": "reparation-froid-et-climatisation-marsei",
+   "societe": "Réparation Froid et Climatisation Marseille & Alentours",
+   "categorie": "materiel_cuisine",
+   "metier": "l'équipement de cuisine professionnelle",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Marseille"
+  },
+  {
+   "slug": "taste-les-milles",
+   "societe": "TASTE les Milles",
+   "categorie": "agenceur",
+   "metier": "l'agencement CHR",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Aix-en-Provence"
+  },
+  {
+   "slug": "lettres-et-decors-enseignes-signaletique",
+   "societe": "Lettres et Décors | Enseignes, Signalétique",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Aix-en-Provence"
+  },
+  {
+   "slug": "com-in-led",
+   "societe": "Com'in Led",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Île-de-France",
+   "ville": "Paris"
+  },
+  {
+   "slug": "ecotel-aix-en-provence",
+   "societe": "ECOTEL AIX EN PROVENCE",
+   "categorie": "agenceur",
+   "metier": "l'agencement CHR",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Aix-en-Provence"
+  },
+  {
+   "slug": "icone-internet",
+   "societe": "ICONE INTERNET",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Avignon"
+  },
+  {
+   "slug": "cashmag-swiss-caisse-enregistreuse-monna",
+   "societe": "CashMag Swiss - Caisse enregistreuse & monnayeur automatique",
+   "categorie": "caisse",
+   "metier": "les solutions d'encaissement",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Annecy"
+  },
+  {
+   "slug": "thevenon-pro",
+   "societe": "Thevenon Pro",
+   "categorie": "materiel_cuisine",
+   "metier": "l'équipement de cuisine professionnelle",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Lyon"
+  }
+ ]
+}

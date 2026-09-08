@@ -1,4 +1,4 @@
-data/
+/data/
 teasers/
 .dbpass
 *.log
