@@ -1,4 +1,5 @@
 import Header from "./components/Header";
+import PhoneDemo from "./components/PhoneDemo";
 
 export default function Home() {
   return (
@@ -74,6 +75,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <PhoneDemo />
 
       <section className="feed-sec wrap" id="feed">
         <h2 className="disp">Publiées hier au Journal officiel</h2>
