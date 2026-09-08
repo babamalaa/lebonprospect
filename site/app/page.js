@@ -211,7 +211,7 @@ export default function Home() {
             <div className="vol">multi-régions, équipes commerciales, national</div>
             <ul>
               <li>France entière ou multi-régions</li>
-              <li>Un digest par commercial, par secteur</li>
+              <li>Chaque commercial reçoit les reprises de son secteur</li>
               <li>Export CSV &amp; intégration CRM</li>
               <li>Interlocuteur dédié</li>
             </ul>
