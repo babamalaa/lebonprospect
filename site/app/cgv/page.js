@@ -28,8 +28,9 @@ export default function CGV() {
 
         <h2 style={H2}>2. Abonnements et prix</h2>
         <p>
-          Trois formules mensuelles sont proposées : Départemental (149 € HT/mois), Régional (299 € HT/mois) et
-          National (499 € HT/mois). Le paiement s&apos;effectue par prélèvement mensuel automatique via Stripe.
+          Trois formules sont proposées : Départemental (149 € HT/mois), Régional (299 € HT/mois) et une offre
+          Nationale / multi-régions sur devis, adaptée aux équipes commerciales. Le paiement s&apos;effectue par
+          prélèvement mensuel automatique via Stripe (ou par virement sur facture pour les offres sur devis).
           L&apos;abonnement est sans engagement de durée : il peut être résilié à tout moment et prend fin à
           l&apos;échéance de la période en cours. Des remises sont accordées pour les engagements de 6 mois
           (1 mois offert) et 12 mois (2 mois offerts).
