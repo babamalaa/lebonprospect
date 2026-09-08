@@ -190,7 +190,7 @@ footer .wrap { display: flex; justify-content: space-between; }
 .tz .row .what { min-width: 0; }
 .tz .row .tag { justify-self: end; align-self: start; }
 .tz-tel-num { font-family: 'JetBrains Mono', monospace; font-weight: 700; }
-.tz-pill { font-size: 10.5px; font-weight: 700; background: #e7f5ec; color: #1e7a4d; border: 1px solid #1e7a4d; padding: 1px 8px; border-radius: 10px; margin-left: 5px; }
+.tz-pill { display: inline-block; white-space: nowrap; font-size: 10.5px; font-weight: 700; background: #e7f5ec; color: #1e7a4d; border: 1px solid #1e7a4d; padding: 1px 8px; border-radius: 10px; margin-left: 5px; }
 .tz-pill.soft { background: var(--teal-soft); color: var(--teal); border-color: var(--teal-light); margin-left: 0; }
 .tz-depts { padding: 52px 0; text-align: center; }
 .tz-dept-grid { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
@@ -206,6 +206,13 @@ footer .wrap { display: flex; justify-content: space-between; }
 @media (max-width: 880px) {
   .tz-hero h1 { font-size: 27px; }
   .tz-band-in { flex-direction: column; gap: 3px; text-align: center; }
+  /* badge vert : passe sous le numéro, entier, jamais coupé */
+  .tz-tel { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+  .tz-pill { margin-left: 0; font-size: 10px; }
+  /* cartes départements : carrousel horizontal sur une seule ligne */
+  .tz-dept-grid { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory; padding: 4px 20px 14px; margin-left: -20px; margin-right: -20px; scrollbar-width: none; }
+  .tz-dept-grid::-webkit-scrollbar { display: none; }
+  .tz-dept { flex-shrink: 0; scroll-snap-align: start; min-width: 128px; }
   .tz-maths { flex-direction: column; align-items: center; }
   .tz-cta { flex-direction: column; align-items: center; }
   .tz-cta .btn { min-width: 250px; text-align: center; }

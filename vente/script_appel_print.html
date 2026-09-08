@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<title>Script d'appel — LeBonProspect</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --teal: #31777A; --teal-soft: #e3efef; --teal-light: #a9d2d3; --ink: #14181d; --red: #d64a2e; --muted: #6f6a5c; --line: #e6e0d0; }
+body { font-family: 'Inter', sans-serif; color: var(--ink); font-size: 12px; line-height: 1.5; }
+.page { padding: 34px 40px; page-break-after: always; }
+.page:last-child { page-break-after: auto; }
+.head { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid var(--ink); padding-bottom: 12px; margin-bottom: 20px; }
+.logo { font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 17px; display: flex; align-items: center; gap: 8px; }
+.logo .mark { background: var(--teal); border: 2px solid var(--ink); border-radius: 7px; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; }
+.head .tag { font-size: 10.5px; color: var(--muted); text-align: right; }
+h1 { font-family: 'Archivo', sans-serif; font-size: 22px; font-weight: 900; margin-bottom: 4px; }
+.sub { color: var(--muted); font-size: 11.5px; margin-bottom: 18px; }
+h2 { font-family: 'Archivo', sans-serif; font-size: 13px; font-weight: 800; background: var(--ink); color: #fff; padding: 6px 12px; border-radius: 8px; margin: 16px 0 9px; display: flex; align-items: center; gap: 8px; }
+h2 .n { background: var(--teal); border-radius: 50%; width: 19px; height: 19px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+.say { background: var(--teal-soft); border-left: 4px solid var(--teal); border-radius: 0 10px 10px 0; padding: 10px 14px; margin: 8px 0; font-size: 12px; }
+.say b { color: var(--teal); }
+.note { font-size: 10.5px; color: var(--muted); font-style: italic; margin: 4px 0 8px; }
+.rule { background: #fdeae4; border: 1.5px solid var(--red); border-radius: 10px; padding: 8px 12px; margin: 8px 0; font-size: 11px; }
+.rule b { color: var(--red); }
+table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+th { font-family: 'Archivo', sans-serif; font-size: 10px; text-align: left; background: var(--teal); color: #fff; padding: 6px 10px; }
+th:first-child { border-radius: 8px 0 0 0; width: 32%; }
+th:last-child { border-radius: 0 8px 0 0; }
+td { border: 1px solid var(--line); border-top: none; padding: 7px 10px; font-size: 10.8px; vertical-align: top; }
+td:first-child { font-weight: 700; background: #faf8f2; }
+.gold { display: flex; gap: 10px; margin-top: 10px; }
+.gold > div { flex: 1; border: 2px solid var(--ink); border-radius: 10px; padding: 10px 12px; font-size: 11px; font-weight: 600; background: #fff; }
+.gold .n { font-family: 'Archivo', sans-serif; color: var(--teal); font-weight: 900; font-size: 15px; display: block; margin-bottom: 3px; }
+.check { margin: 4px 0 8px; }
+.check div { padding: 3px 0 3px 24px; position: relative; font-size: 11.5px; }
+.check div::before { content: "☐"; position: absolute; left: 4px; color: var(--teal); font-size: 13px; }
+.foot { margin-top: 14px; padding-top: 8px; border-top: 1.5px solid var(--line); font-size: 9.5px; color: var(--muted); display: flex; justify-content: space-between; }
+</style></head>
+<body>
+
+<div class="page">
+  <div class="head">
+    <div class="logo"><span class="mark"><svg width="15" height="15" viewBox="0 0 18 18" fill="none"><path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="3" r="2.2" fill="#d64a2e"/></svg></span>LeBonProspect</div>
+    <div class="tag">SCRIPT D'APPEL · V1<br>usage interne</div>
+  </div>
+
+  <h1>Le call en 6 mouvements</h1>
+  <p class="sub">Cible : patron ou responsable commercial d'un fournisseur CHR. Durée idéale : 5-8 min. Objectif : « je vous active votre zone » ou un rendez-vous ferme. La page personnalisée fait le travail visuel.</p>
+
+  <h2><span class="n">0</span>Préparation — 30 secondes avant d'appeler</h2>
+  <div class="check">
+    <div>Ouvrir sa page perso : <b>lebonprospect.fr/pour/‹slug›</b> (liste dans top30_liens.csv)</div>
+    <div>Repérer 1 reprise récente <b>proche de chez lui</b> sur sa page</div>
+    <div>Lien prêt à envoyer par SMS / WhatsApp / email pendant le call</div>
+  </div>
+
+  <h2><span class="n">1</span>L'accroche — 10 secondes pour gagner le droit de continuer</h2>
+  <div class="say">« Bonjour, [Prénom] ? Lawrenza, de LeBonProspect. Je vous appelle parce que <b>[Le Bousti, un resto à Marseille 6e] vient de changer de propriétaire</b>, c'est publié au Journal officiel de jeudi. Le repreneur est en train de tout rééquiper en ce moment. C'est exactement le genre de client que vous cherchez, non ? »</div>
+  <div class="rule"><b>Règles :</b> une VRAIE reprise, proche de chez lui. Pas de « comment allez-vous », pas de « je ne vous dérange pas ». C'est la donnée qui achète le droit de parler.</div>
+
+  <h2><span class="n">2</span>Le pitch — 30 secondes max</h2>
+  <div class="say">« On détecte chaque matin tous les restos, bars et hôtels qui changent de mains dans votre région, au Journal officiel. Du vérifiable, pas du formulaire recyclé. Nos abonnés reçoivent la liste à 8h avec le <b>nom du repreneur et le téléphone de l'établissement</b>. Vous êtes le premier à appeler, avant que les autres fournisseurs sachent que ça a bougé. »</div>
+
+  <h2><span class="n">3</span>L'envoi du lien — le moment clé</h2>
+  <div class="say">« Je vous envoie votre page, là, pendant qu'on parle. Vous me dites quand vous l'avez… Vous y êtes ? Descendez un peu : ce sont les <b>vraies reprises de votre région ces derniers jours</b>. Les numéros masqués, nos abonnés les ont en entier. »</div>
+  <div class="rule"><b>10-15 secondes de silence</b> pendant qu'il scrolle. C'est la page qui vend. Ne pas parler par-dessus.</div>
+
+  <h2><span class="n">4</span>Discovery — 2 questions, pas plus</h2>
+  <div class="say">1. « Aujourd'hui, comment vous trouvez vos nouveaux clients ? »<br>2. « Vous payez combien un lead, en ce moment ? »</div>
+  <p class="note">Pivot : « Chez nous c'est ~3 € le prospect nominatif avec téléphone. Et il n'est pas partagé avec 4 concurrents : celui qui appelle le premier gagne. »</p>
+
+  <div class="foot"><span>LeBonProspect · script d'appel V1</span><span>page 1/2</span></div>
+</div>
+
+<div class="page">
+  <div class="head">
+    <div class="logo"><span class="mark"><svg width="15" height="15" viewBox="0 0 18 18" fill="none"><path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="3" r="2.2" fill="#d64a2e"/></svg></span>LeBonProspect</div>
+    <div class="tag">SCRIPT D'APPEL · V1<br>usage interne</div>
+  </div>
+
+  <h2><span class="n">5</span>Objections — la réponse en une phrase</h2>
+  <table>
+    <tr><th>Il dit…</th><th>Tu réponds…</th></tr>
+    <tr><td>« C'est public, je peux le faire moi-même »</td><td>« Exact. Comptez 1h par jour pour trier, identifier le repreneur, trouver le numéro. Nous, on vous le met dans votre boîte à 8h pour 5 € par jour. Votre heure vaut plus que ça. »</td></tr>
+    <tr><td>« J'ai déjà des apporteurs / du bouche-à-oreille »</td><td>« Parfait, gardez-les. Nous on couvre ce que le bouche-à-oreille rate : le repreneur qui vient d'arriver et ne connaît encore personne. C'est le moment exact où il choisit ses fournisseurs. »</td></tr>
+    <tr><td>« C'est cher »</td><td>« 299 €, c'est ~90 prospects nominatifs le mois dernier dans votre région. UN seul client signé — une enseigne, une caisse, un four — et vous avez remboursé deux ans. »</td></tr>
+    <tr><td>« Les repreneurs gardent les fournisseurs existants »</td><td>« Parfois. Mais la plupart des reprises s'accompagnent de travaux ou de rééquipement la première année. Celui qui appelle en premier est dans la boucle quand ça bouge. »</td></tr>
+    <tr><td>« Je vais réfléchir »</td><td>« Bien sûr. Je vous active la semaine en cours, vous recevez les digests réels dès demain 8h, et on se rappelle vendredi. Si ce n'est pas utile, on arrête là. »</td></tr>
+    <tr><td>« Envoyez-moi une doc »</td><td>« La doc, c'est la page que vous avez sous les yeux, elle reste en ligne. Mieux : demain 8h, vous recevez le VRAI digest de votre zone. On en reparle après. »</td></tr>
+  </table>
+
+  <h2><span class="n">6</span>Le close — alternative fermée, jamais « ça vous intéresse ? »</h2>
+  <div class="say">« On fait simple : votre région entière à 299, ou juste votre département à 149. <b>Vous préférez lequel ?</b> »</div>
+  <div class="say">« Le bouton est en bas de votre page. Vous payez, et demain 8h vous avez vos premières reprises. <b>Je reste en ligne pendant que vous le faites.</b> »</div>
+  <div class="rule"><b>Rester en ligne pendant le paiement.</b> 80 % des « je le ferai après » ne le font jamais.</div>
+
+  <h2><span class="n">✓</span>Après le call</h2>
+  <div class="check">
+    <div>Google Sheet : statut + objections entendues (verbatim)</div>
+    <div>Signé → envoyer à Baptiste : email + plan + zone (activation immédiate)</div>
+    <div>Chaud mais pas signé → relance J+2 avec une NOUVELLE reprise de sa zone</div>
+    <div>Objection inconnue → on l'ajoute au script le soir même</div>
+  </div>
+
+  <div class="gold">
+    <div><span class="n">1</span>« Le repreneur qui vient d'arriver n'a pas encore de fournisseur attitré. Dans 6 mois, si. »</div>
+    <div><span class="n">2</span>« Vous ne payez pas de la donnée, vous payez d'être le premier au courant. »</div>
+    <div><span class="n">3</span>« Un seul client signé rembourse deux ans d'abonnement. »</div>
+  </div>
+
+  <div class="foot"><span>LeBonProspect · script d'appel V1</span><span>page 2/2</span></div>
+</div>
+
+</body></html>
