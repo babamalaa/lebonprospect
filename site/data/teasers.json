@@ -530,6 +530,238 @@
    "metier": "l'équipement de cuisine professionnelle",
    "region": "Auvergne-Rhône-Alpes",
    "ville": "Lyon"
+  },
+  {
+   "slug": "easy-module",
+   "societe": "Easy Module",
+   "categorie": "mobilier",
+   "metier": "le mobilier professionnel",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Annecy"
+  },
+  {
+   "slug": "mediaconcept",
+   "societe": "Mediaconcept",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Marseille"
+  },
+  {
+   "slug": "krome-menuiserie-agencement-interieur-ha",
+   "societe": "KROME Menuiserie | Agencement intérieur haut de gamme",
+   "categorie": "agenceur",
+   "metier": "l'agencement CHR",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Aix-en-Provence"
+  },
+  {
+   "slug": "renovation-enseigne-lumineuse-agencement",
+   "societe": "RÉNOVATION, ENSEIGNE LUMINEUSE, AGENCEMENT DE BOUTIQUE",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Aix-en-Provence"
+  },
+  {
+   "slug": "at-froid",
+   "societe": "AT FROID",
+   "categorie": "materiel_cuisine",
+   "metier": "l'équipement de cuisine professionnelle",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Marseille"
+  },
+  {
+   "slug": "ks-design",
+   "societe": "KS DESIGN",
+   "categorie": "agenceur",
+   "metier": "l'agencement CHR",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Clermont-Ferrand"
+  },
+  {
+   "slug": "g2s-enseignes",
+   "societe": "G2S Enseignes",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Saint-Étienne"
+  },
+  {
+   "slug": "ga-creation",
+   "societe": "GA Création",
+   "categorie": "agenceur",
+   "metier": "l'agencement CHR",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Clermont-Ferrand"
+  },
+  {
+   "slug": "atelier-co-ssences-ebeniste-designer-de-",
+   "societe": "Atelier Co&ssences : Ebéniste Designer, de la 3D à la matière",
+   "categorie": "agenceur",
+   "metier": "l'agencement CHR",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Marseille"
+  },
+  {
+   "slug": "cuisine-connexion",
+   "societe": "Cuisine connexion",
+   "categorie": "agenceur",
+   "metier": "l'agencement CHR",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Marseille"
+  },
+  {
+   "slug": "la-petite-souris-revelatrice-d-interieur",
+   "societe": "La Petite Souris, Révélatrice d'intérieurs",
+   "categorie": "agenceur",
+   "metier": "l'agencement CHR",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Nice"
+  },
+  {
+   "slug": "atelier-becker-tapissier-decorateur-eben",
+   "societe": "Atelier Becker, Tapissier Décorateur Ébéniste",
+   "categorie": "mobilier",
+   "metier": "le mobilier professionnel",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Marseille"
+  },
+  {
+   "slug": "pano-nice-est",
+   "societe": "Pano Nice Est",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Nice"
+  },
+  {
+   "slug": "chassor-vente-et-renovation-de-mobilier-",
+   "societe": "Chassor - vente et rénovation de mobilier vintage",
+   "categorie": "mobilier",
+   "metier": "le mobilier professionnel",
+   "region": "Île-de-France",
+   "ville": "Paris"
+  },
+  {
+   "slug": "gouskant-bois-concept",
+   "societe": "Gouskant Bois Concept",
+   "categorie": "agenceur",
+   "metier": "l'agencement CHR",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Lyon"
+  },
+  {
+   "slug": "all-inox-cuisine-pro",
+   "societe": "All Inox Cuisine Pro",
+   "categorie": "agenceur",
+   "metier": "l'agencement CHR",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Toulon"
+  },
+  {
+   "slug": "arteforme",
+   "societe": "Arteforme",
+   "categorie": "agenceur",
+   "metier": "l'agencement CHR",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Lyon"
+  },
+  {
+   "slug": "enseigniste-paris",
+   "societe": "Enseigniste Paris",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Île-de-France",
+   "ville": "Créteil"
+  },
+  {
+   "slug": "rampailleurs-chaises-ensoleillees-marsei",
+   "societe": "Rampailleurs chaises ensoleillées-Marseille travail à l'ancienne cannage paillage collage tapisserie ameublement fauteuil",
+   "categorie": "mobilier",
+   "metier": "le mobilier professionnel",
+   "region": "Provence-Alpes-Côte d'Azur",
+   "ville": "Marseille"
+  },
+  {
+   "slug": "atelier-roba-ebeniste",
+   "societe": "Atelier Roba - Ebéniste",
+   "categorie": "mobilier",
+   "metier": "le mobilier professionnel",
+   "region": "Île-de-France",
+   "ville": "Boulogne-Billancourt"
+  },
+  {
+   "slug": "atelier-imago-ebeniste",
+   "societe": "Atelier IMAGO, Ébéniste.",
+   "categorie": "mobilier",
+   "metier": "le mobilier professionnel",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Saint-Étienne"
+  },
+  {
+   "slug": "pub-enseigne-sticker-vitrophanie-led-lum",
+   "societe": "PUB Enseigne - Sticker - Vitrophanie - LED Lumineuse - Imprimeur - PARIS",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Île-de-France",
+   "ville": "Boulogne-Billancourt"
+  },
+  {
+   "slug": "serimages",
+   "societe": "Sérimages",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Île-de-France",
+   "ville": "Cergy"
+  },
+  {
+   "slug": "becker-publicite",
+   "societe": "Becker Publicité",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Grenoble"
+  },
+  {
+   "slug": "enseigne-idf",
+   "societe": "enseigne idf",
+   "categorie": "enseigniste",
+   "metier": "l'enseigne et la signalétique",
+   "region": "Île-de-France",
+   "ville": "Cergy"
+  },
+  {
+   "slug": "solutioncaisse-com-caisse-enregistreuse-",
+   "societe": "SOLUTIONCAISSE.COM – Caisse enregistreuse, logiciel de caisse et monnayeur automatique",
+   "categorie": "caisse",
+   "metier": "les solutions d'encaissement",
+   "region": "Île-de-France",
+   "ville": "Paris"
+  },
+  {
+   "slug": "froid-des-alpes-ste",
+   "societe": "Froid Des Alpes Sté",
+   "categorie": "materiel_cuisine",
+   "metier": "l'équipement de cuisine professionnelle",
+   "region": "Auvergne-Rhône-Alpes",
+   "ville": "Grenoble"
+  },
+  {
+   "slug": "hm-chr-equipements",
+   "societe": "HM CHR EQUIPEMENTS",
+   "categorie": "materiel_cuisine",
+   "metier": "l'équipement de cuisine professionnelle",
+   "region": "Île-de-France",
+   "ville": "Boulogne-Billancourt"
+  },
+  {
+   "slug": "eat-collect",
+   "societe": "Eat & Collect",
+   "categorie": "caisse",
+   "metier": "les solutions d'encaissement",
+   "region": "Île-de-France",
+   "ville": "Boulogne-Billancourt"
   }
  ]
 }
