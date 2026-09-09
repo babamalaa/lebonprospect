@@ -82,7 +82,8 @@ export default function Home() {
         <h2 className="disp">Publiées hier au Journal officiel</h2>
         <p className="center-sub">
           Annonces réelles du 6 septembre 2026 : chaque ligne est vérifiable publiquement au BODACC, gratuitement,
-          pour toujours.
+          pour toujours. Un badge indique si le repreneur vient tout juste de s&apos;installer ou s&apos;il est déjà
+          en activité, pour prioriser vos appels.
         </p>
         <div className="feed">
           <div className="feed-head">
@@ -95,7 +96,8 @@ export default function Home() {
           <div className="row">
             <div className="date">06/09<br />Paris 5e</div>
             <div className="what">
-              <b>LE PIANO VACHE</b> reprend le bar Le Piano Vache, rue Laplace
+              <b>LE PIANO VACHE</b> reprend le bar Le Piano Vache, rue Laplace{" "}
+              <span className="badge-fresh">budgets ouverts</span>
               <br />
               <span className="meta">Repreneur identifié · ☎ 01 46 33 ██ ██ · Paris 5e</span>
             </div>
@@ -104,7 +106,8 @@ export default function Home() {
           <div className="row">
             <div className="date">06/09<br />Bordeaux</div>
             <div className="what">
-              <b>DOLCE VITA</b> reprend un restaurant rue du Pas Saint-Georges
+              <b>DOLCE VITA</b> reprend un restaurant rue du Pas Saint-Georges{" "}
+              <span className="badge-fresh exp">en expansion</span>
               <br />
               <span className="meta">Repreneur identifié · ☎ 06 46 68 ██ ██ · Bordeaux centre</span>
             </div>
@@ -113,7 +116,8 @@ export default function Home() {
           <div className="row">
             <div className="date">06/09<br />Ploërmel</div>
             <div className="what">
-              <b>LA HALTE CELTIQUE</b> reprend un fonds rue des Primevères
+              <b>LA HALTE CELTIQUE</b> reprend un fonds rue des Primevères{" "}
+              <span className="badge-fresh">budgets ouverts</span>
               <br />
               <span className="meta">Repreneur identifié · ☎ 06 41 88 ██ ██ · Morbihan</span>
             </div>

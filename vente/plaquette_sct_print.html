@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<title>LeBonProspect SCT</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --teal: #31777A; --teal-soft: #e3efef; --teal-light: #a9d2d3; --ink: #14181d; --red: #d64a2e; --muted: #6f6a5c; --line: #e6e0d0; }
+body { font-family: 'Inter', sans-serif; color: var(--ink); font-size: 12px; line-height: 1.55; }
+.page { padding: 34px 42px; page-break-after: always; }
+.page:last-child { page-break-after: auto; }
+.head { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid var(--ink); padding-bottom: 12px; margin-bottom: 20px; }
+.logo { font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 19px; display: flex; align-items: center; gap: 9px; }
+.logo .mark { background: var(--teal); border: 2.5px solid var(--ink); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+.head .tag { font-size: 10.5px; color: var(--muted); text-align: right; }
+.for-badge { background: var(--ink); color: #fff; border-radius: 10px; padding: 10px 16px; margin-bottom: 18px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; }
+.for-badge b { font-family: 'Archivo', sans-serif; font-size: 13px; }
+h1 { font-family: 'Archivo', sans-serif; font-size: 25px; font-weight: 900; letter-spacing: -.02em; line-height: 1.2; margin-bottom: 8px; }
+h1 .hl { color: var(--teal); }
+.lead { font-size: 13px; color: #3a3a34; max-width: 570px; margin-bottom: 18px; }
+h2 { font-family: 'Archivo', sans-serif; font-size: 14.5px; font-weight: 800; margin: 18px 0 9px; color: var(--teal); }
+.fit { display: flex; gap: 12px; margin: 10px 0 16px; }
+.fitcard { flex: 1; border: 2px solid var(--ink); border-radius: 12px; padding: 12px 14px; background: #fff; }
+.fitcard b { display: block; font-size: 11.5px; margin-bottom: 4px; }
+.fitcard p { font-size: 10.3px; color: var(--muted); }
+.example { border: 2.5px solid var(--ink); border-radius: 14px; overflow: hidden; margin: 12px 0 16px; box-shadow: 5px 5px 0 var(--teal); }
+.ex-head { background: var(--teal); color: #fff; font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 11px; padding: 8px 16px; letter-spacing: .03em; }
+.ex-body { padding: 12px 18px; background: #fff; }
+.ex-name { font-weight: 700; font-size: 13.5px; }
+.ex-loc { font-size: 11px; color: var(--teal); font-weight: 600; margin-bottom: 3px; }
+.ex-row { font-size: 11px; margin-top: 2px; }
+.ex-tel { display: inline-flex; align-items: center; gap: 5px; background: var(--teal); color: #fff; font-weight: 700; font-size: 11.5px; border-radius: 8px; padding: 4px 11px; margin-top: 5px; font-family: 'JetBrains Mono', monospace; }
+.stats { display: flex; gap: 10px; margin: 6px 0; }
+.stat { flex: 1; border: 2px solid var(--ink); border-radius: 12px; padding: 12px 8px; text-align: center; background: #fff; }
+.stat.hot { background: var(--ink); color: #fff; }
+.stat .n { font-family: 'Archivo', sans-serif; font-size: 20px; font-weight: 900; }
+.stat .l { font-size: 9.2px; margin-top: 3px; opacity: .85; }
+.new-box { margin-top: 18px; border: 2.5px solid var(--red); border-radius: 14px; padding: 16px 20px; background: #fdeae4; }
+.new-box .badge { display: inline-block; background: var(--red); color: #fff; font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 10px; border-radius: 9px; padding: 3px 10px; margin-bottom: 8px; letter-spacing: .03em; }
+.new-box h3 { font-family: 'Archivo', sans-serif; font-size: 14.5px; font-weight: 900; margin-bottom: 6px; }
+.new-box p { font-size: 11.3px; color: #3a2a24; margin-bottom: 6px; }
+.new-box ul { margin: 8px 0 4px 18px; font-size: 11px; }
+.new-box li { margin-bottom: 3px; }
+table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+th { font-family: 'Archivo', sans-serif; font-size: 9.5px; text-align: left; background: var(--ink); color: #fff; padding: 7px 11px; }
+th:first-child { border-radius: 8px 0 0 0; }
+th:last-child { border-radius: 0 8px 0 0; }
+td { border-bottom: 1px solid var(--line); padding: 8px 11px; font-size: 10.5px; vertical-align: top; }
+td.plan { font-weight: 800; font-family: 'Archivo', sans-serif; color: var(--teal); }
+td.price { font-weight: 800; white-space: nowrap; }
+.foot-box { margin-top: 16px; background: var(--teal-soft); border: 1.5px solid var(--teal-light); border-radius: 12px; padding: 13px 17px; font-size: 11px; }
+.foot-box b { color: var(--teal); }
+.rule { font-size: 9.5px; color: var(--muted); margin-top: 5px; }
+.cta-box { margin-top: 18px; text-align: center; padding: 18px; border: 2.5px solid var(--ink); border-radius: 14px; background: #fff; }
+.cta-box .url { font-family: 'Archivo', sans-serif; font-size: 19px; font-weight: 900; color: var(--teal); }
+.cta-box p { font-size: 10.5px; color: var(--muted); margin-top: 5px; }
+.foot { margin-top: 16px; padding-top: 9px; border-top: 1.5px solid var(--line); font-size: 9.3px; color: var(--muted); display: flex; justify-content: space-between; }
+.badge-fresh { display: inline-block; font-size: 9px; font-weight: 800; color: var(--red); border: 1px solid var(--red); background: #fdeae4; border-radius: 9px; padding: 1px 7px; margin-left: 6px; vertical-align: 2px; white-space: nowrap; }
+.badges-row { display: flex; gap: 10px; margin-top: 6px; }
+.badge-demo { flex: 1; text-align: center; font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 11px; border-radius: 10px; padding: 10px 12px; border: 1.5px solid; }
+.badge-demo.fresh { color: var(--red); border-color: var(--red); background: #fdeae4; }
+.badge-demo.exp { color: var(--teal); border-color: var(--teal); background: var(--teal-soft); }
+</style></head>
+<body>
+
+<div class="page">
+  <div class="head">
+    <div class="logo"><span class="mark"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="3" r="2.2" fill="#d64a2e"/></svg></span>LeBonProspect</div>
+    <div class="tag">PLAQUETTE DE PRÉSENTATION<br>lebonprospect.fr</div>
+  </div>
+
+  <div class="for-badge">
+    <span>Préparé pour <b>Vihi Kirmen</b> · Directeur commercial France · <b>SCT</b>, experts télécom &amp; cybersécurité TPE/PME</span>
+  </div>
+
+  <h1>Ils viennent de racheter un commerce.<br>Ils ont besoin de <span class="hl">nouvelles lignes</span>.</h1>
+  <p class="lead">Chaque jour, des restaurants, bars, hôtels et commerces changent de propriétaire en France, publié obligatoirement au Journal officiel. LeBonProspect détecte ce moment et vous livre le contact du repreneur avant vos concurrents.</p>
+
+  <h2>Pourquoi ce profil correspond à SCT</h2>
+  <div class="fit">
+    <div class="fitcard"><b>Un dossier qui tient</b><p>Reprendre un fonds de commerce établi suppose un investissement réel et souvent un financement bancaire déjà validé, un profil plus solide qu'une création pure.</p></div>
+    <div class="fitcard"><b>Des contrats à renégocier</b><p>Dans les semaines suivant la reprise, la téléphonie, l'internet et la cybersécurité de l'établissement sont remis à plat par le nouveau dirigeant.</p></div>
+    <div class="fitcard"><b>Un vrai gain de temps</b><p>Vos commerciaux passent moins de temps à chercher des prospects qualifiés et plus de temps à vendre : la liste arrive triée, ciblée et prête à appeler chaque matin.</p></div>
+  </div>
+
+  <h2>Un exemple réel</h2>
+  <div class="example">
+    <div class="ex-head">REPRISE PUBLIÉE LE 8 SEPTEMBRE · CROISSY-SUR-SEINE</div>
+    <div class="ex-body">
+      <div class="ex-name">La Cantine <span class="badge-fresh">Société toute neuve : budgets ouverts</span></div>
+      <div class="ex-loc">Croissy-sur-Seine · Yvelines</div>
+      <div class="ex-row"><b>Repreneur :</b> Jonathan Dias Pereira Machado</div>
+      <div class="ex-tel">☎ 01 30 53 22 23</div>
+    </div>
+  </div>
+
+  <h2>Le badge de fraîcheur : un repère de priorité, à chaque ligne</h2>
+  <p class="lead" style="margin-bottom:10px;">Chaque reprise livrée porte un badge qui indique où en est le repreneur, pour prioriser les appels du jour :</p>
+  <div class="badges-row">
+    <div class="badge-demo fresh">Société toute neuve : budgets ouverts</div>
+    <div class="badge-demo exp">Acquéreur établi depuis 2024 : en expansion</div>
+  </div>
+  <p class="rule" style="margin-top:8px;">Le badge se calcule sur l'ancienneté réelle de la société repreneuse (donnée SIRENE) : moins de 6 mois d'existence, c'est un budget d'installation généralement encore ouvert.</p>
+
+  <h2>Les chiffres</h2>
+  <div class="stats">
+    <div class="stat hot"><div class="n">~1 000</div><div class="l">reprises CHR / mois en France</div></div>
+    <div class="stat"><div class="n">82 %</div><div class="l">livrées avec téléphone</div></div>
+    <div class="stat"><div class="n">48 000</div><div class="l">cessions en base sur 12 mois</div></div>
+  </div>
+
+  <div class="foot">
+    <span>LeBonProspect · données issues d'actes officiels publiés (BODACC, licence ouverte Etalab)</span>
+    <span>page 1/2</span>
+  </div>
+</div>
+
+<div class="page">
+  <div class="head">
+    <div class="logo"><span class="mark"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="3" r="2.2" fill="#d64a2e"/></svg></span>LeBonProspect</div>
+    <div class="tag">PLAQUETTE DE PRÉSENTATION · SCT<br>lebonprospect.fr</div>
+  </div>
+
+  <div class="new-box">
+    <span class="badge">EN DÉVELOPPEMENT · SUR MESURE SCT</span>
+    <h3>Le module Créations : un terrain vierge, sans concurrent installé</h3>
+    <p>Suite à notre échange : au-delà des reprises, nous pouvons développer un flux dédié aux <b>créations pures</b> d'établissements CHR : l'immatriculation d'un nouveau café, restaurant ou hôtel, avant même son ouverture.</p>
+    <ul>
+      <li>Adresse exacte de l'établissement et identité du créateur, dès l'immatriculation</li>
+      <li><b>Capital social déclaré</b>, un signal de sérieux du projet (une création à 150 000 € n'est pas une création à 500 €)</li>
+      <li>Aucune ligne héritée d'un précédent exploitant : terrain d'équipement neuf</li>
+      <li>Filtré sur le secteur CHR uniquement : un projet d'ouverture de café ou restaurant suppose un investissement de départ conséquent, contrairement à une création tous secteurs confondus</li>
+    </ul>
+    <p style="margin-top:8px;"><b>Limite à ce stade :</b> pas de téléphone au jour de l'immatriculation, l'établissement n'a pas encore de présence publique. Notre système de recherche prend le relais automatiquement dès que la fiche de l'établissement apparaît, souvent avant l'ouverture officielle.</p>
+    <p style="margin-top:8px;"><b>Le gain concret pour vos équipes :</b> vos commerciaux n'ont plus à repérer eux-mêmes les futures ouvertures, la liste arrive faite, triée par secteur, prête à appeler dès le matin.</p>
+  </div>
+
+  <h2 style="margin-top:20px;">Les formules</h2>
+  <table>
+    <tr><th>Formule</th><th>Périmètre</th><th>Prix</th></tr>
+    <tr><td class="plan">Départemental</td><td>1 département au choix</td><td class="price">149 €/mois</td></tr>
+    <tr><td class="plan">Régional</td><td>1 région complète</td><td class="price">299 €/mois</td></tr>
+    <tr><td class="plan">National / Enterprise</td><td>France entière, multi-comptes, module Créations</td><td class="price">Sur devis</td></tr>
+  </table>
+  <p class="rule">Sans engagement, résiliable en un clic · facturation par virement sur facture disponible pour les offres sur devis.</p>
+
+  <div class="foot-box">
+    <b>Prochaine étape proposée :</b> un échantillon réel du module Créations (reprises + créations CHR filtrées) livré sous une à deux semaines, pour validation du format avant tout engagement.
+  </div>
+
+  <div class="cta-box">
+    <div class="url">lebonprospect.fr</div>
+    <p>contact@lebonprospect.fr</p>
+  </div>
+
+  <div class="foot">
+    <span>LeBonProspect · préparé pour SCT / Vihi Kirmen</span>
+    <span>page 2/2</span>
+  </div>
+</div>
+
+</body></html>
