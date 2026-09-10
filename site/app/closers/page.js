@@ -77,6 +77,11 @@ export default function ClosersPage() {
           Ce document explique le produit, la rémunération, et les règles à respecter en représentant
           LeBonProspect. À lire avant votre premier appel.
         </p>
+        <div className="cta-row" style={{ justifyContent: "center", marginTop: 18 }}>
+          <a href="/closers/dashboard" className="btn">
+            Ouvrir le tableau de suivi →
+          </a>
+        </div>
       </section>
 
       <section className="wrap cl-section">

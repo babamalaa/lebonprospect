@@ -80,7 +80,10 @@ def main():
     national = sql_exec("""select count(*) filter (where date_parution >= current_date - 90) as n90
         from cessions where verticale = 'chr';""")[0]
     cibles, regions = [], {}
-    for row in csv.DictReader(open(os.path.join(HERE, "..", "data", "top30_cibles.csv")), delimiter=";"):
+
+    # source unique désormais : la table prospects_calls (alimentée par subscribe/refill)
+    rows = sql_exec("select societe, categorie, region, ville from prospects_calls order by id;")
+    for row in rows:
         region = REGION_MAP.get(row["region"], row["region"])
         if region not in regions:
             print(f"stats {region}...", flush=True)
