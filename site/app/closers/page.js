@@ -198,11 +198,14 @@ export default function ClosersPage() {
         <div className="cl-card dark" style={{ marginTop: 18 }}>
           <h3 style={{ color: "#fff" }}>Où est le vrai revenu, et combien de temps ça prend</h3>
           <p>
-            Signer 10 deals/mois demande environ 100 à 200 appels qualifiés (conversion réaliste en B2B froid :
-            5 à 10%), soit environ 10 à 15h/semaine. À ce rythme, comptez 700 à 900 €/mois : un très bon side,
-            pas un plein temps. Le vrai levier de revenu, ce sont les comptes enterprise (chaînes, groupes,
-            équipes commerciales) : un seul deal enterprise engagé vaut plus que 15 deals départementaux. Dès
-            que le pitch est rodé sur les petits comptes, priorisez le temps sur les gros prospects.
+            Signer 10 deals/mois demande environ 100 à 200 appels (conversion réaliste en B2B froid :
+            5 à 10%), soit environ 10 à 15h/semaine. Les cibles ne sont pas pré-qualifiées ni appelées en amont,
+            mais elles ne sortent pas de nulle part : ce sont des listes ciblées, triées par secteur et par
+            zone, avec téléphone et lien personnalisé prêts à l&apos;emploi. À ce rythme, comptez 700 à 900
+            €/mois : un très bon side, pas un plein temps. Le vrai levier de revenu, ce sont les comptes
+            enterprise (chaînes, groupes, équipes commerciales) : un seul deal enterprise engagé vaut plus que
+            15 deals départementaux. Dès que le pitch est rodé sur les petits comptes, priorisez le temps sur
+            les gros prospects.
           </p>
         </div>
       </section>
@@ -221,7 +224,7 @@ export default function ClosersPage() {
             <b>Facturation en indépendant obligatoire</b> (auto-entrepreneur ou société, avec SIRET) pour
             percevoir une commission.
           </li>
-          <li>Le reporting d&apos;un deal signé se fait le jour même auprès de Baptiste.</li>
+          <li>Le reporting d&apos;un deal signé se fait le jour même auprès de Lawrenza.</li>
         </ul>
       </section>
 
@@ -249,7 +252,7 @@ export default function ClosersPage() {
               <li>Promettre un délai ferme sur une fonctionnalité non livrée</li>
               <li>Garantir un résultat commercial</li>
               <li>Dénigrer le BODACC ou suggérer une donnée cachée</li>
-              <li>Signer sans formulaire secteur + zone rempli</li>
+              <li>Signer sans formulaire secteur + zone rempli (sinon rien n&apos;est livrable)</li>
             </ul>
           </div>
         </div>
@@ -272,7 +275,7 @@ export default function ClosersPage() {
           </div>
           <div className="cl-step">
             <div className="n">4</div>
-            <p>Vous signalez le deal à Baptiste le jour même, pour activation de l&apos;abonnement.</p>
+            <p>Vous signalez le deal à Lawrenza le jour même, pour activation de l&apos;abonnement.</p>
           </div>
           <div className="cl-step">
             <div className="n">5</div>
