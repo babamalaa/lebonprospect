@@ -311,16 +311,39 @@ footer .wrap { display: flex; justify-content: space-between; }
 .app-who span { font-size: 10.5px; color: #8a94a0; }
 .app-logout { background: none; border: 1px solid rgba(255,255,255,.2); color: #cfd8df; font-size: 11.5px; padding: 6px 10px; border-radius: 8px; cursor: pointer; width: 100%; }
 .app-logout:hover { border-color: #fff; color: #fff; }
-.app-main { flex: 1; padding: 34px 40px; max-width: 1100px; }
-.app-panel { max-width: 900px; }
+.app-main { flex: 1; padding: 34px 48px; }
+.app-panel { max-width: none; width: 100%; }
+.app-panel.narrow { max-width: 900px; }
 .app-h1 { font-family: 'Archivo', sans-serif; font-size: 27px; font-weight: 900; margin-bottom: 6px; }
 .app-lead { font-size: 13.5px; color: var(--muted); }
 .app-refill-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.app-refill-row .btn { background: var(--teal); border-color: var(--teal-light); font-size: 13.5px; padding: 12px 20px; white-space: nowrap; }
+.app-refill-row .btn:hover { box-shadow: 4px 4px 0 rgba(255,255,255,.25); }
 .app-docs { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
-.app-doc { display: flex; flex-direction: column; border: 2px solid var(--ink); border-radius: 12px; padding: 14px 18px; text-decoration: none; color: var(--ink); background: #fff; }
+.app-doc { display: flex; flex-direction: column; border: 2px solid var(--ink); border-radius: 12px; padding: 14px 18px; text-decoration: none; color: var(--ink); background: #fff; cursor: pointer; }
 .app-doc:hover { background: var(--teal-soft); border-color: var(--teal); }
 .app-doc b { font-family: 'Archivo', sans-serif; font-size: 14px; margin-bottom: 3px; }
 .app-doc span { font-size: 12px; color: var(--muted); }
+.dash-table-wrap { width: 100%; }
+.dash-table { width: 100%; min-width: 0; table-layout: fixed; }
+.dash-table td, .dash-table th { overflow-wrap: break-word; }
+.dash-table th:nth-child(1), .dash-table td:nth-child(1) { width: 18%; }
+.dash-table th:nth-child(2), .dash-table td:nth-child(2) { width: 13%; }
+.dash-table th:nth-child(3), .dash-table td:nth-child(3) { width: 10%; }
+.dash-table th:nth-child(4), .dash-table td:nth-child(4) { width: 6%; }
+.dash-table th:nth-child(5), .dash-table td:nth-child(5) { width: 12%; }
+.dash-table th:nth-child(6), .dash-table td:nth-child(6) { width: 17%; }
+.dash-table th:nth-child(7), .dash-table td:nth-child(7) { width: 24%; }
+.dash-input.wide { width: 100%; }
+.dash-input { width: 100%; }
+
+/* ============ SCRIPT PICKER ============ */
+.script-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+.script-tab { background: #fff; border: 2px solid var(--ink); border-radius: 10px; padding: 9px 16px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12.5px; cursor: pointer; color: var(--ink); }
+.script-tab:hover { background: var(--teal-soft); }
+.script-tab.active { background: var(--ink); color: #fff; }
+.script-block { display: flex; flex-direction: column; gap: 12px; }
+.script-note { font-size: 12px; color: var(--muted); margin-bottom: 14px; font-style: italic; }
 
 @media (max-width: 880px) {
   .app { flex-direction: column; }
