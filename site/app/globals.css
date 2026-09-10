@@ -299,7 +299,7 @@ footer .wrap { display: flex; justify-content: space-between; }
 .app-loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; color: var(--muted); }
 .app { display: flex; min-height: 100vh; }
 .app-side { width: 210px; flex-shrink: 0; background: var(--ink); color: #fff; display: flex; flex-direction: column; padding: 20px 16px; position: sticky; top: 0; height: 100vh; }
-.app-logo { font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 15px; display: flex; align-items: center; gap: 8px; margin-bottom: 26px; }
+.app-logo { font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 15px; display: flex; align-items: center; gap: 8px; margin-bottom: 26px; color: #fff; }
 .app-logo .mark { background: var(--teal); border-radius: 7px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .app-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .app-nav button { text-align: left; background: none; border: none; color: #cfd8df; font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600; padding: 10px 12px; border-radius: 9px; cursor: pointer; }
@@ -307,7 +307,7 @@ footer .wrap { display: flex; justify-content: space-between; }
 .app-nav button.active { background: var(--teal); color: #fff; }
 .app-side-foot { border-top: 1px solid rgba(255,255,255,.12); padding-top: 14px; margin-top: 14px; }
 .app-who { display: flex; flex-direction: column; margin-bottom: 10px; }
-.app-who b { font-size: 12.5px; }
+.app-who b { font-size: 12.5px; color: #fff; }
 .app-who span { font-size: 10.5px; color: #8a94a0; }
 .app-logout { background: none; border: 1px solid rgba(255,255,255,.2); color: #cfd8df; font-size: 11.5px; padding: 6px 10px; border-radius: 8px; cursor: pointer; width: 100%; }
 .app-logout:hover { border-color: #fff; color: #fff; }
