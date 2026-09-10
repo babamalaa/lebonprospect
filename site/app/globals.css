@@ -384,10 +384,11 @@ footer .wrap { display: flex; justify-content: space-between; }
 .prospect-card-row select, .prospect-card-row input { width: 100%; border: 1.5px solid var(--line); border-radius: 8px; padding: 8px 10px; font-family: 'Inter', sans-serif; font-size: 13px; }
 
 @media (max-width: 880px) {
-  .app-mobile-header { display: flex; align-items: center; justify-content: space-between; background: var(--ink); padding: 14px 18px; position: sticky; top: 0; z-index: 20; }
+  .app { flex-direction: column; }
+  .app-mobile-header { display: flex; align-items: center; justify-content: space-between; background: var(--ink); padding: 14px 18px; position: sticky; top: 0; z-index: 20; width: 100%; }
   .app-mobile-header .app-logo { margin-bottom: 0; }
   .app-side { display: none; }
-  .app-main { padding: 20px 16px; }
+  .app-main { padding: 20px 16px; width: 100%; }
   .app-mobile-panel { display: flex; flex-direction: column; position: fixed; inset: 0; background: var(--ink); z-index: 50; padding: 18px; }
   .app-mobile-panel-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
   .app-mobile-panel-top .app-logo { margin-bottom: 0; }
