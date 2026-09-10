@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<title>LeBonProspect — Kit Closer</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --teal: #31777A; --teal-soft: #e3efef; --teal-light: #a9d2d3; --ink: #14181d; --red: #d64a2e; --muted: #6f6a5c; --line: #e6e0d0; }
+body { font-family: 'Inter', sans-serif; color: var(--ink); font-size: 11.5px; line-height: 1.5; }
+.page { padding: 26px 40px; page-break-after: always; }
+.page:last-child { page-break-after: auto; }
+.head { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid var(--ink); padding-bottom: 11px; margin-bottom: 18px; }
+.logo { font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+.logo .mark { background: var(--teal); border: 2.5px solid var(--ink); border-radius: 8px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; }
+.tag { font-size: 10px; color: var(--muted); text-align: right; }
+h1 { font-family: 'Archivo', sans-serif; font-size: 23px; font-weight: 900; letter-spacing: -.02em; margin-bottom: 6px; }
+.lead { font-size: 12px; color: #3a3a34; max-width: 580px; margin-bottom: 16px; }
+h2 { font-family: 'Archivo', sans-serif; font-size: 13px; font-weight: 800; margin: 12px 0 6px; color: var(--teal); }
+h3 { font-family: 'Archivo', sans-serif; font-size: 12px; font-weight: 800; margin: 12px 0 6px; }
+.box { border: 2px solid var(--ink); border-radius: 10px; padding: 10px 14px; background: #fff; margin-bottom: 9px; }
+.box.dark { background: var(--ink); color: #fff; }
+.box.dark h3 { color: #fff; }
+.box.teal { background: var(--teal-soft); border-color: var(--teal-light); }
+.box.red { background: #fdeae4; border-color: var(--red); }
+table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+th { font-family: 'Archivo', sans-serif; font-size: 9.5px; text-align: left; background: var(--ink); color: #fff; padding: 7px 10px; }
+th:first-child { border-radius: 8px 0 0 0; }
+th:last-child { border-radius: 0 8px 0 0; }
+td { border-bottom: 1px solid var(--line); padding: 8px 10px; font-size: 10.8px; vertical-align: top; }
+td b { color: var(--teal); }
+.n { font-family: 'Archivo', sans-serif; font-weight: 900; color: var(--teal); }
+ul { margin-left: 16px; margin-top: 4px; }
+li { margin-bottom: 4px; font-size: 11px; }
+.dolist { display: flex; gap: 12px; margin-top: 6px; }
+.dolist > div { flex: 1; border-radius: 12px; padding: 12px 14px; font-size: 10.5px; }
+.do { background: #e7f5ec; border: 1.5px solid #1e7a4d; }
+.dont { background: #fdeae4; border: 1.5px solid var(--red); }
+.do b, .dont b { display: block; font-family: 'Archivo', sans-serif; font-size: 11px; margin-bottom: 5px; }
+.do b { color: #1e7a4d; }
+.dont b { color: var(--red); }
+.do li, .dont li { font-size: 10px; margin-bottom: 3px; }
+.foot { margin-top: 14px; padding-top: 8px; border-top: 1.5px solid var(--line); font-size: 9px; color: var(--muted); display: flex; justify-content: space-between; }
+.step { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
+.step .num { flex-shrink: 0; background: var(--teal); color: #fff; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 10.5px; }
+.step p { font-size: 11px; }
+</style></head>
+<body>
+
+<div class="page">
+  <div class="head">
+    <div class="logo"><span class="mark"><svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="3" r="2.2" fill="#d64a2e"/></svg></span>LeBonProspect</div>
+    <div class="tag">KIT DE DÉMARRAGE CLOSER / SETTER<br>document confidentiel</div>
+  </div>
+
+  <h1>Bienvenue dans l'équipe commerciale</h1>
+  <p class="lead">Ce document explique le produit, la rémunération, et les règles à respecter en représentant LeBonProspect. À lire avant votre premier appel.</p>
+
+  <h2>Le produit en 30 secondes</h2>
+  <div class="box">
+    <p>Chaque jour, des commerces changent de propriétaire en France, c'est publié obligatoirement au Journal officiel. LeBonProspect détecte ces reprises et livre chaque matin à 8h, par email, le contact du repreneur (nom, adresse, téléphone quand disponible) aux fournisseurs qui veulent l'approcher avant leurs concurrents.</p>
+  </div>
+
+  <h2>Les formules vendues</h2>
+  <table>
+    <tr><th>Formule</th><th>Périmètre</th><th>Prix</th></tr>
+    <tr><td><b>Départemental</b></td><td>1 département</td><td>149 €/mois</td></tr>
+    <tr><td><b>Régional</b></td><td>1 région complète</td><td>299 €/mois</td></tr>
+    <tr><td><b>National / Enterprise</b></td><td>France entière, multi-comptes</td><td>Sur devis</td></tr>
+  </table>
+  <ul style="margin-top:8px;">
+    <li>Sans engagement, résiliable en un clic</li>
+    <li>Engagement 6 mois : 1 mois offert au client</li>
+    <li>Engagement 12 mois : 2 mois offerts au client</li>
+  </ul>
+
+  <div class="foot">
+    <span>LeBonProspect · kit de démarrage · usage confidentiel</span>
+    <span>page 1/4</span>
+  </div>
+</div>
+
+<div class="page">
+  <div class="head">
+    <div class="logo"><span class="mark"><svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="3" r="2.2" fill="#d64a2e"/></svg></span>LeBonProspect</div>
+    <div class="tag">KIT DE DÉMARRAGE CLOSER / SETTER<br>document confidentiel</div>
+  </div>
+
+  <h1 style="font-size:20px;">La rémunération</h1>
+  <p class="lead">100% variable. Pas de salaire fixe, pas de frais avancés, pas de risque si vous ne vendez pas. Vous touchez sur ce que vous signez, point final.</p>
+
+  <h2>Deal sans engagement (résiliable à tout moment)</h2>
+  <div class="box teal">
+    <p><b>25% du premier mois facturé</b>, versé en instantané dès l'encaissement du paiement client.</p>
+    <p style="margin-top:6px;"><b>+ 10% du deuxième mois</b>, versé le mois suivant, <b>uniquement si le client est toujours abonné et à jour de paiement</b> à ce moment-là. Un client qui reste vous rapporte plus, un bon filtrage à l'appel se voit directement sur votre revenu.</p>
+  </div>
+
+  <div class="box dark">
+    <h3>Bonus de lancement : les 30 premiers jours</h3>
+    <p style="font-size:10.8px;">Pendant votre premier mois de collaboration, la commission sur les deals sans engagement passe de <b style="color:#fff;">25% à 35%</b> du premier mois facturé. Objectif : vous donner un vrai coup d'accélérateur pour démarrer, le temps de construire votre pipe et vos premiers deals enterprise.</p>
+  </div>
+
+  <h2>Deal avec engagement 6 mois</h2>
+  <div class="box teal">
+    <p><b>100% du montant du premier mois</b> (avant remise), versé en deux fois :</p>
+    <ul>
+      <li><b>50% à la signature</b> (dès l'encaissement du premier paiement client)</li>
+      <li><b>50% à mi-engagement</b> (mois 3), <b>uniquement si le client est toujours actif et à jour de paiement</b> à cette date. En cas de résiliation ou d'impayé avant le mois 3, cette seconde partie n'est pas due.</li>
+    </ul>
+  </div>
+
+  <div class="foot">
+    <span>LeBonProspect · kit de démarrage · usage confidentiel</span>
+    <span>page 2/4</span>
+  </div>
+</div>
+
+<div class="page">
+  <div class="head">
+    <div class="logo"><span class="mark"><svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="3" r="2.2" fill="#d64a2e"/></svg></span>LeBonProspect</div>
+    <div class="tag">KIT DE DÉMARRAGE CLOSER / SETTER<br>document confidentiel</div>
+  </div>
+
+  <h1 style="font-size:18px;">Ce que ça peut rapporter, concrètement</h1>
+
+  <h2>Paliers de volume (bonus mensuel, cumulatif)</h2>
+  <div class="box teal">
+    <table>
+      <tr><th>Deals signés dans le mois</th><th>Bonus</th></tr>
+      <tr><td>5 deals</td><td class="n">+ 50 €</td></tr>
+      <tr><td>10 deals</td><td class="n">+ 150 € (soit 200 € cumulés depuis le 1er palier)</td></tr>
+    </table>
+  </div>
+
+  <h2>Exemple concret : 10 deals dans le mois (7 départemental + 3 régional)</h2>
+  <table>
+    <tr><th>Période</th><th>Détail</th><th>Total</th></tr>
+    <tr><td><b>Mois 1</b></td><td>Starter tier 35% + paliers (200 €)</td><td class="n">~879 €</td></tr>
+    <tr><td><b>Mois 2</b></td><td>Retour à 25% + paliers + bonus rétention sur les deals du mois 1 (churn moyen 8%)</td><td class="n">~863 €</td></tr>
+    <tr><td><b>Cumul 2 mois</b></td><td>—</td><td class="n">~1 742 €</td></tr>
+  </table>
+
+  <div class="box dark" style="margin-top:14px;">
+    <h3>Où est le vrai revenu, et combien de temps ça prend</h3>
+    <p style="font-size:10.8px;">Signer 10 deals/mois demande environ 100 à 200 appels qualifiés (taux de conversion réaliste en B2B froid : 5 à 10%), soit environ 10 à 15h/semaine. À ce rythme, comptez 700 à 900 €/mois : un très bon side, pas un plein temps. Le vrai levier de revenu, ce sont les comptes enterprise (chaînes, groupes, équipes commerciales) : un seul deal enterprise engagé vaut plus que 15 deals départementaux. Dès que le pitch est rodé sur les petits comptes, priorisez le temps sur les gros prospects.</p>
+  </div>
+
+  <h2>Déclencheur, statut et délai de versement</h2>
+  <ul>
+    <li>La commission se déclenche sur <b>le premier paiement Stripe réellement encaissé</b>, jamais sur une signature verbale ou un accord de principe.</li>
+    <li><b>Virement en instantané le jour même</b> où le client paye son abonnement (paiement confirmé sur Stripe).</li>
+    <li><b>Vous devez facturer en tant qu'indépendant</b> (auto-entrepreneur ou société, avec SIRET) pour percevoir une commission. Aucun paiement ne peut être effectué sans facture valide, c'est une obligation légale, pas une formalité optionnelle.</li>
+    <li>Le reporting d'un deal signé se fait le jour même auprès de Baptiste (voir dernière page).</li>
+  </ul>
+
+  <div class="foot">
+    <span>LeBonProspect · kit de démarrage · usage confidentiel</span>
+    <span>page 3/4</span>
+  </div>
+</div>
+
+<div class="page">
+  <div class="head">
+    <div class="logo"><span class="mark"><svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="3" r="2.2" fill="#d64a2e"/></svg></span>LeBonProspect</div>
+    <div class="tag">KIT DE DÉMARRAGE CLOSER / SETTER<br>document confidentiel</div>
+  </div>
+
+  <h1 style="font-size:20px;">Ce qu'on dit, ce qu'on ne dit jamais</h1>
+  <p class="lead">LeBonProspect vend de la donnée publique, vérifiable, jamais inventée. C'est notre plus gros argument de confiance : ne le cassez jamais pour closer plus vite.</p>
+
+  <div class="dolist">
+    <div class="do">
+      <b>À FAIRE</b>
+      <ul>
+        <li>Toujours citer une reprise réelle et récente, jamais un exemple inventé</li>
+        <li>Envoyer le lien personnalisé (lebonprospect.fr/pour/...) en direct pendant l'appel</li>
+        <li>Dire clairement quand une fonctionnalité est en développement (ex : module Créations) et non déjà livrée</li>
+        <li>Rappeler que c'est sans engagement, résiliable en un clic sur la formule standard</li>
+        <li>Reporter un deal signé le jour même, avec email + plan + zone exacte</li>
+      </ul>
+    </div>
+    <div class="dont">
+      <b>À NE JAMAIS FAIRE</b>
+      <ul>
+        <li>Inventer ou arrondir un chiffre, un numéro de téléphone ou une reprise</li>
+        <li>Promettre un délai de livraison ferme sur une fonctionnalité pas encore construite</li>
+        <li>Garantir un résultat commercial (nombre de clients, chiffre d'affaires généré)</li>
+        <li>Dénigrer le BODACC ou suggérer que la donnée est cachée ou exclusive à un concurrent</li>
+        <li>Signer un deal sans avoir fait remplir le formulaire secteur + zone (sinon rien n'est livrable)</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Le processus, étape par étape</h2>
+  <div class="step"><div class="num">1</div><p>Vous recevez une liste de cibles (société, téléphone, lien personnalisé) et les outils : script d'appel, plaquette, fiche de suivi.</p></div>
+  <div class="step"><div class="num">2</div><p>Vous appelez, vous envoyez le lien personnalisé en direct, vous remplissez une fiche de suivi par call.</p></div>
+  <div class="step"><div class="num">3</div><p>Si le prospect paye via le lien Stripe : c'est automatique, rien à faire de votre côté pour l'encaissement.</p></div>
+  <div class="step"><div class="num">4</div><p>Vous signalez le deal à Baptiste le jour même (email, plan, zone), pour activation de l'abonnement.</p></div>
+  <div class="step"><div class="num">5</div><p>La commission est calculée sur l'encaissement réel et versée sur présentation de facture.</p></div>
+
+  <h2>Confidentialité</h2>
+  <div class="box red">
+    <p style="font-size:10.5px;">La liste de prospects, les scripts et les documents fournis sont confidentiels : ils ne sont pas transmis à des tiers ni réutilisés pour un autre projet, pendant votre collaboration avec LeBonProspect et après.</p>
+  </div>
+
+  <div class="foot">
+    <span>LeBonProspect · contact@lebonprospect.fr</span>
+    <span>page 4/4</span>
+  </div>
+</div>
+
+</body></html>
