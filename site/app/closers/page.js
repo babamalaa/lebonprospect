@@ -1,57 +1,8 @@
 "use client";
 
-import { useState } from "react";
-
-const PASSWORD = "lbp2026closers";
-
 const fmt = (n) => n.toLocaleString("fr-FR");
 
 export default function ClosersPage() {
-  const [unlocked, setUnlocked] = useState(false);
-  const [input, setInput] = useState("");
-  const [err, setErr] = useState(false);
-
-  const tryUnlock = (e) => {
-    e.preventDefault();
-    if (input.trim() === PASSWORD) {
-      setUnlocked(true);
-      setErr(false);
-    } else {
-      setErr(true);
-    }
-  };
-
-  if (!unlocked) {
-    return (
-      <main className="gate-wrap">
-        <div className="gate-box">
-          <div className="logo" style={{ justifyContent: "center", marginBottom: 18 }}>
-            <span className="mark">
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="16" cy="3" r="2.2" fill="#d64a2e" />
-              </svg>
-            </span>
-            LeBonProspect
-          </div>
-          <h1>Espace équipe commerciale</h1>
-          <p>Document confidentiel. Entrez le mot de passe qui vous a été communiqué.</p>
-          <form onSubmit={tryUnlock}>
-            <input
-              type="password"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Mot de passe"
-              autoFocus
-            />
-            <button type="submit" className="btn">Accéder</button>
-          </form>
-          {err && <p className="gate-err">Mot de passe incorrect.</p>}
-        </div>
-      </main>
-    );
-  }
-
   return (
     <main className="closers">
       <div className="cl-band">

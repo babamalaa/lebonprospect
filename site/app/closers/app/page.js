@@ -17,6 +17,7 @@ const STATUT_COLOR = {
   a_rappeler: "#2e6b8a", chaud: "#d64a2e", signe: "#1e7a4d", non: "#6f6a5c",
 };
 const REGIONS = ["Île-de-France", "Auvergne-Rhône-Alpes", "Provence-Alpes-Côte d'Azur"];
+const fmt2 = (n) => Math.round(n).toLocaleString("fr-FR");
 
 const SCRIPTS = [
   {
@@ -181,7 +182,6 @@ export default function AppPage() {
   const [refillMsg, setRefillMsg] = useState("");
   const [filterStatut, setFilterStatut] = useState("tous");
   const [filterCloser, setFilterCloser] = useState("tous");
-  const [openDoc, setOpenDoc] = useState(null); // "kit" | null
   const [scriptId, setScriptId] = useState("evenement");
 
   useEffect(() => {
@@ -207,7 +207,7 @@ export default function AppPage() {
     authedFetch("/api/prospects").then((r) => r.json()).then((d) => { setRows(Array.isArray(d) ? d : []); setLoadingRows(false); });
   }, [session, authedFetch]);
 
-  useEffect(() => { if (tab === "prospects") loadRows(); }, [tab, loadRows]);
+  useEffect(() => { if (session) loadRows(); }, [session, loadRows]);
 
   const patch = async (id, fields) => {
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...fields } : r)));
@@ -242,6 +242,45 @@ export default function AppPage() {
     aTraiter: rows.filter((r) => r.statut === "a_contacter").length,
   };
   const activeScript = SCRIPTS.find((s) => s.id === scriptId) || SCRIPTS[0];
+
+  // --- Calcul commissions & paliers (basé sur les prospects signés du closer courant) ---
+  const signedDeals = rows.filter((r) => r.statut === "signe");
+  const nSigned = signedDeals.length;
+  const planLabel = { departemental: "Départemental", regional: "Régional", national: "National" };
+  const planPrice = { departemental: 149, regional: 299, national: 0 };
+  const dealsByPlan = { departemental: 0, regional: 0, national: 0, sans_plan: 0 };
+  let commissionEstimee = 0;
+  signedDeals.forEach((r) => {
+    const plan = r.plan;
+    if (plan && dealsByPlan[plan] !== undefined) dealsByPlan[plan] += 1;
+    else dealsByPlan.sans_plan += 1;
+    const montant = r.montant || planPrice[plan] || 0;
+    commissionEstimee += montant * 0.25; // hypothèse conservatrice: sans engagement, 25% du 1er mois
+  });
+  const palier1 = 5, palier2 = 10;
+  const bonusActuel = nSigned >= palier2 ? 200 : nSigned >= palier1 ? 50 : 0;
+  const prochainPalier = nSigned < palier1 ? palier1 : nSigned < palier2 ? palier2 : null;
+  const dealsRestants = prochainPalier ? prochainPalier - nSigned : 0;
+  const progressPct = prochainPalier
+    ? Math.min(100, (nSigned / prochainPalier) * 100)
+    : 100;
+
+  // --- Donut répartition des deals signés par plan ---
+  const donutData = [
+    { key: "departemental", label: "Départemental", value: dealsByPlan.departemental, color: "#31777A" },
+    { key: "regional", label: "Régional", value: dealsByPlan.regional, color: "#14181d" },
+    { key: "national", label: "National", value: dealsByPlan.national, color: "#d64a2e" },
+    { key: "sans_plan", label: "Non renseigné", value: dealsByPlan.sans_plan, color: "#c9c2ab" },
+  ].filter((d) => d.value > 0);
+  const donutTotal = donutData.reduce((a, d) => a + d.value, 0) || 1;
+  let donutAcc = 0;
+  const donutSegments = donutData.map((d) => {
+    const pct = d.value / donutTotal;
+    const seg = { ...d, offset: donutAcc, pct };
+    donutAcc += pct;
+    return seg;
+  });
+  const CIRC = 2 * Math.PI * 40; // rayon 40
 
   return (
     <main className="app">
@@ -281,17 +320,77 @@ export default function AppPage() {
             </div>
 
             {profile?.role !== "admin" && (
-              <div className="cl-card dark" style={{ marginTop: 24 }}>
-                <h3 style={{ color: "#fff", marginBottom: 8 }}>Recevoir de nouveaux leads</h3>
-                <p style={{ marginBottom: 14 }}>Piochez de nouveaux prospects CHR dans le vivier, non assignés à un autre closer. Par lot de 15.</p>
-                <div className="app-refill-row">
-                  <button className="btn" onClick={() => doRefill(null)} disabled={refilling}>{refilling ? "..." : "+ 15 nouveaux leads (toutes zones)"}</button>
-                  {REGIONS.map((r) => (
-                    <button key={r} className="btn" onClick={() => doRefill(r)} disabled={refilling}>{refilling ? "..." : `+ ${r}`}</button>
-                  ))}
+              <>
+                {/* Commission estimée + paliers */}
+                <div className="perf-row">
+                  <div className="perf-card">
+                    <div className="perf-label">Commission estimée ce mois</div>
+                    <div className="perf-value">{fmt2(commissionEstimee + bonusActuel)} €</div>
+                    <div className="perf-sub">
+                      {fmt2(commissionEstimee)} € sur deals signés
+                      {bonusActuel > 0 && <> + {bonusActuel} € de palier</>}
+                    </div>
+                  </div>
+                  <div className="perf-card">
+                    <div className="perf-label">Paliers de volume</div>
+                    <div className="perf-bar-wrap">
+                      <div className="perf-bar"><div className="perf-bar-fill" style={{ width: `${progressPct}%` }} /></div>
+                      <div className="perf-bar-marks">
+                        <span style={{ left: "50%" }}>5 → +50€</span>
+                        <span style={{ left: "100%" }}>10 → +150€</span>
+                      </div>
+                    </div>
+                    <div className="perf-sub" style={{ marginTop: 22 }}>
+                      {prochainPalier
+                        ? <>Plus que <b>{dealsRestants}</b> deal{dealsRestants > 1 ? "s" : ""} avant le prochain palier ({prochainPalier === palier1 ? "+50€" : "+150€"})</>
+                        : <>Tous les paliers sont atteints ce mois-ci 🎉</>}
+                    </div>
+                  </div>
                 </div>
-                {refillMsg && <p style={{ marginTop: 12, color: "#a9d2d3", fontWeight: 700 }}>{refillMsg}</p>}
-              </div>
+
+                {/* Répartition des deals signés */}
+                {nSigned > 0 && (
+                  <div className="perf-card" style={{ marginTop: 16 }}>
+                    <div className="perf-label" style={{ marginBottom: 14 }}>Répartition de vos {nSigned} deal{nSigned > 1 ? "s" : ""} signé{nSigned > 1 ? "s" : ""}</div>
+                    <div className="donut-row">
+                      <svg width="110" height="110" viewBox="0 0 110 110">
+                        <circle cx="55" cy="55" r="40" fill="none" stroke="#efe9d8" strokeWidth="15" />
+                        {donutSegments.map((seg) => (
+                          <circle
+                            key={seg.key}
+                            cx="55" cy="55" r="40" fill="none"
+                            stroke={seg.color} strokeWidth="15"
+                            strokeDasharray={`${seg.pct * CIRC} ${CIRC}`}
+                            strokeDashoffset={-seg.offset * CIRC}
+                            transform="rotate(-90 55 55)"
+                          />
+                        ))}
+                        <text x="55" y="60" textAnchor="middle" fontFamily="Archivo" fontWeight="900" fontSize="22" fill="#14181d">{nSigned}</text>
+                      </svg>
+                      <div className="donut-legend">
+                        {donutSegments.map((seg) => (
+                          <div key={seg.key} className="donut-legend-item">
+                            <span className="dot" style={{ background: seg.color }} />
+                            {seg.label} — {seg.value}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="cl-card dark" style={{ marginTop: 20 }}>
+                  <h3 style={{ color: "#fff", marginBottom: 8 }}>Recevoir de nouveaux leads</h3>
+                  <p style={{ marginBottom: 14 }}>Piochez de nouveaux prospects CHR dans le vivier, non assignés à un autre closer. Par lot de 15.</p>
+                  <div className="app-refill-row">
+                    <button className="btn" onClick={() => doRefill(null)} disabled={refilling}>{refilling ? "..." : "+ 15 nouveaux leads (toutes zones)"}</button>
+                    {REGIONS.map((r) => (
+                      <button key={r} className="btn" onClick={() => doRefill(r)} disabled={refilling}>{refilling ? "..." : `+ ${r}`}</button>
+                    ))}
+                  </div>
+                  {refillMsg && <p style={{ marginTop: 12, color: "#a9d2d3", fontWeight: 700 }}>{refillMsg}</p>}
+                </div>
+              </>
             )}
 
             <div className="cl-card teal" style={{ marginTop: 20 }}>
@@ -323,7 +422,7 @@ export default function AppPage() {
               <div className="dash-table-wrap" style={{ marginTop: 16 }}>
                 <table className="dash-table">
                   <thead>
-                    <tr><th>Société</th><th>Zone</th><th>Tél.</th><th>Lien</th><th>Statut</th><th>Prochaine action</th><th>Notes</th></tr>
+                    <tr><th>Société</th><th>Zone</th><th>Tél.</th><th>Lien</th><th>Statut</th><th>Plan</th><th>Prochaine action</th><th>Notes</th></tr>
                   </thead>
                   <tbody>
                     {filteredRows.map((r) => (
@@ -336,6 +435,26 @@ export default function AppPage() {
                           <select value={r.statut || "a_contacter"} onChange={(e) => patch(r.id, { statut: e.target.value })} style={{ color: STATUT_COLOR[r.statut] || "#14181d", fontWeight: 700 }}>
                             {STATUTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
                           </select>
+                        </td>
+                        <td>
+                          {r.statut === "signe" ? (
+                            <select
+                              value={r.plan || ""}
+                              onChange={(e) => {
+                                const plan = e.target.value;
+                                const montant = plan === "departemental" ? 149 : plan === "regional" ? 299 : r.montant || 0;
+                                patch(r.id, { plan, montant });
+                              }}
+                              style={{ fontWeight: 700 }}
+                            >
+                              <option value="">— choisir —</option>
+                              <option value="departemental">Départemental (149€)</option>
+                              <option value="regional">Régional (299€)</option>
+                              <option value="national">National (sur devis)</option>
+                            </select>
+                          ) : (
+                            <span className="dash-sub">—</span>
+                          )}
                         </td>
                         <td><input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel jeudi" onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} /></td>
                         <td><input className="dash-input wide" defaultValue={r.notes || ""} placeholder="objections…" onBlur={(e) => e.target.value !== r.notes && patch(r.id, { notes: e.target.value })} /></td>
@@ -354,12 +473,10 @@ export default function AppPage() {
             <h1 className="app-h1">Documents</h1>
             <p className="app-lead">Tout ce dont vous avez besoin, toujours à jour.</p>
             <div className="app-docs">
-              <div className="app-doc" onClick={() => setOpenDoc(openDoc === "kit" ? null : "kit")}>
-                <b>Kit de démarrage complet {openDoc === "kit" ? "▲" : "▼"}</b>
+              <a className="app-doc" href="/closers" target="_blank" rel="noreferrer">
+                <b>Kit de démarrage complet →</b>
                 <span>Produit, rémunération, do&apos;s &amp; don&apos;ts, processus</span>
-              </div>
-              {openDoc === "kit" && <KitContent />}
-
+              </a>
               <div className="app-doc" onClick={() => setTab("script")}>
                 <b>Scripts d&apos;appel →</b>
                 <span>4 approches différentes, objections, closing</span>
@@ -400,48 +517,5 @@ export default function AppPage() {
         )}
       </section>
     </main>
-  );
-}
-
-function KitContent() {
-  return (
-    <div className="cl-card" style={{ marginTop: -4 }}>
-      <h3 className="cl-h3" style={{ marginTop: 0 }}>Le produit en 30 secondes</h3>
-      <p>Chaque jour, des commerces changent de propriétaire en France, c&apos;est publié obligatoirement au Journal officiel. LeBonProspect détecte ces reprises et livre chaque matin à 8h, par email, le contact du repreneur (nom, adresse, téléphone quand disponible) aux fournisseurs qui veulent l&apos;approcher avant leurs concurrents.</p>
-
-      <h3 className="cl-h3">Les formules vendues</h3>
-      <ul className="cl-list">
-        <li><b>Départemental</b> — 149 €/mois — 1 département</li>
-        <li><b>Régional</b> — 299 €/mois — 1 région complète</li>
-        <li><b>National / Enterprise</b> — Sur devis — France entière, multi-comptes</li>
-      </ul>
-      <p className="script-note">Sans engagement, résiliable en 1 clic. 6 mois = 1 mois offert. 12 mois = 2 mois offerts.</p>
-
-      <h3 className="cl-h3">Rémunération</h3>
-      <ul className="cl-list">
-        <li>Sans engagement : 25% du 1er mois + 10% du 2e mois si le client reste actif</li>
-        <li>30 premiers jours : bonus de lancement, 35% au lieu de 25%</li>
-        <li>Engagement 6 mois : 100% du 1er mois, en 2×50% (signature + mi-engagement)</li>
-        <li>Paliers volume : +50€ à 5 deals/mois, +150€ de plus à 10 deals/mois</li>
-        <li>Virement instantané le jour de l&apos;encaissement client, facturation en indépendant obligatoire</li>
-      </ul>
-
-      <h3 className="cl-h3">À faire</h3>
-      <ul className="cl-list">
-        <li>Toujours citer une reprise réelle et récente, jamais un exemple inventé</li>
-        <li>Envoyer le lien personnalisé en direct pendant l&apos;appel</li>
-        <li>Rappeler que c&apos;est sans engagement, résiliable en un clic</li>
-        <li>Reporter un deal signé le jour même à Lawrenza</li>
-      </ul>
-
-      <h3 className="cl-h3">À ne jamais faire</h3>
-      <ul className="cl-list">
-        <li>Inventer ou arrondir un chiffre, un numéro, une reprise</li>
-        <li>Promettre un délai ferme sur une fonctionnalité non livrée</li>
-        <li>Garantir un résultat commercial</li>
-        <li>Dire « prospect qualifié » (les cibles ne sont pas pré-appelées, mais elles ne sortent pas de nulle part)</li>
-        <li>Signer sans formulaire secteur + zone rempli</li>
-      </ul>
-    </div>
   );
 }

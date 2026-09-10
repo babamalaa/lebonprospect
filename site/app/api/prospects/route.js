@@ -41,6 +41,9 @@ export async function PATCH(req) {
   }
 
   fields.updated_at = new Date().toISOString();
+  if (fields.statut === "signe" && !fields.signed_at) {
+    fields.signed_at = new Date().toISOString();
+  }
   const { data, error } = await admin
     .from("prospects_pool")
     .update(fields)
