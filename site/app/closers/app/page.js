@@ -18,6 +18,7 @@ const STATUT_COLOR = {
 };
 const REGIONS = ["Île-de-France", "Auvergne-Rhône-Alpes", "Provence-Alpes-Côte d'Azur"];
 const fmt2 = (n) => Math.round(n).toLocaleString("fr-FR");
+const TAB_LABELS = { accueil: "Accueil", prospects: "Mes prospects", documents: "Documents", script: "Scripts d'appel" };
 
 const SCRIPTS = [
   {
@@ -183,6 +184,7 @@ export default function AppPage() {
   const [filterStatut, setFilterStatut] = useState("tous");
   const [filterCloser, setFilterCloser] = useState("tous");
   const [scriptId, setScriptId] = useState("evenement");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session ?? null));
@@ -284,6 +286,62 @@ export default function AppPage() {
 
   return (
     <main className="app">
+      {/* Header mobile compact : logo + hamburger */}
+      <div className="app-mobile-header">
+        <div className="app-logo">
+          <span className="mark">
+            <svg width="15" height="15" viewBox="0 0 18 18" fill="none">
+              <path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx="16" cy="3" r="2.2" fill="#d64a2e" />
+            </svg>
+          </span>
+          LeBonProspect
+        </div>
+        <button className="app-burger" onClick={() => setMobileMenuOpen(true)} aria-label="Menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round">
+            <line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Panneau hamburger mobile (plein écran) */}
+      {mobileMenuOpen && (
+        <div className="app-mobile-panel">
+          <div className="app-mobile-panel-top">
+            <div className="app-logo">
+              <span className="mark">
+                <svg width="15" height="15" viewBox="0 0 18 18" fill="none">
+                  <path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="16" cy="3" r="2.2" fill="#d64a2e" />
+                </svg>
+              </span>
+              LeBonProspect
+            </div>
+            <button className="app-burger" onClick={() => setMobileMenuOpen(false)} aria-label="Fermer">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round">
+                <line x1="5" y1="5" x2="19" y2="19" /><line x1="19" y1="5" x2="5" y2="19" />
+              </svg>
+            </button>
+          </div>
+          <div className="app-who app-who-mobile">
+            <b>{profile?.full_name}</b>
+            <span>{profile?.role === "admin" ? "Admin" : "Closer"}</span>
+          </div>
+          <nav className="app-nav app-nav-mobile">
+            {Object.entries(TAB_LABELS).map(([key, label]) => (
+              <button
+                key={key}
+                className={tab === key ? "active" : ""}
+                onClick={() => { setTab(key); setMobileMenuOpen(false); }}
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
+          <button className="app-logout app-logout-mobile" onClick={logout}>Se déconnecter</button>
+        </div>
+      )}
+
       <aside className="app-side">
         <div className="app-logo">
           <span className="mark">
@@ -419,51 +477,106 @@ export default function AppPage() {
             {loadingRows ? (
               <p style={{ padding: "30px 0", color: "#6f6a5c" }}>Chargement…</p>
             ) : (
-              <div className="dash-table-wrap" style={{ marginTop: 16 }}>
-                <table className="dash-table">
-                  <thead>
-                    <tr><th>Société</th><th>Zone</th><th>Tél.</th><th>Lien</th><th>Statut</th><th>Plan</th><th>Prochaine action</th><th>Notes</th></tr>
-                  </thead>
-                  <tbody>
-                    {filteredRows.map((r) => (
-                      <tr key={r.id}>
-                        <td><b>{r.societe}</b><div className="dash-sub">{r.categorie}</div></td>
-                        <td className="dash-sub">{r.region}<br />{r.ville}</td>
-                        <td>{r.telephone && <a href={`tel:${r.telephone.replace(/\s/g, "")}`} className="mono">{r.telephone}</a>}</td>
-                        <td>{r.lien_teaser && <a href={r.lien_teaser} target="_blank" rel="noreferrer" className="dash-link">voir →</a>}</td>
-                        <td>
-                          <select value={r.statut || "a_contacter"} onChange={(e) => patch(r.id, { statut: e.target.value })} style={{ color: STATUT_COLOR[r.statut] || "#14181d", fontWeight: 700 }}>
-                            {STATUTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
-                          </select>
-                        </td>
-                        <td>
-                          {r.statut === "signe" ? (
-                            <select
-                              value={r.plan || ""}
-                              onChange={(e) => {
-                                const plan = e.target.value;
-                                const montant = plan === "departemental" ? 149 : plan === "regional" ? 299 : r.montant || 0;
-                                patch(r.id, { plan, montant });
-                              }}
-                              style={{ fontWeight: 700 }}
-                            >
-                              <option value="">— choisir —</option>
-                              <option value="departemental">Départemental (149€)</option>
-                              <option value="regional">Régional (299€)</option>
-                              <option value="national">National (sur devis)</option>
+              <>
+                {/* Desktop : vrai tableau */}
+                <div className="dash-table-wrap dash-desktop-only" style={{ marginTop: 16 }}>
+                  <table className="dash-table">
+                    <thead>
+                      <tr><th>Société</th><th>Zone</th><th>Tél.</th><th>Lien</th><th>Statut</th><th>Plan</th><th>Prochaine action</th><th>Notes</th></tr>
+                    </thead>
+                    <tbody>
+                      {filteredRows.map((r) => (
+                        <tr key={r.id}>
+                          <td><b>{r.societe}</b><div className="dash-sub">{r.categorie}</div></td>
+                          <td className="dash-sub">{r.region}<br />{r.ville}</td>
+                          <td>{r.telephone && <a href={`tel:${r.telephone.replace(/\s/g, "")}`} className="mono">{r.telephone}</a>}</td>
+                          <td>{r.lien_teaser && <a href={r.lien_teaser} target="_blank" rel="noreferrer" className="dash-link">voir →</a>}</td>
+                          <td>
+                            <select value={r.statut || "a_contacter"} onChange={(e) => patch(r.id, { statut: e.target.value })} style={{ color: STATUT_COLOR[r.statut] || "#14181d", fontWeight: 700 }}>
+                              {STATUTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
                             </select>
-                          ) : (
-                            <span className="dash-sub">—</span>
-                          )}
-                        </td>
-                        <td><input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel jeudi" onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} /></td>
-                        <td><input className="dash-input wide" defaultValue={r.notes || ""} placeholder="objections…" onBlur={(e) => e.target.value !== r.notes && patch(r.id, { notes: e.target.value })} /></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {filteredRows.length === 0 && <p style={{ padding: "30px 0", textAlign: "center", color: "#6f6a5c" }}>Aucun prospect pour le moment. Allez sur Accueil pour en récupérer.</p>}
-              </div>
+                          </td>
+                          <td>
+                            {r.statut === "signe" ? (
+                              <select
+                                value={r.plan || ""}
+                                onChange={(e) => {
+                                  const plan = e.target.value;
+                                  const montant = plan === "departemental" ? 149 : plan === "regional" ? 299 : r.montant || 0;
+                                  patch(r.id, { plan, montant });
+                                }}
+                                style={{ fontWeight: 700 }}
+                              >
+                                <option value="">— choisir —</option>
+                                <option value="departemental">Départemental (149€)</option>
+                                <option value="regional">Régional (299€)</option>
+                                <option value="national">National (sur devis)</option>
+                              </select>
+                            ) : (
+                              <span className="dash-sub">—</span>
+                            )}
+                          </td>
+                          <td><input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel jeudi" onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} /></td>
+                          <td><input className="dash-input wide" defaultValue={r.notes || ""} placeholder="objections…" onBlur={(e) => e.target.value !== r.notes && patch(r.id, { notes: e.target.value })} /></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {filteredRows.length === 0 && <p style={{ padding: "30px 0", textAlign: "center", color: "#6f6a5c" }}>Aucun prospect pour le moment. Allez sur Accueil pour en récupérer.</p>}
+                </div>
+
+                {/* Mobile : cartes empilées */}
+                <div className="prospect-cards dash-mobile-only">
+                  {filteredRows.map((r) => (
+                    <div key={r.id} className="prospect-card">
+                      <div className="prospect-card-head">
+                        <div>
+                          <b>{r.societe}</b>
+                          <div className="dash-sub">{r.categorie} · {r.region}{r.ville ? ` · ${r.ville}` : ""}</div>
+                        </div>
+                        {r.lien_teaser && <a href={r.lien_teaser} target="_blank" rel="noreferrer" className="dash-link">voir →</a>}
+                      </div>
+                      {r.telephone && (
+                        <a href={`tel:${r.telephone.replace(/\s/g, "")}`} className="prospect-card-tel mono">☎ {r.telephone}</a>
+                      )}
+                      <div className="prospect-card-row">
+                        <label>Statut</label>
+                        <select value={r.statut || "a_contacter"} onChange={(e) => patch(r.id, { statut: e.target.value })} style={{ color: STATUT_COLOR[r.statut] || "#14181d", fontWeight: 700 }}>
+                          {STATUTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
+                        </select>
+                      </div>
+                      {r.statut === "signe" && (
+                        <div className="prospect-card-row">
+                          <label>Plan</label>
+                          <select
+                            value={r.plan || ""}
+                            onChange={(e) => {
+                              const plan = e.target.value;
+                              const montant = plan === "departemental" ? 149 : plan === "regional" ? 299 : r.montant || 0;
+                              patch(r.id, { plan, montant });
+                            }}
+                            style={{ fontWeight: 700 }}
+                          >
+                            <option value="">— choisir —</option>
+                            <option value="departemental">Départemental (149€)</option>
+                            <option value="regional">Régional (299€)</option>
+                            <option value="national">National (sur devis)</option>
+                          </select>
+                        </div>
+                      )}
+                      <div className="prospect-card-row">
+                        <label>Prochaine action</label>
+                        <input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel jeudi" onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} />
+                      </div>
+                      <div className="prospect-card-row">
+                        <label>Notes</label>
+                        <input className="dash-input" defaultValue={r.notes || ""} placeholder="objections…" onBlur={(e) => e.target.value !== r.notes && patch(r.id, { notes: e.target.value })} />
+                      </div>
+                    </div>
+                  ))}
+                  {filteredRows.length === 0 && <p style={{ padding: "30px 0", textAlign: "center", color: "#6f6a5c" }}>Aucun prospect pour le moment. Allez sur Accueil pour en récupérer.</p>}
+                </div>
+              </>
             )}
           </div>
         )}

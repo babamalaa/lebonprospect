@@ -367,14 +367,39 @@ footer .wrap { display: flex; justify-content: space-between; }
   .perf-value { font-size: 26px; }
 }
 
+/* ============ MOBILE HEADER + HAMBURGER (app) ============ */
+.app-mobile-header { display: none; }
+.app-burger { background: none; border: none; cursor: pointer; padding: 6px; display: flex; align-items: center; }
+.app-mobile-panel { display: none; }
+.dash-desktop-only { display: block; }
+.dash-mobile-only { display: none; }
+.prospect-cards { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+.prospect-card { border: 2px solid var(--ink); border-radius: 14px; padding: 14px 16px; background: #fff; }
+.prospect-card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.prospect-card-head b { font-size: 14.5px; }
+.prospect-card-tel { display: inline-block; background: var(--teal-soft); color: var(--teal); font-weight: 700; padding: 6px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 10px; text-decoration: none; }
+.prospect-card-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.prospect-card-row:last-child { margin-bottom: 0; }
+.prospect-card-row label { font-size: 10.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
+.prospect-card-row select, .prospect-card-row input { width: 100%; border: 1.5px solid var(--line); border-radius: 8px; padding: 8px 10px; font-family: 'Inter', sans-serif; font-size: 13px; }
+
 @media (max-width: 880px) {
-  .app { flex-direction: column; }
-  .app-side { width: 100%; height: auto; position: relative; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 10px; padding: 14px 16px; }
-  .app-logo { margin-bottom: 0; }
-  .app-nav { flex-direction: row; flex-wrap: wrap; flex: none; width: 100%; order: 3; }
-  .app-side-foot { border-top: none; margin: 0 0 0 auto; padding: 0; display: flex; align-items: center; gap: 10px; order: 2; }
-  .app-who { flex-direction: row; gap: 6px; }
-  .app-main { padding: 22px 18px; }
+  .app-mobile-header { display: flex; align-items: center; justify-content: space-between; background: var(--ink); padding: 14px 18px; position: sticky; top: 0; z-index: 20; }
+  .app-mobile-header .app-logo { margin-bottom: 0; }
+  .app-side { display: none; }
+  .app-main { padding: 20px 16px; }
+  .app-mobile-panel { display: flex; flex-direction: column; position: fixed; inset: 0; background: var(--ink); z-index: 50; padding: 18px; }
+  .app-mobile-panel-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .app-mobile-panel-top .app-logo { margin-bottom: 0; }
+  .app-who-mobile { flex-direction: row; align-items: center; gap: 8px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,.12); }
+  .app-nav-mobile { flex-direction: column; gap: 6px; }
+  .app-nav-mobile button { font-size: 16px; padding: 14px 12px; }
+  .app-logout-mobile { margin-top: auto; width: 100%; padding: 12px; font-size: 13px; }
+  .dash-desktop-only { display: none; }
+  .dash-mobile-only { display: block; }
+}
+
+@media (max-width: 880px) {
   .app-refill-row { flex-direction: column; }
 }
 .tz-pill.soft { background: var(--teal-soft); color: var(--teal); border-color: var(--teal-light); margin-left: 0; }
