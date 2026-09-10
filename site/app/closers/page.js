@@ -78,8 +78,8 @@ export default function ClosersPage() {
           LeBonProspect. À lire avant votre premier appel.
         </p>
         <div className="cta-row" style={{ justifyContent: "center", marginTop: 18 }}>
-          <a href="/closers/dashboard" className="btn">
-            Ouvrir le tableau de suivi →
+          <a href="/closers/login" className="btn">
+            Accéder à mon espace →
           </a>
         </div>
       </section>

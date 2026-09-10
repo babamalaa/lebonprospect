@@ -294,6 +294,44 @@ footer .wrap { display: flex; justify-content: space-between; }
   .dash-title { font-size: 21px; }
   .dash-filters select { flex: 1; min-width: 140px; }
 }
+
+/* ============ APP (sidebar, comptes closers) ============ */
+.app-loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; color: var(--muted); }
+.app { display: flex; min-height: 100vh; }
+.app-side { width: 210px; flex-shrink: 0; background: var(--ink); color: #fff; display: flex; flex-direction: column; padding: 20px 16px; position: sticky; top: 0; height: 100vh; }
+.app-logo { font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 15px; display: flex; align-items: center; gap: 8px; margin-bottom: 26px; }
+.app-logo .mark { background: var(--teal); border-radius: 7px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.app-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.app-nav button { text-align: left; background: none; border: none; color: #cfd8df; font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600; padding: 10px 12px; border-radius: 9px; cursor: pointer; }
+.app-nav button:hover { background: rgba(255,255,255,.06); color: #fff; }
+.app-nav button.active { background: var(--teal); color: #fff; }
+.app-side-foot { border-top: 1px solid rgba(255,255,255,.12); padding-top: 14px; margin-top: 14px; }
+.app-who { display: flex; flex-direction: column; margin-bottom: 10px; }
+.app-who b { font-size: 12.5px; }
+.app-who span { font-size: 10.5px; color: #8a94a0; }
+.app-logout { background: none; border: 1px solid rgba(255,255,255,.2); color: #cfd8df; font-size: 11.5px; padding: 6px 10px; border-radius: 8px; cursor: pointer; width: 100%; }
+.app-logout:hover { border-color: #fff; color: #fff; }
+.app-main { flex: 1; padding: 34px 40px; max-width: 1100px; }
+.app-panel { max-width: 900px; }
+.app-h1 { font-family: 'Archivo', sans-serif; font-size: 27px; font-weight: 900; margin-bottom: 6px; }
+.app-lead { font-size: 13.5px; color: var(--muted); }
+.app-refill-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.app-docs { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.app-doc { display: flex; flex-direction: column; border: 2px solid var(--ink); border-radius: 12px; padding: 14px 18px; text-decoration: none; color: var(--ink); background: #fff; }
+.app-doc:hover { background: var(--teal-soft); border-color: var(--teal); }
+.app-doc b { font-family: 'Archivo', sans-serif; font-size: 14px; margin-bottom: 3px; }
+.app-doc span { font-size: 12px; color: var(--muted); }
+
+@media (max-width: 880px) {
+  .app { flex-direction: column; }
+  .app-side { width: 100%; height: auto; position: relative; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 10px; padding: 14px 16px; }
+  .app-logo { margin-bottom: 0; }
+  .app-nav { flex-direction: row; flex-wrap: wrap; flex: none; width: 100%; order: 3; }
+  .app-side-foot { border-top: none; margin: 0 0 0 auto; padding: 0; display: flex; align-items: center; gap: 10px; order: 2; }
+  .app-who { flex-direction: row; gap: 6px; }
+  .app-main { padding: 22px 18px; }
+  .app-refill-row { flex-direction: column; }
+}
 .tz-pill.soft { background: var(--teal-soft); color: var(--teal); border-color: var(--teal-light); margin-left: 0; }
 .tz-depts { padding: 52px 0; text-align: center; }
 .tz-dept-grid { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
