@@ -34,7 +34,6 @@ export default function LoginPage() {
     const data = await res.json();
     setLoading(false);
     if (!res.ok) { setErr(data.error || "Erreur lors de l'inscription."); return; }
-    // auto-login après inscription
     const { error } = await supabase.auth.signInWithPassword({
       email: form.email.trim().toLowerCase(),
       password: form.password,
@@ -44,69 +43,116 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="gate-wrap">
-      <div className="gate-box" style={{ maxWidth: 380 }}>
-        <div className="logo" style={{ justifyContent: "center", marginBottom: 14 }}>
-          <span className="mark">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-              <circle cx="16" cy="3" r="2.2" fill="#d64a2e" />
-            </svg>
-          </span>
-          LeBonProspect
+    <main className="auth-page">
+      {/* Panneau de contexte, visible desktop uniquement */}
+      <div className="auth-context">
+        <div className="auth-context-inner">
+          <div className="logo" style={{ marginBottom: 34 }}>
+            <span className="mark">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="16" cy="3" r="2.2" fill="#d64a2e" />
+              </svg>
+            </span>
+            LeBonProspect
+          </div>
+          <h1 className="auth-context-h1">
+            L&apos;espace des <span className="hl">closers</span>
+          </h1>
+          <p className="auth-context-p">
+            Chaque matin, des commerces changent de propriétaire en France. Votre mission : les
+            fournisseurs qui les équipent avant leurs concurrents.
+          </p>
+          <div className="auth-feature-list">
+            <div className="auth-feature">
+              <span className="auth-feature-dot">✓</span>
+              Des prospects triés par secteur et zone, en un clic
+            </div>
+            <div className="auth-feature">
+              <span className="auth-feature-dot">✓</span>
+              Scripts d&apos;appel, plaquette et suivi intégrés
+            </div>
+            <div className="auth-feature">
+              <span className="auth-feature-dot">✓</span>
+              Commission versée en instantané, dès l&apos;encaissement
+            </div>
+          </div>
         </div>
-        <h1>{mode === "login" ? "Connexion" : "Créer mon compte"}</h1>
-        <p>
-          {mode === "login"
-            ? "Espace équipe commerciale, accès personnel."
-            : "Un code d'invitation vous a été communiqué par Lawrenza ou Baptiste."}
-        </p>
+      </div>
 
-        <form onSubmit={mode === "login" ? doLogin : doSignup}>
-          {mode === "signup" && (
-            <input placeholder="Prénom Nom" value={form.full_name} onChange={set("full_name")} required />
-          )}
-          <input type="email" placeholder="Email" value={form.email} onChange={set("email")} required />
-          <input
-            type="password"
-            placeholder="Mot de passe"
-            value={form.password}
-            onChange={set("password")}
-            required
-            minLength={8}
-          />
-          {mode === "signup" && (
-            <input
-              placeholder="Code d'invitation"
-              value={form.invite_code}
-              onChange={set("invite_code")}
-              required
-            />
-          )}
-          <button type="submit" className="btn" disabled={loading}>
-            {loading ? "..." : mode === "login" ? "Se connecter" : "Créer mon compte"}
-          </button>
-        </form>
+      {/* Formulaire */}
+      <div className="auth-form-side">
+        <div className="auth-box">
+          <div className="logo auth-box-logo">
+            <span className="mark">
+              <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
+                <path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="16" cy="3" r="2.2" fill="#d64a2e" />
+              </svg>
+            </span>
+            LeBonProspect
+          </div>
 
-        {err && <p className="gate-err">{err}</p>}
+          <h2 className="auth-title">{mode === "login" ? "Connexion" : "Créer mon compte"}</h2>
+          <p className="auth-sub">
+            {mode === "login"
+              ? "Espace équipe commerciale, accès personnel."
+              : "Un code d'invitation vous a été communiqué par Lawrenza ou Baptiste."}
+          </p>
 
-        <p style={{ marginTop: 16, fontSize: 12 }}>
-          {mode === "login" ? (
-            <>
-              Pas encore de compte ?{" "}
-              <a href="#" onClick={(e) => { e.preventDefault(); setMode("signup"); setErr(""); }} style={{ color: "#31777A", fontWeight: 700 }}>
-                Créer un compte
-              </a>
-            </>
-          ) : (
-            <>
-              Déjà un compte ?{" "}
-              <a href="#" onClick={(e) => { e.preventDefault(); setMode("login"); setErr(""); }} style={{ color: "#31777A", fontWeight: 700 }}>
-                Se connecter
-              </a>
-            </>
-          )}
-        </p>
+          <form onSubmit={mode === "login" ? doLogin : doSignup} className="auth-form">
+            {mode === "signup" && (
+              <div className="auth-field">
+                <label>Nom complet</label>
+                <input placeholder="Prénom Nom" value={form.full_name} onChange={set("full_name")} required />
+              </div>
+            )}
+            <div className="auth-field">
+              <label>Email</label>
+              <input type="email" placeholder="vous@exemple.fr" value={form.email} onChange={set("email")} required />
+            </div>
+            <div className="auth-field">
+              <label>Mot de passe</label>
+              <input
+                type="password"
+                placeholder="8 caractères minimum"
+                value={form.password}
+                onChange={set("password")}
+                required
+                minLength={8}
+              />
+            </div>
+            {mode === "signup" && (
+              <div className="auth-field">
+                <label>Code d&apos;invitation</label>
+                <input placeholder="lbp-closer-2026" value={form.invite_code} onChange={set("invite_code")} required />
+              </div>
+            )}
+            <button type="submit" className="btn auth-submit" disabled={loading}>
+              {loading ? "..." : mode === "login" ? "Se connecter" : "Créer mon compte"}
+            </button>
+          </form>
+
+          {err && <p className="gate-err">{err}</p>}
+
+          <p className="auth-switch">
+            {mode === "login" ? (
+              <>
+                Pas encore de compte ?{" "}
+                <a href="#" onClick={(e) => { e.preventDefault(); setMode("signup"); setErr(""); }}>
+                  Créer un compte
+                </a>
+              </>
+            ) : (
+              <>
+                Déjà un compte ?{" "}
+                <a href="#" onClick={(e) => { e.preventDefault(); setMode("login"); setErr(""); }}>
+                  Se connecter
+                </a>
+              </>
+            )}
+          </p>
+        </div>
       </div>
     </main>
   );

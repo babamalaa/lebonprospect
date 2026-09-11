@@ -586,7 +586,7 @@ export default function AppPage() {
             <h1 className="app-h1">Documents</h1>
             <p className="app-lead">Tout ce dont vous avez besoin, toujours à jour.</p>
             <div className="app-docs">
-              <a className="app-doc" href="/closers" target="_blank" rel="noreferrer">
+              <a className="app-doc" href="/closers/kit" target="_blank" rel="noreferrer">
                 <b>Kit de démarrage complet →</b>
                 <span>Produit, rémunération, do&apos;s &amp; don&apos;ts, processus</span>
               </a>
@@ -615,14 +615,29 @@ export default function AppPage() {
 
             <div className="script-block">
               {activeScript.blocks.map((b, i) => (
-                <div key={i} className={`cl-card ${b.style}`}>
-                  <b style={{ display: "block", marginBottom: 8, color: b.style === "dark" ? "#fff" : b.style === "teal" ? "#14181d" : "#31777A" }}>{b.title}</b>
-                  {b.text && <p style={{ whiteSpace: "pre-line" }}>{b.text}</p>}
-                  {b.list && (
-                    <ul className="cl-list">
-                      {b.list.map((l, j) => <li key={j}>{l}</li>)}
-                    </ul>
-                  )}
+                <div key={i} className="script-sheet">
+                  <div className="script-sheet-tab" style={{
+                    background: b.style === "dark" ? "#14181d" : b.style === "teal" ? "#31777A" : "#d64a2e",
+                  }}>
+                    <span>{b.title}</span>
+                    {b.text && (
+                      <button
+                        className="script-copy"
+                        onClick={() => navigator.clipboard?.writeText(b.text)}
+                        title="Copier ce texte"
+                      >
+                        Copier
+                      </button>
+                    )}
+                  </div>
+                  <div className="script-sheet-body">
+                    {b.text && <p style={{ whiteSpace: "pre-line" }}>{b.text}</p>}
+                    {b.list && (
+                      <ul className="cl-list">
+                        {b.list.map((l, j) => <li key={j}>{l}</li>)}
+                      </ul>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
