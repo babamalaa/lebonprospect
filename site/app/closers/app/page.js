@@ -526,60 +526,114 @@ export default function AppPage() {
             {loadingRows ? (
               <p style={{ padding: "30px 0", color: "#6f6a5c" }}>Chargement…</p>
             ) : (
-              <div className="dash-table-wrap" style={{ marginTop: 16 }}>
-                <table className="dash-table">
-                  <thead>
-                    <tr><th>Société</th><th>Zone</th><th>Tél.</th><th>Page</th><th>Statut</th><th>Plan</th><th>Prochaine action</th><th>Notes</th></tr>
-                  </thead>
-                  <tbody>
-                    {filteredRows.map((r) => (
-                      <tr key={r.id}>
-                        <td><b>{r.societe}</b><div className="dash-sub">{r.categorie}</div></td>
-                        <td className="dash-sub">{r.region}<br />{r.ville}</td>
-                        <td>{r.telephone && <a href={`tel:${r.telephone.replace(/\s/g, "")}`} className="mono">{r.telephone}</a>}</td>
-                        <td>
-                          {r.lien_teaser ? (
-                            <a href={r.lien_teaser} target="_blank" rel="noreferrer" className="dash-link">voir →</a>
-                          ) : (
-                            <button
-                              className="page-gen-btn"
-                              onClick={() => generatePage(r)}
-                              disabled={generatingId === r.id}
-                            >
-                              {generatingId === r.id ? "…" : "Générer"}
-                            </button>
-                          )}
-                        </td>
-                        <td>
-                          <select value={r.statut || "a_contacter"} onChange={(e) => patch(r.id, { statut: e.target.value })} style={{ color: STATUT_COLOR[r.statut] || "#14181d", fontWeight: 700 }}>
-                            {STATUTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
-                          </select>
-                        </td>
-                        <td>
-                          {r.statut === "signe" ? (
-                            <select
-                              value={r.plan || ""}
-                              onChange={(e) => signDeal(r, e.target.value)}
-                              disabled={signingId === r.id}
-                              style={{ fontWeight: 700 }}
-                            >
-                              <option value="">— choisir —</option>
-                              <option value="departemental">Départemental (149€)</option>
-                              <option value="regional">Régional (299€)</option>
-                              <option value="national">National (sur devis)</option>
+              <>
+                {/* Desktop : vrai tableau */}
+                <div className="dash-table-wrap dash-desktop-only" style={{ marginTop: 16 }}>
+                  <table className="dash-table">
+                    <thead>
+                      <tr><th>Société</th><th>Zone</th><th>Tél.</th><th>Page</th><th>Statut</th><th>Plan</th><th>Prochaine action</th><th>Notes</th></tr>
+                    </thead>
+                    <tbody>
+                      {filteredRows.map((r) => (
+                        <tr key={r.id}>
+                          <td><b>{r.societe}</b><div className="dash-sub">{r.categorie}</div></td>
+                          <td className="dash-sub">{r.region}<br />{r.ville}</td>
+                          <td>{r.telephone && <a href={`tel:${r.telephone.replace(/\s/g, "")}`} className="mono">{r.telephone}</a>}</td>
+                          <td>
+                            {r.lien_teaser ? (
+                              <a href={r.lien_teaser} target="_blank" rel="noreferrer" className="dash-link">voir →</a>
+                            ) : (
+                              <button className="page-gen-btn" onClick={() => generatePage(r)} disabled={generatingId === r.id}>
+                                {generatingId === r.id ? "…" : "Générer"}
+                              </button>
+                            )}
+                          </td>
+                          <td>
+                            <select value={r.statut || "a_contacter"} onChange={(e) => patch(r.id, { statut: e.target.value })} style={{ color: STATUT_COLOR[r.statut] || "#14181d", fontWeight: 700 }}>
+                              {STATUTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
                             </select>
-                          ) : (
-                            <span className="dash-sub">—</span>
-                          )}
-                        </td>
-                        <td><input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel jeudi" onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} /></td>
-                        <td><input className="dash-input wide" defaultValue={r.notes || ""} placeholder="objections…" onBlur={(e) => e.target.value !== r.notes && patch(r.id, { notes: e.target.value })} /></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {filteredRows.length === 0 && <p style={{ padding: "30px 0", textAlign: "center", color: "#6f6a5c" }}>Aucun prospect pour le moment. Allez sur Accueil pour en récupérer.</p>}
-              </div>
+                          </td>
+                          <td>
+                            {r.statut === "signe" ? (
+                              <select
+                                value={r.plan || ""}
+                                onChange={(e) => signDeal(r, e.target.value)}
+                                disabled={signingId === r.id}
+                                style={{ fontWeight: 700 }}
+                              >
+                                <option value="">— choisir —</option>
+                                <option value="departemental">Départemental (149€)</option>
+                                <option value="regional">Régional (299€)</option>
+                                <option value="national">National (sur devis)</option>
+                              </select>
+                            ) : (
+                              <span className="dash-sub">—</span>
+                            )}
+                          </td>
+                          <td><input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel jeudi" onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} /></td>
+                          <td><input className="dash-input wide" defaultValue={r.notes || ""} placeholder="objections…" onBlur={(e) => e.target.value !== r.notes && patch(r.id, { notes: e.target.value })} /></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {filteredRows.length === 0 && <p style={{ padding: "30px 0", textAlign: "center", color: "#6f6a5c" }}>Aucun prospect pour le moment. Allez sur Accueil pour en récupérer.</p>}
+                </div>
+
+                {/* Mobile : cartes empilées */}
+                <div className="prospect-cards dash-mobile-only">
+                  {filteredRows.map((r) => (
+                    <div key={r.id} className="prospect-card">
+                      <div className="prospect-card-head">
+                        <div>
+                          <b>{r.societe}</b>
+                          <div className="dash-sub">{r.categorie} · {r.region}{r.ville ? ` · ${r.ville}` : ""}</div>
+                        </div>
+                        {r.lien_teaser ? (
+                          <a href={r.lien_teaser} target="_blank" rel="noreferrer" className="dash-link">voir →</a>
+                        ) : (
+                          <button className="page-gen-btn" onClick={() => generatePage(r)} disabled={generatingId === r.id}>
+                            {generatingId === r.id ? "…" : "Générer"}
+                          </button>
+                        )}
+                      </div>
+                      {r.telephone && (
+                        <a href={`tel:${r.telephone.replace(/\s/g, "")}`} className="prospect-card-tel mono">☎ {r.telephone}</a>
+                      )}
+                      <div className="prospect-card-row">
+                        <label>Statut</label>
+                        <select value={r.statut || "a_contacter"} onChange={(e) => patch(r.id, { statut: e.target.value })} style={{ color: STATUT_COLOR[r.statut] || "#14181d", fontWeight: 700 }}>
+                          {STATUTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
+                        </select>
+                      </div>
+                      {r.statut === "signe" && (
+                        <div className="prospect-card-row">
+                          <label>Plan</label>
+                          <select
+                            value={r.plan || ""}
+                            onChange={(e) => signDeal(r, e.target.value)}
+                            disabled={signingId === r.id}
+                            style={{ fontWeight: 700 }}
+                          >
+                            <option value="">— choisir —</option>
+                            <option value="departemental">Départemental (149€)</option>
+                            <option value="regional">Régional (299€)</option>
+                            <option value="national">National (sur devis)</option>
+                          </select>
+                        </div>
+                      )}
+                      <div className="prospect-card-row">
+                        <label>Prochaine action</label>
+                        <input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel jeudi" onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} />
+                      </div>
+                      <div className="prospect-card-row">
+                        <label>Notes</label>
+                        <input className="dash-input" defaultValue={r.notes || ""} placeholder="objections…" onBlur={(e) => e.target.value !== r.notes && patch(r.id, { notes: e.target.value })} />
+                      </div>
+                    </div>
+                  ))}
+                  {filteredRows.length === 0 && <p style={{ padding: "30px 0", textAlign: "center", color: "#6f6a5c" }}>Aucun prospect pour le moment. Allez sur Accueil pour en récupérer.</p>}
+                </div>
+              </>
             )}
           </div>
         )}
