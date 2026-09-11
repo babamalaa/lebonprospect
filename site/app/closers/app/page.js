@@ -19,6 +19,13 @@ const STATUT_COLOR = {
 const REGIONS = ["Île-de-France", "Auvergne-Rhône-Alpes", "Provence-Alpes-Côte d'Azur"];
 const fmt2 = (n) => Math.round(n).toLocaleString("fr-FR");
 const TAB_LABELS = { accueil: "Accueil", prospects: "Mes prospects", documents: "Documents", script: "Scripts d'appel" };
+const MOTIV_QUOTES = [
+  "Le premier fournisseur qui appelle avec un « félicitations pour la reprise » part avec une longueur d'avance.",
+  "Chaque appel qualifie une donnée : soit un client, soit une objection à raffiner. Aucun appel n'est perdu.",
+  "10 deals/mois, c'est un bon side. Le vrai levier, c'est le premier compte enterprise que vous décrochez.",
+  "Un client qui reste au mois 2 vous rapporte 37% de plus. Bien qualifier vaut mieux que bien vendre vite.",
+  "La donnée est publique, votre rapidité ne l'est pas. Le repreneur choisit son fournisseur dans les 90 premiers jours.",
+];
 
 const SCRIPTS = [
   {
@@ -185,6 +192,10 @@ export default function AppPage() {
   const [filterCloser, setFilterCloser] = useState("tous");
   const [scriptId, setScriptId] = useState("evenement");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [celebrating, setCelebrating] = useState(null); // { societe } | null
+  const [signingId, setSigningId] = useState(null);
+  const [generatingId, setGeneratingId] = useState(null);
+  const [motivIdx] = useState(() => Math.floor(Math.random() * MOTIV_QUOTES.length));
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session ?? null));
@@ -223,6 +234,39 @@ export default function AppPage() {
     setRefilling(false);
     if (data.n > 0) { setRefillMsg(`✓ ${data.n} nouveaux prospects ajoutés à votre liste.`); loadRows(); }
     else setRefillMsg(data.message || "Rien de nouveau pour le moment.");
+  };
+
+  const signDeal = async (prospect, plan) => {
+    if (!plan) return;
+    setSigningId(prospect.id);
+    const res = await authedFetch("/api/sign-deal", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prospect_id: prospect.id, plan }),
+    });
+    setSigningId(null);
+    if (res.ok) {
+      const montant = plan === "departemental" ? 149 : plan === "regional" ? 299 : 0;
+      setRows((prev) => prev.map((r) => (r.id === prospect.id ? { ...r, statut: "signe", plan, montant } : r)));
+      setCelebrating({ societe: prospect.societe });
+      setTimeout(() => setCelebrating(null), 3200);
+    }
+  };
+
+  const generatePage = async (prospect) => {
+    setGeneratingId(prospect.id);
+    const res = await authedFetch("/api/generate-page", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prospect_id: prospect.id }),
+    });
+    const data = await res.json();
+    setGeneratingId(null);
+    if (res.ok) {
+      setRows((prev) => prev.map((r) => (r.id === prospect.id ? { ...r, lien_teaser: data.url } : r)));
+    } else {
+      alert(data.error || "Erreur lors de la génération.");
+    }
   };
 
   const logout = async () => { await supabase.auth.signOut(); window.location.href = "/closers/login"; };
@@ -370,6 +414,11 @@ export default function AppPage() {
             <h1 className="app-h1">Bonjour {profile?.full_name?.split(" ")[0]} 👋</h1>
             <p className="app-lead">Voici où vous en êtes.</p>
 
+            <div className="motiv-banner">
+              <span className="emoji">💡</span>
+              <span>{MOTIV_QUOTES[motivIdx]}</span>
+            </div>
+
             <div className="dash-stats" style={{ marginTop: 20 }}>
               <div className="dash-stat"><div className="n">{stats.total}</div><div className="l">prospects assignés</div></div>
               <div className="dash-stat"><div className="n">{stats.aTraiter}</div><div className="l">à contacter</div></div>
@@ -437,8 +486,8 @@ export default function AppPage() {
                   </div>
                 )}
 
-                <div className="cl-card dark" style={{ marginTop: 20 }}>
-                  <h3 style={{ color: "#fff", marginBottom: 8 }}>Recevoir de nouveaux leads</h3>
+                <div className="app-card dark" style={{ marginTop: 20 }}>
+                  <h3 style={{ color: "#fff" }}>Recevoir de nouveaux leads</h3>
                   <p style={{ marginBottom: 14 }}>Piochez de nouveaux prospects CHR dans le vivier, non assignés à un autre closer. Par lot de 15.</p>
                   <div className="app-refill-row">
                     <button className="btn" onClick={() => doRefill(null)} disabled={refilling}>{refilling ? "..." : "+ 15 nouveaux leads (toutes zones)"}</button>
@@ -451,7 +500,7 @@ export default function AppPage() {
               </>
             )}
 
-            <div className="cl-card teal" style={{ marginTop: 20 }}>
+            <div className="app-card teal" style={{ marginTop: 20 }}>
               <p>Besoin d&apos;un script d&apos;appel ou de la plaquette ? Tout est dans les onglets <b>Documents</b> et <b>Scripts d&apos;appel</b>.</p>
             </div>
           </div>
@@ -477,106 +526,60 @@ export default function AppPage() {
             {loadingRows ? (
               <p style={{ padding: "30px 0", color: "#6f6a5c" }}>Chargement…</p>
             ) : (
-              <>
-                {/* Desktop : vrai tableau */}
-                <div className="dash-table-wrap dash-desktop-only" style={{ marginTop: 16 }}>
-                  <table className="dash-table">
-                    <thead>
-                      <tr><th>Société</th><th>Zone</th><th>Tél.</th><th>Lien</th><th>Statut</th><th>Plan</th><th>Prochaine action</th><th>Notes</th></tr>
-                    </thead>
-                    <tbody>
-                      {filteredRows.map((r) => (
-                        <tr key={r.id}>
-                          <td><b>{r.societe}</b><div className="dash-sub">{r.categorie}</div></td>
-                          <td className="dash-sub">{r.region}<br />{r.ville}</td>
-                          <td>{r.telephone && <a href={`tel:${r.telephone.replace(/\s/g, "")}`} className="mono">{r.telephone}</a>}</td>
-                          <td>{r.lien_teaser && <a href={r.lien_teaser} target="_blank" rel="noreferrer" className="dash-link">voir →</a>}</td>
-                          <td>
-                            <select value={r.statut || "a_contacter"} onChange={(e) => patch(r.id, { statut: e.target.value })} style={{ color: STATUT_COLOR[r.statut] || "#14181d", fontWeight: 700 }}>
-                              {STATUTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
-                            </select>
-                          </td>
-                          <td>
-                            {r.statut === "signe" ? (
-                              <select
-                                value={r.plan || ""}
-                                onChange={(e) => {
-                                  const plan = e.target.value;
-                                  const montant = plan === "departemental" ? 149 : plan === "regional" ? 299 : r.montant || 0;
-                                  patch(r.id, { plan, montant });
-                                }}
-                                style={{ fontWeight: 700 }}
-                              >
-                                <option value="">— choisir —</option>
-                                <option value="departemental">Départemental (149€)</option>
-                                <option value="regional">Régional (299€)</option>
-                                <option value="national">National (sur devis)</option>
-                              </select>
-                            ) : (
-                              <span className="dash-sub">—</span>
-                            )}
-                          </td>
-                          <td><input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel jeudi" onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} /></td>
-                          <td><input className="dash-input wide" defaultValue={r.notes || ""} placeholder="objections…" onBlur={(e) => e.target.value !== r.notes && patch(r.id, { notes: e.target.value })} /></td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {filteredRows.length === 0 && <p style={{ padding: "30px 0", textAlign: "center", color: "#6f6a5c" }}>Aucun prospect pour le moment. Allez sur Accueil pour en récupérer.</p>}
-                </div>
-
-                {/* Mobile : cartes empilées */}
-                <div className="prospect-cards dash-mobile-only">
-                  {filteredRows.map((r) => (
-                    <div key={r.id} className="prospect-card">
-                      <div className="prospect-card-head">
-                        <div>
-                          <b>{r.societe}</b>
-                          <div className="dash-sub">{r.categorie} · {r.region}{r.ville ? ` · ${r.ville}` : ""}</div>
-                        </div>
-                        {r.lien_teaser && <a href={r.lien_teaser} target="_blank" rel="noreferrer" className="dash-link">voir →</a>}
-                      </div>
-                      {r.telephone && (
-                        <a href={`tel:${r.telephone.replace(/\s/g, "")}`} className="prospect-card-tel mono">☎ {r.telephone}</a>
-                      )}
-                      <div className="prospect-card-row">
-                        <label>Statut</label>
-                        <select value={r.statut || "a_contacter"} onChange={(e) => patch(r.id, { statut: e.target.value })} style={{ color: STATUT_COLOR[r.statut] || "#14181d", fontWeight: 700 }}>
-                          {STATUTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
-                        </select>
-                      </div>
-                      {r.statut === "signe" && (
-                        <div className="prospect-card-row">
-                          <label>Plan</label>
-                          <select
-                            value={r.plan || ""}
-                            onChange={(e) => {
-                              const plan = e.target.value;
-                              const montant = plan === "departemental" ? 149 : plan === "regional" ? 299 : r.montant || 0;
-                              patch(r.id, { plan, montant });
-                            }}
-                            style={{ fontWeight: 700 }}
-                          >
-                            <option value="">— choisir —</option>
-                            <option value="departemental">Départemental (149€)</option>
-                            <option value="regional">Régional (299€)</option>
-                            <option value="national">National (sur devis)</option>
+              <div className="dash-table-wrap" style={{ marginTop: 16 }}>
+                <table className="dash-table">
+                  <thead>
+                    <tr><th>Société</th><th>Zone</th><th>Tél.</th><th>Page</th><th>Statut</th><th>Plan</th><th>Prochaine action</th><th>Notes</th></tr>
+                  </thead>
+                  <tbody>
+                    {filteredRows.map((r) => (
+                      <tr key={r.id}>
+                        <td><b>{r.societe}</b><div className="dash-sub">{r.categorie}</div></td>
+                        <td className="dash-sub">{r.region}<br />{r.ville}</td>
+                        <td>{r.telephone && <a href={`tel:${r.telephone.replace(/\s/g, "")}`} className="mono">{r.telephone}</a>}</td>
+                        <td>
+                          {r.lien_teaser ? (
+                            <a href={r.lien_teaser} target="_blank" rel="noreferrer" className="dash-link">voir →</a>
+                          ) : (
+                            <button
+                              className="page-gen-btn"
+                              onClick={() => generatePage(r)}
+                              disabled={generatingId === r.id}
+                            >
+                              {generatingId === r.id ? "…" : "Générer"}
+                            </button>
+                          )}
+                        </td>
+                        <td>
+                          <select value={r.statut || "a_contacter"} onChange={(e) => patch(r.id, { statut: e.target.value })} style={{ color: STATUT_COLOR[r.statut] || "#14181d", fontWeight: 700 }}>
+                            {STATUTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
                           </select>
-                        </div>
-                      )}
-                      <div className="prospect-card-row">
-                        <label>Prochaine action</label>
-                        <input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel jeudi" onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} />
-                      </div>
-                      <div className="prospect-card-row">
-                        <label>Notes</label>
-                        <input className="dash-input" defaultValue={r.notes || ""} placeholder="objections…" onBlur={(e) => e.target.value !== r.notes && patch(r.id, { notes: e.target.value })} />
-                      </div>
-                    </div>
-                  ))}
-                  {filteredRows.length === 0 && <p style={{ padding: "30px 0", textAlign: "center", color: "#6f6a5c" }}>Aucun prospect pour le moment. Allez sur Accueil pour en récupérer.</p>}
-                </div>
-              </>
+                        </td>
+                        <td>
+                          {r.statut === "signe" ? (
+                            <select
+                              value={r.plan || ""}
+                              onChange={(e) => signDeal(r, e.target.value)}
+                              disabled={signingId === r.id}
+                              style={{ fontWeight: 700 }}
+                            >
+                              <option value="">— choisir —</option>
+                              <option value="departemental">Départemental (149€)</option>
+                              <option value="regional">Régional (299€)</option>
+                              <option value="national">National (sur devis)</option>
+                            </select>
+                          ) : (
+                            <span className="dash-sub">—</span>
+                          )}
+                        </td>
+                        <td><input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel jeudi" onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} /></td>
+                        <td><input className="dash-input wide" defaultValue={r.notes || ""} placeholder="objections…" onBlur={(e) => e.target.value !== r.notes && patch(r.id, { notes: e.target.value })} /></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {filteredRows.length === 0 && <p style={{ padding: "30px 0", textAlign: "center", color: "#6f6a5c" }}>Aucun prospect pour le moment. Allez sur Accueil pour en récupérer.</p>}
+              </div>
             )}
           </div>
         )}
@@ -644,6 +647,26 @@ export default function AppPage() {
           </div>
         )}
       </section>
+
+      {celebrating && (
+        <div className="celebrate-overlay">
+          <div className="celebrate-card">
+            <div className="celebrate-emoji">🎉</div>
+            <div className="celebrate-title">Deal signé !</div>
+            <div className="celebrate-sub">{celebrating.societe}</div>
+            <div className="celebrate-note">Lawrenza vient d&apos;être notifiée.</div>
+          </div>
+          <div className="confetti">
+            {Array.from({ length: 24 }).map((_, i) => (
+              <span key={i} className="confetti-piece" style={{
+                left: `${(i * 37) % 100}%`,
+                animationDelay: `${(i % 8) * 0.12}s`,
+                background: ["#31777A", "#d64a2e", "#14181d", "#f1ebd9"][i % 4],
+              }} />
+            ))}
+          </div>
+        </div>
+      )}
     </main>
   );
 }

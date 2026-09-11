@@ -1,16 +1,132 @@
 import teasers from "../../../data/teasers.json";
 import PhoneDemo from "../../components/PhoneDemo";
+import { supabaseAdmin } from "../../lib/supabaseAdmin";
 
-export const dynamicParams = false;
+export const dynamicParams = true; // autorise les slugs générés après le build (servis dynamiquement)
+
+const REGION_MAP = { "Île-de-France": "Île-de-France", PACA: "Provence-Alpes-Côte d'Azur", "Auvergne-Rhône-Alpes": "Auvergne-Rhône-Alpes" };
+const CAT_LABELS = {
+  agenceur: "l'agencement CHR",
+  materiel_cuisine: "l'équipement de cuisine professionnelle",
+  caisse: "les solutions d'encaissement",
+  enseigniste: "l'enseigne et la signalétique",
+  mobilier: "le mobilier professionnel",
+};
+
+function maskTel(tel) {
+  const parts = tel.split(" ");
+  if (parts.length >= 5) return [...parts.slice(0, 3), "## ##"].join(" ");
+  return tel.slice(0, -5) + " ## ##";
+}
+
+async function fetchRegionPayload(region) {
+  const admin = supabaseAdmin();
+  const since90 = new Date(Date.now() - 90 * 86400000).toISOString().slice(0, 10);
+  const since30 = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+
+  const { data: n90rows } = await admin
+    .from("cessions")
+    .select("id", { count: "exact", head: true })
+    .eq("verticale", "chr")
+    .eq("region", region)
+    .gte("date_parution", since90);
+  const n90 = n90rows?.length ?? 0;
+
+  // Supabase JS ne renvoie pas facilement des counts multiples en une requête ; on fait 3 appels ciblés
+  const countQuery = async (filters) => {
+    let q = admin.from("cessions").select("*", { count: "exact", head: true }).eq("verticale", "chr").eq("region", region);
+    for (const [k, v] of Object.entries(filters)) q = v.op === "gte" ? q.gte(k, v.val) : q.not(k, "is", null);
+    const { count } = await q;
+    return count || 0;
+  };
+
+  const c90 = await countQuery({ date_parution: { op: "gte", val: since90 } });
+  const c30 = await countQuery({ date_parution: { op: "gte", val: since30 } });
+
+  const { data: rows } = await admin
+    .from("cessions")
+    .select("*")
+    .eq("verticale", "chr")
+    .eq("region", region)
+    .not("acheteur_nom", "is", null)
+    .order("date_parution", { ascending: false })
+    .limit(12);
+
+  const rowsWithTel = (rows || []).sort((a, b) => (a.telephone ? 0 : 1) - (b.telephone ? 0 : 1));
+  const n90Tel = rowsWithTel.filter((r) => r.telephone).length;
+
+  const today = new Date();
+  const leads = rowsWithTel.slice(0, 6).map((r) => {
+    let badge = null;
+    if (r.acheteur_date_creation) {
+      const age = Math.floor((today - new Date(r.acheteur_date_creation)) / 86400000);
+      badge = age <= 180 ? "budgets ouverts" : "en expansion";
+    }
+    let dirigeants = r.acheteur_dirigeants;
+    if (typeof dirigeants === "string") {
+      dirigeants = dirigeants.replace(/[{}]/g, "").split(",").map((d) => d.trim()).filter(Boolean);
+    }
+    dirigeants = (dirigeants || []).slice(0, 2).map((d) => d.replace(/\s*\([^)]*\)/g, "").trim());
+    return {
+      nom: r.place_name || r.acheteur_nom || r.commercant || "",
+      ville: (r.ville || "").split(",")[0],
+      dept: r.departement || "",
+      date: r.date_parution || "",
+      dirigeants,
+      tel_masque: r.telephone ? maskTel(r.telephone) : null,
+      badge,
+    };
+  });
+
+  const { data: deptRows } = await admin
+    .from("cessions")
+    .select("departement")
+    .eq("verticale", "chr")
+    .eq("region", region)
+    .gte("date_parution", since90);
+  const deptCounts = {};
+  (deptRows || []).forEach((r) => {
+    if (r.departement) deptCounts[r.departement] = (deptCounts[r.departement] || 0) + 1;
+  });
+  const depts = Object.entries(deptCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([nom, n]) => ({ nom, n }));
+
+  return {
+    n90: c90,
+    n30: c30,
+    n90_tel: n90Tel,
+    pct_tel: Math.round((100 * n90Tel) / Math.max(c90, 1)),
+    leads,
+    depts,
+  };
+}
+
+async function fetchGeneratedCible(slug) {
+  const admin = supabaseAdmin();
+  const { data } = await admin.from("generated_pages").select("*").eq("slug", slug).single();
+  if (!data) return null;
+  const region = REGION_MAP[data.region] || data.region;
+  return {
+    slug: data.slug,
+    societe: data.societe,
+    categorie: data.categorie,
+    metier: CAT_LABELS[data.categorie] || "votre métier",
+    region,
+    ville: data.ville,
+  };
+}
 
 export function generateStaticParams() {
   return teasers.cibles.map((c) => ({ slug: c.slug }));
 }
 
-export function generateMetadata({ params }) {
-  const c = teasers.cibles.find((x) => x.slug === params.slug);
+export async function generateMetadata({ params }) {
+  const staticCible = teasers.cibles.find((x) => x.slug === params.slug);
+  const societe = staticCible?.societe || (await fetchGeneratedCible(params.slug))?.societe;
   return {
-    title: c ? `LeBonProspect × ${c.societe}` : "LeBonProspect",
+    title: societe ? `LeBonProspect × ${societe}` : "LeBonProspect",
     robots: { index: false, follow: false },
   };
 }
@@ -22,9 +138,23 @@ const fmtDate = (iso) => {
   return `${d.getDate()} ${mois[d.getMonth()]}`;
 };
 
-export default function TeaserPage({ params }) {
-  const cible = teasers.cibles.find((x) => x.slug === params.slug);
-  const reg = teasers.regions[cible.region];
+export default async function TeaserPage({ params }) {
+  let cible = teasers.cibles.find((x) => x.slug === params.slug);
+  let reg = cible ? teasers.regions[cible.region] : null;
+
+  if (!cible) {
+    // slug généré dynamiquement après le build : on le sert à la volée
+    cible = await fetchGeneratedCible(params.slug);
+    if (!cible) {
+      return (
+        <main className="tz" style={{ padding: "80px 24px", textAlign: "center" }}>
+          <p>Cette page n&apos;existe pas ou plus.</p>
+        </main>
+      );
+    }
+    reg = await fetchRegionPayload(cible.region);
+  }
+
   const perLeadRegional = (299 / Math.max(reg.n30, 1)).toFixed(2).replace(".", ",");
 
   return (
