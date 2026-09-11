@@ -83,7 +83,7 @@ export default function LoginPage() {
       {/* Formulaire */}
       <div className="auth-form-side">
         <div className="auth-box">
-          <div className="logo auth-box-logo">
+          <div className="logo auth-box-logo auth-box-logo-mobile-only">
             <span className="mark">
               <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
                 <path d="M2 13 L7 5 L11 10 L16 3" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />

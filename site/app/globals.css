@@ -215,7 +215,7 @@ footer .wrap { display: flex; justify-content: space-between; }
 .auth-context .logo { font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 17px; display: flex; align-items: center; gap: 10px; color: #fff; }
 .auth-context .logo .mark { background: var(--teal); border-radius: 9px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; }
 .auth-context-h1 { font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 36px; line-height: 1.12; letter-spacing: -.02em; margin-bottom: 16px; }
-.auth-context-h1 .hl { color: var(--teal-light); }
+.auth-context-h1 .hl { background: linear-gradient(transparent 62%, rgba(49,119,122,.55) 62%); color: #fff; padding: 0 3px; }
 .auth-context-p { font-size: 14.5px; color: #b9c1c9; line-height: 1.6; margin-bottom: 30px; }
 .auth-feature-list { display: flex; flex-direction: column; gap: 14px; }
 .auth-feature { display: flex; align-items: center; gap: 12px; font-size: 13.5px; color: #dfe4e8; }
@@ -225,6 +225,7 @@ footer .wrap { display: flex; justify-content: space-between; }
 .auth-box { width: 100%; max-width: 380px; }
 .auth-box-logo { font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 16px; display: flex; align-items: center; gap: 9px; margin-bottom: 30px; color: var(--ink); }
 .auth-box-logo .mark { background: var(--teal); border-radius: 8px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; }
+.auth-box-logo-mobile-only { display: none; }
 .auth-title { font-family: 'Archivo', sans-serif; font-size: 27px; font-weight: 900; margin-bottom: 6px; }
 .auth-sub { font-size: 13px; color: var(--muted); margin-bottom: 26px; }
 .auth-form { display: flex; flex-direction: column; gap: 16px; }
@@ -239,6 +240,9 @@ footer .wrap { display: flex; justify-content: space-between; }
 
 @media (min-width: 960px) {
   .auth-context { display: flex; }
+}
+@media (max-width: 959px) {
+  .auth-box-logo-mobile-only { display: flex; }
 }
 
 /* ============ CLOSERS PAGE ============ */
