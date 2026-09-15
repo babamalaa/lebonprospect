@@ -211,6 +211,7 @@ function AppPageInner() {
   const [adminStats, setAdminStats] = useState(null);
   const [loadingAdminStats, setLoadingAdminStats] = useState(false);
   const [exportingCsv, setExportingCsv] = useState(false);
+  const [closersList, setClosersList] = useState([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session ?? null));
@@ -295,6 +296,11 @@ function AppPageInner() {
   }, [session, authedFetch]);
 
   useEffect(() => { if (profile?.role === "admin" && tab === "accueil") loadAdminStats(); }, [profile, tab, loadAdminStats]);
+  useEffect(() => {
+    if (profile?.role === "admin" && session) {
+      authedFetch("/api/closers-list").then((r) => r.json()).then((d) => setClosersList(Array.isArray(d) ? d : []));
+    }
+  }, [profile, session, authedFetch]);
 
   const exportCsv = async () => {
     setExportingCsv(true);
@@ -340,7 +346,6 @@ function AppPageInner() {
       return 0;
     });
 
-  const closerIds = Array.from(new Set(rows.map((r) => r.closer_id))).filter(Boolean);
   const stats = {
     total: rows.length,
     signe: rows.filter((r) => r.statut === "signe").length,
@@ -686,7 +691,7 @@ function AppPageInner() {
               {profile?.role === "admin" && (
                 <select value={filterCloser} onChange={(e) => setFilterCloser(e.target.value)}>
                   <option value="tous">Tous les closers</option>
-                  {closerIds.map((id) => <option key={id} value={id}>{id.slice(0, 8)}</option>)}
+                  {closersList.map((c) => <option key={c.id} value={c.id}>{c.full_name}</option>)}
                 </select>
               )}
               <button className="btn inv" onClick={loadRows} style={{ padding: "9px 16px", fontSize: 13 }}>↻ Rafraîchir</button>
