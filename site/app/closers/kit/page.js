@@ -178,15 +178,19 @@ export default function KitPage() {
       <section id="revenu" className="wrap cl-section">
         <h2 className="disp">4. Ce que ça peut rapporter</h2>
 
-        <h3 className="cl-h3">Paliers de volume (bonus mensuel, cumulatif)</h3>
+        <h3 className="cl-h3">Paliers de volume (bonus mensuel, cumulables)</h3>
         <div className="cl-stats">
           <div className="cl-stat">
-            <div className="n">+50 €</div>
+            <div className="n">+75 €</div>
             <div className="l">à partir de 5 deals dans le mois</div>
           </div>
+          <div className="cl-stat">
+            <div className="n">+75 €</div>
+            <div className="l">à partir de 7 deals dans le mois</div>
+          </div>
           <div className="cl-stat hot">
-            <div className="n">+150 €</div>
-            <div className="l">à partir de 10 deals (200 € cumulés)</div>
+            <div className="n">+75 €</div>
+            <div className="l">à partir de 10 deals (225 € cumulés au total)</div>
           </div>
         </div>
 
@@ -195,22 +199,22 @@ export default function KitPage() {
           <div className="cl-tl-item">
             <div className="cl-tl-dot" />
             <div>
-              <b>Mois 1</b> — starter tier 35% + paliers
-              <span className="cl-tl-n">~879 €</span>
+              <b>Mois 1</b> — starter tier 35% + les 3 paliers (225€)
+              <span className="cl-tl-n">~904 €</span>
             </div>
           </div>
           <div className="cl-tl-item">
             <div className="cl-tl-dot" />
             <div>
-              <b>Mois 2</b> — retour à 25% + paliers + rétention (churn 8%)
-              <span className="cl-tl-n">~863 €</span>
+              <b>Mois 2</b> — retour à 25% + les 3 paliers + rétention (churn 8%)
+              <span className="cl-tl-n">~888 €</span>
             </div>
           </div>
           <div className="cl-tl-item last">
             <div className="cl-tl-dot" />
             <div>
               <b>Cumul 2 mois</b>
-              <span className="cl-tl-n hot">~1 742 €</span>
+              <span className="cl-tl-n hot">~1 792 €</span>
             </div>
           </div>
         </div>

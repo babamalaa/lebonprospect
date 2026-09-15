@@ -303,13 +303,13 @@ export default function AppPage() {
     const montant = r.montant || planPrice[plan] || 0;
     commissionEstimee += montant * 0.25; // hypothèse conservatrice: sans engagement, 25% du 1er mois
   });
-  const palier1 = 5, palier2 = 10;
-  const bonusActuel = nSigned >= palier2 ? 200 : nSigned >= palier1 ? 50 : 0;
-  const prochainPalier = nSigned < palier1 ? palier1 : nSigned < palier2 ? palier2 : null;
+  const paliers = [5, 7, 10];
+  const bonusParPalier = 75;
+  const paliersAtteints = paliers.filter((p) => nSigned >= p).length;
+  const bonusActuel = paliersAtteints * bonusParPalier;
+  const prochainPalier = paliers.find((p) => nSigned < p) ?? null;
   const dealsRestants = prochainPalier ? prochainPalier - nSigned : 0;
-  const progressPct = prochainPalier
-    ? Math.min(100, (nSigned / prochainPalier) * 100)
-    : 100;
+  const progressPct = Math.min(100, (nSigned / 10) * 100);
 
   // --- Donut répartition des deals signés par plan ---
   const donutData = [
@@ -443,13 +443,14 @@ export default function AppPage() {
                     <div className="perf-bar-wrap">
                       <div className="perf-bar"><div className="perf-bar-fill" style={{ width: `${progressPct}%` }} /></div>
                       <div className="perf-bar-marks">
-                        <span style={{ left: "50%" }}>5 → +50€</span>
-                        <span style={{ left: "100%" }}>10 → +150€</span>
+                        <span style={{ left: "50%" }}>5 → +75€</span>
+                        <span style={{ left: "70%" }}>7 → +75€</span>
+                        <span style={{ left: "100%" }}>10 → +75€</span>
                       </div>
                     </div>
                     <div className="perf-sub" style={{ marginTop: 22 }}>
                       {prochainPalier
-                        ? <>Plus que <b>{dealsRestants}</b> deal{dealsRestants > 1 ? "s" : ""} avant le prochain palier ({prochainPalier === palier1 ? "+50€" : "+150€"})</>
+                        ? <>Plus que <b>{dealsRestants}</b> deal{dealsRestants > 1 ? "s" : ""} avant le prochain palier (+75€)</>
                         : <>Tous les paliers sont atteints ce mois-ci 🎉</>}
                     </div>
                   </div>
