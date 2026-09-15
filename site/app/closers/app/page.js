@@ -236,7 +236,6 @@ function AppPageInner() {
   }, [session, authedFetch]);
 
   useEffect(() => { if (session) loadRows(); }, [session, loadRows]);
-  useEffect(() => { if (profile?.role === "admin" && tab === "accueil") loadAdminStats(); }, [profile, tab, loadAdminStats]);
 
   const patch = async (id, fields) => {
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...fields } : r)));
@@ -294,6 +293,8 @@ function AppPageInner() {
       .then((d) => { setAdminStats(d); setLoadingAdminStats(false); })
       .catch(() => setLoadingAdminStats(false));
   }, [session, authedFetch]);
+
+  useEffect(() => { if (profile?.role === "admin" && tab === "accueil") loadAdminStats(); }, [profile, tab, loadAdminStats]);
 
   const exportCsv = async () => {
     setExportingCsv(true);
