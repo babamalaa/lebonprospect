@@ -554,6 +554,19 @@ footer .wrap { display: flex; justify-content: space-between; }
 .badge-emoji { font-size: 15px; }
 .badge-milestone-next { font-size: 11.5px; color: var(--muted); font-weight: 600; }
 
+/* ============ EMAIL TEMPLATES ============ */
+.email-templates { display: flex; flex-direction: column; gap: 10px; }
+.email-card { border: 1.5px solid #e6e0d0; border-radius: 14px; background: #fff; overflow: hidden; }
+.email-card-head { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; background: none; border: none; cursor: pointer; text-align: left; font-family: 'Inter', sans-serif; }
+.email-card-head b { display: block; font-family: 'Archivo', sans-serif; font-size: 14px; margin-bottom: 3px; color: var(--ink); }
+.email-card-head span { font-size: 12px; color: var(--muted); }
+.email-chevron { font-size: 20px; font-weight: 300; color: var(--teal); flex-shrink: 0; }
+.email-card-body { padding: 0 20px 20px; display: flex; flex-direction: column; gap: 14px; }
+.email-field-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.email-field-head label { font-size: 10.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
+.email-preview { background: #faf8f2; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 12.5px; line-height: 1.6; color: #2a2a24; white-space: pre-wrap; font-family: 'Inter', sans-serif; margin: 0; }
+.email-preview-objet { font-weight: 700; }
+
 /* ============ PAGE GEN BUTTON ============ */
 .page-gen-btn { background: var(--teal-soft); color: var(--teal); border: 1.5px solid var(--teal-light); font-size: 10.5px; font-weight: 700; padding: 5px 12px; border-radius: 8px; cursor: pointer; margin-right: 4px; }
 .page-gen-btn:hover { background: var(--teal); color: #fff; }

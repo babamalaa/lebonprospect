@@ -29,6 +29,69 @@ const MOTIV_QUOTES = [
   "La donnée est publique, votre rapidité ne l'est pas. Le repreneur choisit son fournisseur dans les 90 premiers jours.",
 ];
 
+const EMAILS = [
+  {
+    id: "premier_contact",
+    label: "Premier contact (pas de réponse au tel)",
+    desc: "Le closer a récupéré l'email (site, annuaire) mais n'a pas pu joindre le repreneur par téléphone.",
+    objet: "[Nom du commerce] — une info rapide sur votre reprise",
+    corps: `Bonjour [Prénom],
+
+J'ai essayé de vous joindre par téléphone au sujet de la reprise de [Nom du commerce], publiée le [date] au Journal officiel — sans succès, vous devez être en plein dans le démarrage.
+
+En deux mots : LeBonProspect détecte chaque matin les commerces qui changent de propriétaire en France, et livre par email la liste des repreneurs de votre secteur à 8h — nom, adresse, téléphone. L'idée : équiper les nouveaux commerçants avant que vos concurrents ne les appellent.
+
+Voici votre page personnalisée, avec les chiffres réels de votre zone : [lien]
+
+Vous avez 2 minutes cette semaine pour qu'on en parle ? Je peux aussi vous rappeler à un moment qui vous arrange, dites-moi juste quand.
+
+Bonne journée,
+[Prénom du closer]
+LeBonProspect`,
+  },
+  {
+    id: "follow_up",
+    label: "Follow-up après appel (pas de décision)",
+    desc: "Contact téléphonique établi, le prospect a écouté mais n'a rien décidé. Le closer envoie la plaquette et plus d'infos.",
+    objet: "Comme promis — LeBonProspect en détail",
+    corps: `Bonjour [Prénom],
+
+Merci pour votre temps au téléphone tout à l'heure. Comme convenu, voici de quoi voir le produit plus en détail :
+
+→ Votre page personnalisée (chiffres réels de votre zone) : [lien]
+→ La plaquette avec un exemple concret du digest reçu chaque matin : [lien plaquette]
+
+Pour résumer rapidement : [1 phrase rappelant le point qui l'a le plus intéressé pendant l'appel — le prix, la fraîcheur des données, le côté "avant les concurrents"…]
+
+Aucun engagement pour commencer : sans engagement, résiliable en un clic. Si le format vous convient sur 6 ou 12 mois, un mois ou deux sont offerts.
+
+Je vous rappelle [jour] pour en discuter, ou vous préférez qu'on programme un autre moment ?
+
+Bonne fin de journée,
+[Prénom du closer]
+LeBonProspect`,
+  },
+  {
+    id: "relance",
+    label: "Relance silence radio",
+    desc: "5 à 7 jours sans réponse après le follow-up. Ton léger, sans pression — juste réactiver le sujet.",
+    objet: "Je reviens vers vous — LeBonProspect",
+    corps: `Bonjour [Prénom],
+
+Je me permets de revenir vers vous suite à notre échange de la semaine dernière au sujet de LeBonProspect.
+
+Pas de souci si le timing n'est pas bon en ce moment — je voulais juste m'assurer que ma page personnalisée ne s'était pas perdue dans votre boîte mail : [lien]
+
+Si une question reste en suspens (prix, zone, engagement…), j'y réponds en 2 minutes par téléphone ou par email, comme vous préférez.
+
+Sinon, je vous laisse tranquille et reste disponible si le besoin se présente plus tard.
+
+Bonne journée,
+[Prénom du closer]
+LeBonProspect`,
+  },
+];
+
 const SCRIPTS = [
   {
     id: "evenement",
@@ -204,6 +267,7 @@ function AppPageInner() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("recent");
   const [scriptId, setScriptId] = useState("evenement");
+  const [emailOpenId, setEmailOpenId] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [celebrating, setCelebrating] = useState(null); // { societe } | null
   const [signingId, setSigningId] = useState(null);
@@ -325,6 +389,15 @@ function AppPageInner() {
   };
 
   const logout = async () => { await supabase.auth.signOut(); window.location.href = "/closers/login"; };
+
+  const copyToClipboard = async (text, label) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast(`${label} copié.`, "success");
+    } catch {
+      toast("Impossible de copier — sélectionnez le texte manuellement.", "error");
+    }
+  };
 
   if (session === undefined || (session && !profile)) return <div className="app-loading">Chargement…</div>;
   if (session === null) return null;
@@ -880,6 +953,44 @@ function AppPageInner() {
                 <b>Scripts d&apos;appel →</b>
                 <span>4 approches différentes, objections, closing</span>
               </div>
+            </div>
+
+            <h2 className="disp" style={{ fontSize: 19, marginTop: 32, marginBottom: 6 }}>Emails types</h2>
+            <p className="app-lead" style={{ marginBottom: 16 }}>À copier-coller et personnaliser selon la situation du prospect.</p>
+
+            <div className="email-templates">
+              {EMAILS.map((e) => {
+                const open = emailOpenId === e.id;
+                return (
+                  <div key={e.id} className="email-card">
+                    <button className="email-card-head" onClick={() => setEmailOpenId(open ? null : e.id)}>
+                      <div>
+                        <b>{e.label}</b>
+                        <span>{e.desc}</span>
+                      </div>
+                      <span className="email-chevron">{open ? "−" : "+"}</span>
+                    </button>
+                    {open && (
+                      <div className="email-card-body">
+                        <div className="email-field">
+                          <div className="email-field-head">
+                            <label>Objet</label>
+                            <button className="page-gen-btn" onClick={() => copyToClipboard(e.objet, "Objet")}>Copier</button>
+                          </div>
+                          <div className="email-preview email-preview-objet">{e.objet}</div>
+                        </div>
+                        <div className="email-field">
+                          <div className="email-field-head">
+                            <label>Corps du message</label>
+                            <button className="page-gen-btn" onClick={() => copyToClipboard(e.corps, "Message")}>Copier</button>
+                          </div>
+                          <pre className="email-preview">{e.corps}</pre>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
