@@ -19,7 +19,8 @@ const STATUT_COLOR = {
 };
 const REGIONS = ["Île-de-France", "Auvergne-Rhône-Alpes", "Provence-Alpes-Côte d'Azur"];
 const fmt2 = (n) => Math.round(n).toLocaleString("fr-FR");
-const TAB_LABELS = { accueil: "Accueil", prospects: "Mes prospects", documents: "Documents", script: "Scripts d'appel" };
+const TAB_LABELS_CLOSER = { accueil: "Accueil", prospects: "Mes prospects", documents: "Documents", script: "Scripts d'appel" };
+const TAB_LABELS_ADMIN = { accueil: "Accueil", prospects: "Suivi équipe", documents: "Documents", script: "Scripts d'appel" };
 const MOTIV_QUOTES = [
   "Le premier fournisseur qui appelle avec un « félicitations pour la reprise » part avec une longueur d'avance.",
   "Chaque appel qualifie une donnée : soit un client, soit une objection à raffiner. Aucun appel n'est perdu.",
@@ -452,7 +453,7 @@ function AppPageInner() {
             <span>{profile?.role === "admin" ? "Admin" : "Closer"}</span>
           </div>
           <nav className="app-nav app-nav-mobile">
-            {Object.entries(TAB_LABELS).map(([key, label]) => (
+            {Object.entries(profile?.role === "admin" ? TAB_LABELS_ADMIN : TAB_LABELS_CLOSER).map(([key, label]) => (
               <button
                 key={key}
                 className={tab === key ? "active" : ""}
@@ -478,7 +479,7 @@ function AppPageInner() {
         </div>
         <nav className="app-nav">
           <button className={tab === "accueil" ? "active" : ""} onClick={() => setTab("accueil")}>Accueil</button>
-          <button className={tab === "prospects" ? "active" : ""} onClick={() => setTab("prospects")}>Mes prospects</button>
+          <button className={tab === "prospects" ? "active" : ""} onClick={() => setTab("prospects")}>{profile?.role === "admin" ? "Suivi équipe" : "Mes prospects"}</button>
           <button className={tab === "documents" ? "active" : ""} onClick={() => setTab("documents")}>Documents</button>
           <button className={tab === "script" ? "active" : ""} onClick={() => setTab("script")}>Scripts d&apos;appel</button>
         </nav>
@@ -670,7 +671,12 @@ function AppPageInner() {
 
         {tab === "prospects" && (
           <div className="app-panel">
-            <h1 className="app-h1">Mes prospects</h1>
+            <h1 className="app-h1">{profile?.role === "admin" ? "Suivi équipe" : "Mes prospects"}</h1>
+            {profile?.role === "admin" && (
+              <p className="app-lead" style={{ marginTop: -4, marginBottom: 12 }}>
+                Vue de supervision en lecture. Filtrez par closer pour voir où en est chacun — vous ne pouvez pas réclamer de prospects vous-même.
+              </p>
+            )}
             <div className="dash-filters" style={{ marginTop: 16 }}>
               <input
                 type="text"
@@ -719,6 +725,8 @@ function AppPageInner() {
                           <td>
                             {r.lien_teaser ? (
                               <a href={r.lien_teaser} target="_blank" rel="noreferrer" className="dash-link">voir →</a>
+                            ) : profile?.role === "admin" ? (
+                              <span className="dash-sub">—</span>
                             ) : (
                               <button className="page-gen-btn" onClick={() => generatePage(r)} disabled={generatingId === r.id}>
                                 {generatingId === r.id ? "…" : "Générer"}
@@ -726,7 +734,7 @@ function AppPageInner() {
                             )}
                           </td>
                           <td>
-                            <select value={r.statut || "a_contacter"} onChange={(e) => patch(r.id, { statut: e.target.value })} style={{ color: STATUT_COLOR[r.statut] || "#14181d", fontWeight: 700 }}>
+                            <select value={r.statut || "a_contacter"} onChange={(e) => patch(r.id, { statut: e.target.value })} disabled={profile?.role === "admin"} style={{ color: STATUT_COLOR[r.statut] || "#14181d", fontWeight: 700 }}>
                               {STATUTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
                             </select>
                           </td>
@@ -735,7 +743,7 @@ function AppPageInner() {
                               <select
                                 value={r.plan || ""}
                                 onChange={(e) => signDeal(r, e.target.value)}
-                                disabled={signingId === r.id}
+                                disabled={signingId === r.id || profile?.role === "admin"}
                                 style={{ fontWeight: 700 }}
                               >
                                 <option value="">— choisir —</option>
@@ -753,16 +761,21 @@ function AppPageInner() {
                               type="date"
                               defaultValue={r.prochaine_action_date || ""}
                               onChange={(e) => patch(r.id, { prochaine_action_date: e.target.value || null })}
+                              disabled={profile?.role === "admin"}
                               style={{ marginBottom: 4, fontSize: 11 }}
                             />
-                            <input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel + objection" onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} />
+                            <input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel + objection" disabled={profile?.role === "admin"} onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} />
                           </td>
-                          <td><input className="dash-input wide" defaultValue={r.notes || ""} placeholder="objections…" onBlur={(e) => e.target.value !== r.notes && patch(r.id, { notes: e.target.value })} /></td>
+                          <td><input className="dash-input wide" defaultValue={r.notes || ""} placeholder="objections…" disabled={profile?.role === "admin"} onBlur={(e) => e.target.value !== r.notes && patch(r.id, { notes: e.target.value })} /></td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  {filteredRows.length === 0 && <p style={{ padding: "30px 0", textAlign: "center", color: "#6f6a5c" }}>Aucun prospect pour le moment. Allez sur Accueil pour en récupérer.</p>}
+                  {filteredRows.length === 0 && (
+                    <p style={{ padding: "30px 0", textAlign: "center", color: "#6f6a5c" }}>
+                      {profile?.role === "admin" ? "Aucun prospect ne correspond à ce filtre." : "Aucun prospect pour le moment. Allez sur Accueil pour en récupérer."}
+                    </p>
+                  )}
                 </div>
 
                 {/* Mobile : cartes empilées */}
@@ -776,6 +789,8 @@ function AppPageInner() {
                         </div>
                         {r.lien_teaser ? (
                           <a href={r.lien_teaser} target="_blank" rel="noreferrer" className="dash-link">voir →</a>
+                        ) : profile?.role === "admin" ? (
+                          <span className="dash-sub">—</span>
                         ) : (
                           <button className="page-gen-btn" onClick={() => generatePage(r)} disabled={generatingId === r.id}>
                             {generatingId === r.id ? "…" : "Générer"}
@@ -787,7 +802,7 @@ function AppPageInner() {
                       )}
                       <div className="prospect-card-row">
                         <label>Statut</label>
-                        <select value={r.statut || "a_contacter"} onChange={(e) => patch(r.id, { statut: e.target.value })} style={{ color: STATUT_COLOR[r.statut] || "#14181d", fontWeight: 700 }}>
+                        <select value={r.statut || "a_contacter"} onChange={(e) => patch(r.id, { statut: e.target.value })} disabled={profile?.role === "admin"} style={{ color: STATUT_COLOR[r.statut] || "#14181d", fontWeight: 700 }}>
                           {STATUTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
                         </select>
                       </div>
@@ -797,7 +812,7 @@ function AppPageInner() {
                           <select
                             value={r.plan || ""}
                             onChange={(e) => signDeal(r, e.target.value)}
-                            disabled={signingId === r.id}
+                            disabled={signingId === r.id || profile?.role === "admin"}
                             style={{ fontWeight: 700 }}
                           >
                             <option value="">— choisir —</option>
@@ -814,19 +829,24 @@ function AppPageInner() {
                           type="date"
                           defaultValue={r.prochaine_action_date || ""}
                           onChange={(e) => patch(r.id, { prochaine_action_date: e.target.value || null })}
+                          disabled={profile?.role === "admin"}
                         />
                       </div>
                       <div className="prospect-card-row">
                         <label>Prochaine action</label>
-                        <input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel + objection" onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} />
+                        <input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel + objection" disabled={profile?.role === "admin"} onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} />
                       </div>
                       <div className="prospect-card-row">
                         <label>Notes</label>
-                        <input className="dash-input" defaultValue={r.notes || ""} placeholder="objections…" onBlur={(e) => e.target.value !== r.notes && patch(r.id, { notes: e.target.value })} />
+                        <input className="dash-input" defaultValue={r.notes || ""} placeholder="objections…" disabled={profile?.role === "admin"} onBlur={(e) => e.target.value !== r.notes && patch(r.id, { notes: e.target.value })} />
                       </div>
                     </div>
                   ))}
-                  {filteredRows.length === 0 && <p style={{ padding: "30px 0", textAlign: "center", color: "#6f6a5c" }}>Aucun prospect pour le moment. Allez sur Accueil pour en récupérer.</p>}
+                  {filteredRows.length === 0 && (
+                    <p style={{ padding: "30px 0", textAlign: "center", color: "#6f6a5c" }}>
+                      {profile?.role === "admin" ? "Aucun prospect ne correspond à ce filtre." : "Aucun prospect pour le moment. Allez sur Accueil pour en récupérer."}
+                    </p>
+                  )}
                 </div>
               </>
             )}
