@@ -647,6 +647,20 @@ export default function AppPage() {
                 <b>Kit de démarrage complet →</b>
                 <span>Produit, rémunération, do&apos;s &amp; don&apos;ts, processus</span>
               </a>
+              <div className="app-doc app-doc-plaquette">
+                <a
+                  className="app-doc-plaquette-txt"
+                  href="/documents/LeBonProspect_Plaquette_Digest.pdf"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <b>Plaquette « Le digest, tel qu&apos;il arrive » →</b>
+                  <span>Capture réelle de l&apos;email envoyé chaque matin — à montrer ou envoyer après un appel</span>
+                </a>
+                <a className="page-gen-btn" href="/documents/LeBonProspect_Plaquette_Digest.pdf" download>
+                  Télécharger le PDF
+                </a>
+              </div>
               <div className="app-doc" onClick={() => setTab("script")}>
                 <b>Scripts d&apos;appel →</b>
                 <span>4 approches différentes, objections, closing</span>
