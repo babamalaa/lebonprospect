@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "../../lib/supabaseClient";
+import { ToastProvider, useToast } from "../../lib/ToastContext";
 
 const STATUTS = [
   { v: "a_contacter", l: "À contacter" },
@@ -181,6 +182,15 @@ const SCRIPTS = [
 ];
 
 export default function AppPage() {
+  return (
+    <ToastProvider>
+      <AppPageInner />
+    </ToastProvider>
+  );
+}
+
+function AppPageInner() {
+  const toast = useToast();
   const [session, setSession] = useState(undefined);
   const [profile, setProfile] = useState(null);
   const [tab, setTab] = useState("accueil");
@@ -190,12 +200,17 @@ export default function AppPage() {
   const [refillMsg, setRefillMsg] = useState("");
   const [filterStatut, setFilterStatut] = useState("tous");
   const [filterCloser, setFilterCloser] = useState("tous");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("recent");
   const [scriptId, setScriptId] = useState("evenement");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [celebrating, setCelebrating] = useState(null); // { societe } | null
   const [signingId, setSigningId] = useState(null);
   const [generatingId, setGeneratingId] = useState(null);
   const [motivIdx] = useState(() => Math.floor(Math.random() * MOTIV_QUOTES.length));
+  const [adminStats, setAdminStats] = useState(null);
+  const [loadingAdminStats, setLoadingAdminStats] = useState(false);
+  const [exportingCsv, setExportingCsv] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session ?? null));
@@ -221,6 +236,7 @@ export default function AppPage() {
   }, [session, authedFetch]);
 
   useEffect(() => { if (session) loadRows(); }, [session, loadRows]);
+  useEffect(() => { if (profile?.role === "admin" && tab === "accueil") loadAdminStats(); }, [profile, tab, loadAdminStats]);
 
   const patch = async (id, fields) => {
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...fields } : r)));
@@ -264,9 +280,40 @@ export default function AppPage() {
     setGeneratingId(null);
     if (res.ok) {
       setRows((prev) => prev.map((r) => (r.id === prospect.id ? { ...r, lien_teaser: data.url } : r)));
+      toast("Page générée avec succès.", "success");
     } else {
-      alert(data.error || "Erreur lors de la génération.");
+      toast(data.error || "Erreur lors de la génération.", "error");
     }
+  };
+
+  const loadAdminStats = useCallback(() => {
+    if (!session) return;
+    setLoadingAdminStats(true);
+    authedFetch("/api/admin-stats")
+      .then((r) => r.json())
+      .then((d) => { setAdminStats(d); setLoadingAdminStats(false); })
+      .catch(() => setLoadingAdminStats(false));
+  }, [session, authedFetch]);
+
+  const exportCsv = async () => {
+    setExportingCsv(true);
+    try {
+      const res = await authedFetch("/api/export-commissions");
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `commissions_${new Date().toISOString().slice(0, 7)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast("Export téléchargé.", "success");
+    } catch {
+      toast("Erreur lors de l'export.", "error");
+    }
+    setExportingCsv(false);
   };
 
   const logout = async () => { await supabase.auth.signOut(); window.location.href = "/closers/login"; };
@@ -274,11 +321,23 @@ export default function AppPage() {
   if (session === undefined || (session && !profile)) return <div className="app-loading">Chargement…</div>;
   if (session === null) return null;
 
-  const filteredRows = rows.filter((r) => {
-    if (filterStatut !== "tous" && r.statut !== filterStatut) return false;
-    if (profile?.role === "admin" && filterCloser !== "tous" && r.closer_id !== filterCloser) return false;
-    return true;
-  });
+  const filteredRows = rows
+    .filter((r) => {
+      if (filterStatut !== "tous" && r.statut !== filterStatut) return false;
+      if (profile?.role === "admin" && filterCloser !== "tous" && r.closer_id !== filterCloser) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.trim().toLowerCase();
+        const hay = `${r.societe || ""} ${r.categorie || ""} ${r.ville || ""}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      if (sortBy === "recent") return new Date(b.claimed_at || b.created_at || 0) - new Date(a.claimed_at || a.created_at || 0);
+      if (sortBy === "societe") return (a.societe || "").localeCompare(b.societe || "");
+      if (sortBy === "statut") return (a.statut || "").localeCompare(b.statut || "");
+      return 0;
+    });
 
   const closerIds = Array.from(new Set(rows.map((r) => r.closer_id))).filter(Boolean);
   const stats = {
@@ -426,6 +485,46 @@ export default function AppPage() {
               <div className="dash-stat ok"><div className="n">{stats.signe}</div><div className="l">signés</div></div>
             </div>
 
+            {profile?.role === "admin" && (
+              <div className="admin-panel">
+                <div className="admin-panel-head">
+                  <span className="perf-section-title" style={{ marginBottom: 0 }}>Vue équipe — ce mois-ci</span>
+                  <button className="btn inv" onClick={exportCsv} disabled={exportingCsv} style={{ padding: "9px 16px", fontSize: 12.5 }}>
+                    {exportingCsv ? "…" : "⤓ Export CSV commissions"}
+                  </button>
+                </div>
+
+                {loadingAdminStats ? (
+                  <p style={{ padding: "20px 0", color: "#6f6a5c" }}>Chargement…</p>
+                ) : adminStats ? (
+                  <>
+                    <div className="dash-stats" style={{ marginTop: 14 }}>
+                      <div className="dash-stat ok"><div className="n">{adminStats.global.signed_this_month}</div><div className="l">deals signés ce mois (équipe)</div></div>
+                      <div className="dash-stat"><div className="n">{fmt2(adminStats.global.total_du)} €</div><div className="l">total dû ce mois (commissions + paliers)</div></div>
+                      <div className="dash-stat"><div className="n">{adminStats.global.unclaimed_prospects}</div><div className="l">prospects encore dans le pool</div></div>
+                    </div>
+
+                    <div className="admin-closer-list">
+                      {adminStats.closers.map((c) => (
+                        <div key={c.id} className="admin-closer-row">
+                          <div className="admin-closer-name">
+                            <b>{c.full_name}</b>
+                            <span>{c.email}</span>
+                          </div>
+                          <div className="admin-closer-stats">
+                            <div><span className="n">{c.signed_this_month}</span><span className="l">signés ce mois</span></div>
+                            <div><span className="n">{c.total_prospects}</span><span className="l">assignés</span></div>
+                            <div><span className="n hot">{fmt2(c.total_du)} €</span><span className="l">dû ce mois</span></div>
+                          </div>
+                        </div>
+                      ))}
+                      {adminStats.closers.length === 0 && <p style={{ color: "#6f6a5c", fontSize: 13 }}>Aucun closer inscrit pour le moment.</p>}
+                    </div>
+                  </>
+                ) : null}
+              </div>
+            )}
+
             {profile?.role !== "admin" && (
               <>
                 {/* Commission estimée + paliers */}
@@ -511,9 +610,21 @@ export default function AppPage() {
           <div className="app-panel">
             <h1 className="app-h1">Mes prospects</h1>
             <div className="dash-filters" style={{ marginTop: 16 }}>
+              <input
+                type="text"
+                className="dash-search"
+                placeholder="Rechercher une société, une ville…"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
               <select value={filterStatut} onChange={(e) => setFilterStatut(e.target.value)}>
                 <option value="tous">Tous les statuts</option>
                 {STATUTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
+              </select>
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                <option value="recent">Plus récents</option>
+                <option value="societe">Société (A-Z)</option>
+                <option value="statut">Statut</option>
               </select>
               {profile?.role === "admin" && (
                 <select value={filterCloser} onChange={(e) => setFilterCloser(e.target.value)}>
@@ -523,6 +634,9 @@ export default function AppPage() {
               )}
               <button className="btn inv" onClick={loadRows} style={{ padding: "9px 16px", fontSize: 13 }}>↻ Rafraîchir</button>
             </div>
+            {(searchQuery || filterStatut !== "tous") && (
+              <p className="dash-result-count">{filteredRows.length} prospect{filteredRows.length > 1 ? "s" : ""} trouvé{filteredRows.length > 1 ? "s" : ""}</p>
+            )}
 
             {loadingRows ? (
               <p style={{ padding: "30px 0", color: "#6f6a5c" }}>Chargement…</p>

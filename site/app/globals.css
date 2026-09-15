@@ -317,6 +317,9 @@ footer .wrap { display: flex; justify-content: space-between; }
 .dash-stat .l { font-size: 11px; color: var(--muted); margin-top: 5px; }
 .dash-filters { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
 .dash-filters select { border: 1.5px solid #e6e0d0; border-radius: 10px; padding: 9px 14px; font-family: 'Inter', sans-serif; font-size: 12.5px; background: #fff; }
+.dash-search { border: 1.5px solid #e6e0d0; border-radius: 10px; padding: 9px 14px; font-family: 'Inter', sans-serif; font-size: 12.5px; background: #fff; flex: 1; min-width: 200px; }
+.dash-search:focus { outline: none; border-color: var(--teal); }
+.dash-result-count { font-size: 12px; color: var(--muted); margin-bottom: 12px; font-weight: 600; }
 .dash-table-wrap { overflow-x: auto; border: 1.5px solid #e6e0d0; border-radius: 16px; background: #fff; box-shadow: 0 2px 8px rgba(20,24,29,.04); }
 .dash-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 980px; }
 .dash-table th { position: sticky; top: 0; background: var(--ink); color: #fff; font-family: 'Archivo', sans-serif; font-size: 10px; text-align: left; padding: 10px 12px; white-space: nowrap; }
@@ -477,6 +480,14 @@ footer .wrap { display: flex; justify-content: space-between; }
 }
 
 /* ============ APP CARD (variante premium des cl-card pour le dashboard) ============ */
+.toast-stack { position: fixed; bottom: 24px; right: 24px; z-index: 200; display: flex; flex-direction: column; gap: 10px; max-width: 340px; }
+.toast { background: var(--ink); color: #fff; font-size: 13px; font-weight: 600; padding: 13px 18px; border-radius: 12px; box-shadow: 0 8px 24px rgba(20,24,29,.25); animation: toastIn .25s ease; }
+.toast-error { background: var(--red); }
+.toast-success { background: var(--teal); }
+@keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 600px) {
+  .toast-stack { left: 16px; right: 16px; bottom: 16px; max-width: none; }
+}
 .app-card { border: 1.5px solid #e6e0d0; border-radius: 18px; padding: 22px 26px; background: #fff; box-shadow: 0 2px 8px rgba(20,24,29,.04); font-size: 13.5px; line-height: 1.6; }
 .app-card.dark { background: linear-gradient(135deg, #14181d 0%, #1e262c 100%); color: #dfe4e8; border: none; }
 .app-card.dark p { color: #c3cbd1; }
@@ -497,6 +508,25 @@ footer .wrap { display: flex; justify-content: space-between; }
 }
 .motiv-banner .emoji { font-size: 22px; flex-shrink: 0; }
 .motiv-banner b { color: var(--teal-light); }
+
+/* ============ ADMIN PANEL (vue equipe agregee) ============ */
+.admin-panel { margin-top: 22px; border: 1.5px solid #e6e0d0; border-radius: 18px; padding: 22px 26px; background: #fff; box-shadow: 0 2px 8px rgba(20,24,29,.04); }
+.admin-panel-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.admin-closer-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.admin-closer-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: #faf8f2; }
+.admin-closer-name { display: flex; flex-direction: column; }
+.admin-closer-name b { font-size: 13.5px; }
+.admin-closer-name span { font-size: 11px; color: var(--muted); }
+.admin-closer-stats { display: flex; gap: 20px; flex-wrap: wrap; }
+.admin-closer-stats > div { display: flex; flex-direction: column; align-items: center; min-width: 70px; }
+.admin-closer-stats .n { font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 16px; color: var(--teal); }
+.admin-closer-stats .n.hot { color: var(--red); }
+.admin-closer-stats .l { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+@media (max-width: 700px) {
+  .admin-closer-row { flex-direction: column; align-items: flex-start; }
+  .admin-closer-stats { width: 100%; justify-content: space-between; }
+}
 
 /* ============ PAGE GEN BUTTON ============ */
 .page-gen-btn { background: var(--teal-soft); color: var(--teal); border: 1.5px solid var(--teal-light); font-size: 10.5px; font-weight: 700; padding: 5px 12px; border-radius: 8px; cursor: pointer; margin-right: 4px; }
