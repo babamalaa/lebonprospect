@@ -351,6 +351,21 @@ function AppPageInner() {
   // --- Calcul commissions & paliers (basé sur les prospects signés du closer courant) ---
   const signedDeals = rows.filter((r) => r.statut === "signe");
   const nSigned = signedDeals.length;
+
+  // --- Relances du jour (aujourd'hui ou en retard, statut pas encore signé/perdu) ---
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const relancesDues = rows
+    .filter((r) => r.prochaine_action_date && r.prochaine_action_date <= todayStr && !["signe", "non"].includes(r.statut))
+    .sort((a, b) => (a.prochaine_action_date < b.prochaine_action_date ? -1 : 1));
+
+  // --- Badges de milestone (premier deal, 5 cumulés, 10 cumulés) ---
+  const MILESTONES = [
+    { n: 1, label: "Premier deal", emoji: "🥇" },
+    { n: 5, label: "5 deals cumulés", emoji: "🔥" },
+    { n: 10, label: "10 deals cumulés", emoji: "🚀" },
+  ];
+  const badgesObtenus = MILESTONES.filter((m) => nSigned >= m.n);
+  const prochainBadge = MILESTONES.find((m) => nSigned < m.n) || null;
   const planLabel = { departemental: "Départemental", regional: "Régional", national: "National" };
   const planPrice = { departemental: 149, regional: 299, national: 0 };
   const dealsByPlan = { departemental: 0, regional: 0, national: 0, sans_plan: 0 };
@@ -473,6 +488,29 @@ function AppPageInner() {
             <h1 className="app-h1">Bonjour {profile?.full_name?.split(" ")[0]} 👋</h1>
             <p className="app-lead">Voici où vous en êtes.</p>
 
+            {profile?.role !== "admin" && relancesDues.length > 0 && (
+              <div className="today-panel">
+                <div className="today-panel-head">
+                  <span className="today-icon">⏰</span>
+                  <b>{relancesDues.length} relance{relancesDues.length > 1 ? "s" : ""} prévue{relancesDues.length > 1 ? "s" : ""} aujourd&apos;hui ou en retard</b>
+                </div>
+                <div className="today-list">
+                  {relancesDues.slice(0, 5).map((r) => (
+                    <div key={r.id} className="today-item">
+                      <div className="today-item-info">
+                        <b>{r.societe}</b>
+                        <span>{r.prochaine_action || "Relance prévue"} — {r.prochaine_action_date === todayStr ? "aujourd'hui" : `depuis le ${new Date(r.prochaine_action_date).toLocaleDateString("fr-FR")}`}</span>
+                      </div>
+                      {r.telephone && <a href={`tel:${r.telephone.replace(/\s/g, "")}`} className="today-call-btn">☎ Appeler</a>}
+                    </div>
+                  ))}
+                </div>
+                {relancesDues.length > 5 && (
+                  <p className="today-more">+ {relancesDues.length - 5} autre{relancesDues.length - 5 > 1 ? "s" : ""} dans l&apos;onglet Mes prospects</p>
+                )}
+              </div>
+            )}
+
             <div className="motiv-banner">
               <span className="emoji">💡</span>
               <span>{MOTIV_QUOTES[motivIdx]}</span>
@@ -485,6 +523,24 @@ function AppPageInner() {
               <div className="dash-stat ok"><div className="n">{stats.signe}</div><div className="l">signés</div></div>
             </div>
 
+            {profile?.role !== "admin" && (
+              <div className="badges-row">
+                {MILESTONES.map((m) => {
+                  const obtenu = nSigned >= m.n;
+                  return (
+                    <div key={m.n} className={`badge-milestone ${obtenu ? "obtenu" : "verrouille"}`}>
+                      <span className="badge-emoji">{obtenu ? m.emoji : "🔒"}</span>
+                      <span className="badge-label">{m.label}</span>
+                    </div>
+                  );
+                })}
+                {prochainBadge && (
+                  <div className="badge-milestone-next">
+                    Plus que <b>{prochainBadge.n - nSigned}</b> deal{prochainBadge.n - nSigned > 1 ? "s" : ""} pour « {prochainBadge.label} » {prochainBadge.emoji}
+                  </div>
+                )}
+              </div>
+            )}
             {profile?.role === "admin" && (
               <div className="admin-panel">
                 <div className="admin-panel-head">
@@ -685,7 +741,16 @@ function AppPageInner() {
                               <span className="dash-sub">—</span>
                             )}
                           </td>
-                          <td><input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel jeudi" onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} /></td>
+                          <td>
+                            <input
+                              className="dash-input"
+                              type="date"
+                              defaultValue={r.prochaine_action_date || ""}
+                              onChange={(e) => patch(r.id, { prochaine_action_date: e.target.value || null })}
+                              style={{ marginBottom: 4, fontSize: 11 }}
+                            />
+                            <input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel + objection" onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} />
+                          </td>
                           <td><input className="dash-input wide" defaultValue={r.notes || ""} placeholder="objections…" onBlur={(e) => e.target.value !== r.notes && patch(r.id, { notes: e.target.value })} /></td>
                         </tr>
                       ))}
@@ -737,8 +802,17 @@ function AppPageInner() {
                         </div>
                       )}
                       <div className="prospect-card-row">
+                        <label>Date de relance</label>
+                        <input
+                          className="dash-input"
+                          type="date"
+                          defaultValue={r.prochaine_action_date || ""}
+                          onChange={(e) => patch(r.id, { prochaine_action_date: e.target.value || null })}
+                        />
+                      </div>
+                      <div className="prospect-card-row">
                         <label>Prochaine action</label>
-                        <input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel jeudi" onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} />
+                        <input className="dash-input" defaultValue={r.prochaine_action || ""} placeholder="ex: rappel + objection" onBlur={(e) => e.target.value !== r.prochaine_action && patch(r.id, { prochaine_action: e.target.value })} />
                       </div>
                       <div className="prospect-card-row">
                         <label>Notes</label>

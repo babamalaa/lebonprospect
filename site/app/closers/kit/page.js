@@ -267,7 +267,7 @@ export default function KitPage() {
           </div>
           <div className="cl-card">
             <b style={{ display: "block", marginBottom: 6 }}>Suivre un prospect</b>
-            <p>Changez le statut après chaque appel (à contacter, répondeur, barrage, à rappeler, chaud, signé, non), notez la prochaine action et les objections rencontrées. Le tableau se sauvegarde automatiquement.</p>
+            <p>Changez le statut après chaque appel (à contacter, répondeur, barrage, à rappeler, chaud, signé, non), renseignez une date de relance si besoin et notez les objections rencontrées. Le tableau se sauvegarde automatiquement. Les relances dues du jour (ou en retard) apparaissent en évidence sur votre Accueil, avec un bouton d&apos;appel direct.</p>
           </div>
           <div className="cl-card">
             <b style={{ display: "block", marginBottom: 6 }}>Signer un deal</b>
