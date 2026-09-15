@@ -347,6 +347,15 @@ footer .wrap { display: flex; justify-content: space-between; }
 .app-nav button { text-align: left; background: none; border: none; color: #9aa4ad; font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600; padding: 11px 14px; border-radius: 10px; cursor: pointer; transition: all .15s; }
 .app-nav button:hover { background: rgba(255,255,255,.05); color: #fff; }
 .app-nav button.active { background: var(--teal); color: #fff; font-weight: 700; box-shadow: 0 4px 14px rgba(49,119,122,.35); }
+.app-nav-link {
+  display: flex; align-items: center; gap: 9px;
+  text-align: left; background: none; border: none; color: #9aa4ad;
+  font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600;
+  padding: 11px 14px; border-radius: 10px; cursor: pointer; transition: all .15s;
+  text-decoration: none; margin-top: 6px; border-top: 1px solid rgba(255,255,255,.08); padding-top: 17px;
+}
+.app-nav-link:hover { background: rgba(255,255,255,.05); color: #fff; }
+.app-nav-link svg { flex-shrink: 0; color: var(--teal-light); }
 .app-side-foot { border-top: 1px solid rgba(255,255,255,.1); padding-top: 16px; margin-top: 16px; }
 .app-who { display: flex; flex-direction: column; margin-bottom: 12px; }
 .app-who b { font-size: 12.5px; color: #fff; }

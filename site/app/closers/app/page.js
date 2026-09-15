@@ -535,6 +535,13 @@ function AppPageInner() {
                 {label}
               </button>
             ))}
+            <a className="app-nav-link" href="https://mail.zoho.eu" target="_blank" rel="noreferrer">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-10 5L2 7" />
+              </svg>
+              Email pro
+            </a>
           </nav>
           <button className="app-logout app-logout-mobile" onClick={logout}>Se déconnecter</button>
         </div>
@@ -555,6 +562,13 @@ function AppPageInner() {
           <button className={tab === "prospects" ? "active" : ""} onClick={() => setTab("prospects")}>{profile?.role === "admin" ? "Suivi équipe" : "Mes prospects"}</button>
           <button className={tab === "documents" ? "active" : ""} onClick={() => setTab("documents")}>Documents</button>
           <button className={tab === "script" ? "active" : ""} onClick={() => setTab("script")}>Scripts d&apos;appel</button>
+          <a className="app-nav-link" href="https://mail.zoho.eu" target="_blank" rel="noreferrer">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2" />
+              <path d="m22 7-10 5L2 7" />
+            </svg>
+            Email pro
+          </a>
         </nav>
         <div className="app-side-foot">
           <div className="app-who"><b>{profile?.full_name}</b><span>{profile?.role === "admin" ? "Admin" : "Closer"}</span></div>
