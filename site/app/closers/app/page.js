@@ -29,6 +29,13 @@ const MOTIV_QUOTES = [
   "La donnée est publique, votre rapidité ne l'est pas. Le repreneur choisit son fournisseur dans les 90 premiers jours.",
 ];
 
+const BADGE_ICON = {
+  trophy: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a2 2 0 0 0 0 4h3M17 6h3a2 2 0 0 1 0 4h-3"/></svg>,
+  flame: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c4 0 7-3 7-7 0-3-2-5-3-7-1 2-2 3-3 3 0-3-1-6-4-8 0 4-4 6-4 12 0 4 3 7 7 7z"/></svg>,
+  rocket: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 15c-1.5 1.5-2 5-2 5s3.5-.5 5-2M14 4l6 6-8 8-6-6zM9 15l-1 1M15 9l1-1"/><circle cx="15" cy="9" r="1.5"/></svg>,
+  lock: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>,
+};
+
 const EMAILS = [
   {
     id: "premier_contact",
@@ -440,9 +447,9 @@ function AppPageInner() {
 
   // --- Badges de milestone (premier deal, 5 cumulés, 10 cumulés) ---
   const MILESTONES = [
-    { n: 1, label: "Premier deal", emoji: "🥇" },
-    { n: 5, label: "5 deals cumulés", emoji: "🔥" },
-    { n: 10, label: "10 deals cumulés", emoji: "🚀" },
+    { n: 1, label: "Premier deal", icon: "trophy" },
+    { n: 5, label: "5 deals cumulés", icon: "flame" },
+    { n: 10, label: "10 deals cumulés", icon: "rocket" },
   ];
   const badgesObtenus = MILESTONES.filter((m) => nSigned >= m.n);
   const prochainBadge = MILESTONES.find((m) => nSigned < m.n) || null;
@@ -579,13 +586,13 @@ function AppPageInner() {
       <section className="app-main">
         {tab === "accueil" && (
           <div className="app-panel narrow">
-            <h1 className="app-h1">Bonjour {profile?.full_name?.split(" ")[0]} 👋</h1>
+            <h1 className="app-h1">Bonjour {profile?.full_name?.split(" ")[0]}</h1>
             <p className="app-lead">Voici où vous en êtes.</p>
 
             {profile?.role !== "admin" && relancesDues.length > 0 && (
               <div className="today-panel">
                 <div className="today-panel-head">
-                  <span className="today-icon">⏰</span>
+                  <span className="today-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
                   <b>{relancesDues.length} relance{relancesDues.length > 1 ? "s" : ""} prévue{relancesDues.length > 1 ? "s" : ""} aujourd&apos;hui ou en retard</b>
                 </div>
                 <div className="today-list">
@@ -595,7 +602,7 @@ function AppPageInner() {
                         <b>{r.societe}</b>
                         <span>{r.prochaine_action || "Relance prévue"} — {r.prochaine_action_date === todayStr ? "aujourd'hui" : `depuis le ${new Date(r.prochaine_action_date).toLocaleDateString("fr-FR")}`}</span>
                       </div>
-                      {r.telephone && <a href={`tel:${r.telephone.replace(/\s/g, "")}`} className="today-call-btn">☎ Appeler</a>}
+                      {r.telephone && <a href={`tel:${r.telephone.replace(/\s/g, "")}`} className="today-call-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7A2 2 0 0 1 22 16.9z"/></svg> Appeler</a>}
                     </div>
                   ))}
                 </div>
@@ -606,7 +613,7 @@ function AppPageInner() {
             )}
 
             <div className="motiv-banner">
-              <span className="emoji">💡</span>
+              <span className="emoji"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg></span>
               <span>{MOTIV_QUOTES[motivIdx]}</span>
             </div>
 
@@ -623,7 +630,7 @@ function AppPageInner() {
                   const obtenu = nSigned >= m.n;
                   return (
                     <div key={m.n} className={`badge-milestone ${obtenu ? "obtenu" : "verrouille"}`}>
-                      <span className="badge-emoji">{obtenu ? m.emoji : "🔒"}</span>
+                      <span className="badge-emoji">{obtenu ? BADGE_ICON[m.icon] : BADGE_ICON.lock}</span>
                       <span className="badge-label">{m.label}</span>
                     </div>
                   );
@@ -700,7 +707,7 @@ function AppPageInner() {
                     <div className="perf-sub" style={{ marginTop: 22 }}>
                       {prochainPalier
                         ? <>Plus que <b>{dealsRestants}</b> deal{dealsRestants > 1 ? "s" : ""} avant le prochain palier (+75€)</>
-                        : <>Tous les paliers sont atteints ce mois-ci 🎉</>}
+                        : <>Tous les paliers sont atteints ce mois-ci</>}
                     </div>
                   </div>
                 </div>
@@ -885,7 +892,7 @@ function AppPageInner() {
                         )}
                       </div>
                       {r.telephone && (
-                        <a href={`tel:${r.telephone.replace(/\s/g, "")}`} className="prospect-card-tel mono">☎ {r.telephone}</a>
+                        <a href={`tel:${r.telephone.replace(/\s/g, "")}`} className="prospect-card-tel mono"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7A2 2 0 0 1 22 16.9z"/></svg> {r.telephone}</a>
                       )}
                       <div className="prospect-card-row">
                         <label>Statut</label>
