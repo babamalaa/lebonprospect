@@ -1,6 +1,9 @@
 * { box-sizing: border-box; margin: 0; padding: 0; min-width: 0; }
 
 html, body { overflow-x: clip; width: 100%; }
+html { scroll-behavior: smooth; }
+[id] { scroll-margin-top: 84px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 :root {
   --teal: #31777A;
