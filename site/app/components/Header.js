@@ -25,11 +25,12 @@ export default function Header() {
           <span /><span /><span />
         </button>
         <nav className={`links${open ? " open" : ""}`} onClick={() => setOpen(false)}>
-          <a href="/#feed">Publiées hier</a>
+          <a href="/#comment">Comment ça marche</a>
+          <a href="/#exemple">Exemple d&apos;email</a>
+          <a href="/#pour-qui">Pour qui</a>
           <a href="/#tarifs">Tarifs</a>
-          <a className="btn inv" style={{ marginLeft: 24, padding: "10px 20px", fontSize: 13.5 }} href="/#tarifs">
-            Voir ma zone
-          </a>
+          <a href="/#faq">FAQ</a>
+          <a className="btn nav-cta" href="/#tarifs">Voir ma zone</a>
         </nav>
       </div>
     </header>
