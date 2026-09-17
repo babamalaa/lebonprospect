@@ -143,7 +143,7 @@ export default function KitPage() {
         <h3 className="cl-h3">Deal sans engagement</h3>
         <div className="cl-card teal">
           <p>
-            <b>25% du premier mois facturé</b>, versé en instantané dès l&apos;encaissement du paiement client.
+            <b>25% du premier mois facturé</b>, versé par virement instantané le 9 du mois suivant l&apos;encaissement du paiement client.
           </p>
           <p style={{ marginTop: 8 }}>
             <b>+ 10% du deuxième mois</b>, versé le mois suivant, uniquement si le client est toujours abonné et
@@ -166,7 +166,7 @@ export default function KitPage() {
             <b>100% du montant du premier mois</b> (avant remise), versé en deux fois :
           </p>
           <ul className="cl-list">
-            <li>50% à la signature (dès l&apos;encaissement du premier paiement client)</li>
+            <li>50% à la signature (versés le 9 du mois suivant l&apos;encaissement du premier paiement client)</li>
             <li>
               50% à mi-engagement (mois 3), uniquement si le client est toujours actif et à jour de paiement.
               En cas de résiliation ou d&apos;impayé avant le mois 3, cette seconde partie n&apos;est pas due.
@@ -242,7 +242,7 @@ export default function KitPage() {
             une signature verbale ou un accord de principe.
           </li>
           <li>
-            <b>Virement en instantané le jour même</b> où le client paye son abonnement.
+            <b>Paiement à date fixe : le 9 de chaque mois</b>, par virement instantané, pour toutes les commissions dont le paiement client a été encaissé le mois précédent. Exemple : un client qui paye le 20 septembre est commissionné le 9 octobre.
           </li>
           <li>
             <b>Facturation en indépendant obligatoire</b> (auto-entrepreneur ou société, avec SIRET) pour

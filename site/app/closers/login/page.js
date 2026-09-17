@@ -74,7 +74,7 @@ export default function LoginPage() {
             </div>
             <div className="auth-feature">
               <span className="auth-feature-dot">✓</span>
-              Commission versée en instantané, dès l&apos;encaissement
+              Commission versée le 9 de chaque mois, par virement instantané
             </div>
           </div>
         </div>
