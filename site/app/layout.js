@@ -1,7 +1,8 @@
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata = {
-  metadataBase: new URL("https://lebonprospect.fr"),
+  metadataBase: new URL("https://www.lebonprospect.fr"),
   title: {
     default: "LeBonProspect · Ils viennent de racheter un commerce. Ils ont besoin de vous.",
     template: "%s · LeBonProspect",
@@ -12,7 +13,7 @@ export const metadata = {
     title: "LeBonProspect · Vos futurs clients, publiés chaque matin au Journal officiel",
     description:
       "3 950 commerces changent de mains chaque mois en France. Recevez ceux de votre métier et de votre zone, chaque matin à 8h, avec le nom du repreneur et le numéro où l'appeler.",
-    url: "https://lebonprospect.fr",
+    url: "https://www.lebonprospect.fr",
     siteName: "LeBonProspect",
     locale: "fr_FR",
     type: "website",
@@ -31,7 +32,10 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

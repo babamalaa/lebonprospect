@@ -28,6 +28,7 @@ export default function Header() {
           <a href="/#comment">Comment ça marche</a>
           <a href="/#exemple">Exemple d&apos;email</a>
           <a href="/#pour-qui">Pour qui</a>
+          <a href="/reprises">Reprises par région</a>
           <a href="/#tarifs">Tarifs</a>
           <a href="/#faq">FAQ</a>
           <a className="btn nav-cta" href="/#tarifs">Voir ma zone</a>
