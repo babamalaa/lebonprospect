@@ -8,6 +8,10 @@ const FAQ = [
     a: "Du BODACC, le Bulletin officiel des annonces civiles et commerciales. Chaque cession de fonds de commerce y est publiée par obligation légale. Nous ne faisons que la détecter, la trier par métier et par zone, et l'enrichir avec l'identité du repreneur et le téléphone de l'établissement. Chaque ligne reste vérifiable publiquement, gratuitement, pour toujours.",
   },
   {
+    q: "Pourquoi payer, si le BODACC est public ?",
+    a: "Parce que le BODACC est public, mais pas exploitable. Il donne une raison sociale et une adresse, perdues dans des dizaines de pages de jargon, sans tri par métier, sans téléphone, sans nom de dirigeant. Ce que vous achetez, ce n'est pas l'accès à l'information : c'est la fiche prête à appeler, le lendemain de la publication, avant votre concurrent. Un repreneur choisit ses fournisseurs dans les 90 jours. Arriver à J+1 plutôt qu'à J+30, c'est toute la différence entre signer et arriver après. Et le calcul est simple : un seul client signé dans l'année rembourse l'abonnement.",
+  },
+  {
     q: "C'est légal de démarcher ces repreneurs ?",
     a: "Oui. Il s'agit de données professionnelles publiées officiellement, concernant des entreprises et non des particuliers. Le démarchage B2B sur ces bases est parfaitement conforme au RGPD, à condition de respecter le droit d'opposition, ce qui est le cas de tout démarchage professionnel classique.",
   },

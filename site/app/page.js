@@ -243,32 +243,32 @@ export default async function Home() {
       <section className="compare-sec" data-reveal>
         <div className="wrap">
           <div className="sec-head">
-            <span className="eyebrow">Faire soi-même ou déléguer</span>
-            <h2 className="disp">« C&apos;est public, je peux le faire moi-même »</h2>
-            <p className="center-sub">Oui. Voici ce que ça demande, tous les matins.</p>
+            <span className="eyebrow">La question que tout le monde se pose</span>
+            <h2 className="disp">Oui, le BODACC est public. Ce n&apos;est pas ce que vous achetez.</h2>
+            <p className="center-sub">Ce que contient le Journal officiel, et ce que vous recevez à 8h.</p>
           </div>
           <div className="compare">
             <div className="compare-col">
-              <div className="compare-title">Seul, chaque matin</div>
+              <div className="compare-title">Ce que le BODACC contient</div>
               <ul>
-                <li><span className="x" />Ouvrir le BODACC et lire des dizaines de pages de jargon juridique</li>
-                <li><span className="x" />Repérer à la main les cessions qui concernent votre métier et votre zone</li>
-                <li><span className="x" />Identifier la société repreneuse, retrouver son dirigeant</li>
-                <li><span className="x" />Chercher l&apos;établissement, trouver un numéro de téléphone qui répond</li>
-                <li><span className="x" />Recommencer demain. Et après-demain.</li>
+                <li><span className="x" />Une raison sociale et une adresse, noyées dans des dizaines de pages de jargon juridique</li>
+                <li><span className="x" />Aucun tri par métier ni par zone : tout est mélangé, partout en France</li>
+                <li><span className="x" />Aucun numéro de téléphone</li>
+                <li><span className="x" />Aucun nom de dirigeant, aucune fiche entreprise</li>
+                <li><span className="x" />Aucun signal pour savoir si le repreneur vient de s&apos;installer ou s&apos;il est déjà en activité</li>
               </ul>
-              <div className="compare-foot">Environ 1 heure par jour, pour une poignée de contacts.</div>
+              <div className="compare-foot">Public, oui. Exploitable, non.</div>
             </div>
             <div className="compare-col main">
-              <div className="compare-title">Avec LeBonProspect</div>
+              <div className="compare-title">Ce que vous recevez à 8h</div>
               <ul>
-                <li><span className="ok" />Un email à 8h, trié pour votre métier et votre zone</li>
-                <li><span className="ok" />Le nom du repreneur, sa société, l&apos;adresse de l&apos;établissement</li>
+                <li><span className="ok" />Les reprises de votre métier, dans votre zone, publiées la veille</li>
+                <li><span className="ok" />Le repreneur identifié : société, dirigeant, adresse de l&apos;établissement</li>
                 <li><span className="ok" />Le numéro de téléphone, prêt à composer</li>
-                <li><span className="ok" />Un badge pour savoir qui appeler en premier</li>
-                <li><span className="ok" />Vous lisez, vous appelez. C&apos;est tout.</li>
+                <li><span className="ok" />Un badge « budgets ouverts » pour savoir qui appeler en premier</li>
+                <li><span className="ok" />À J+1, avant votre concurrent. Pas à J+30.</li>
               </ul>
-              <div className="compare-foot">Dès 5 € le prospect nominatif, jamais revendu.</div>
+              <div className="compare-foot">Un client signé rembourse un an d&apos;abonnement. Il n&apos;y a pas d&apos;autre calcul à faire.</div>
             </div>
           </div>
         </div>

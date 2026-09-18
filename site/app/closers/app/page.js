@@ -130,7 +130,7 @@ const SCRIPTS = [
         title: "Objections fréquentes",
         style: "",
         list: [
-          "« C'est public, je peux le faire moi-même » → « Comptez 1h/jour pour trier, identifier, trouver le numéro. Nous, 8h du matin, 5€/jour. Votre heure vaut plus que ça. »",
+          "« C'est public, je peux le faire moi-même » → « Vous avez raison, c'est public. Le BODACC d'hier fait 89 pages. Vous avez quelqu'un qui les lit tous les matins et qui trouve le numéro du repreneur avant votre concurrent ? » (voir la banque d'objections pour la version complète)",
           "« Envoyez-moi une doc » → « La doc, c'est la page sous vos yeux. Mieux : demain 8h vous recevez le vrai digest de votre zone. »",
           "« Trop cher » → « 3,50 à 5,50€ le prospect nominatif non partagé, vous payez combien ailleurs ? »",
           "« Je dois en parler à mon associé » → « Bien sûr. Je vous envoie la page, vous la regardez ensemble. Je vous rappelle demain à quelle heure ? »",
@@ -247,6 +247,74 @@ const SCRIPTS = [
         title: "Le close",
         style: "dark",
         text: `« Si ça vous parle : département à 149 ou région à 299 ? » Rester en ligne pendant le paiement.`,
+      },
+    ],
+  },
+  {
+    id: "objections",
+    label: "Banque d'objections",
+    desc: "Toutes les objections rencontrées, avec la réponse qui marche. Règle d'or : ne jamais nier, toujours retourner, puis faire le calcul à voix haute avec les chiffres du prospect.",
+    blocks: [
+      {
+        title: "« C'est public, je peux le faire moi-même » (la plus fréquente)",
+        style: "",
+        text: `Ne jamais nier. Retourner :
+« Vous avez raison, c'est public. Le BODACC d'hier fait 89 pages. Vous avez quelqu'un qui les lit tous les matins et qui trouve le numéro du repreneur avant votre concurrent ? »
+
+Puis déplacer la valeur du temps vers le résultat :
+« Le tri n'est pas ce que vous achetez. Le BODACC ne donne ni le tri par métier, ni le téléphone, ni le nom du dirigeant, ni si le repreneur vient de s'installer. Nous, oui, à 8h, prêt à appeler. »
+
+Puis la vitesse :
+« Le repreneur signe ses fournisseurs dans les 90 jours. Celui qui l'appelle à J+1 signe. Celui qui le trouve à J+30 arrive après le concurrent. »`,
+      },
+      {
+        title: "« 149€ par mois, c'est cher »",
+        style: "",
+        text: `Faire le calcul à voix haute, avec SES chiffres :
+« Un client chez vous, c'est combien par an ? » (laisser répondre : en CHR, 2 000 à 5 000€ d'achats annuels chez un fournisseur)
+« Donc 149€ par mois, c'est 1 788€ par an. Un seul client signé rembourse l'année. Vous pensez en signer combien sur 300 reprises ? »
+
+Angle prix unitaire : « 5,50€ le prospect nominatif, avec le téléphone, jamais revendu. Vous payez combien ailleurs pour un lead qui n'a pas encore choisi son fournisseur ? »`,
+      },
+      {
+        title: "« Envoyez-moi une doc »",
+        style: "",
+        text: `« La doc, c'est la page sous vos yeux. Mieux : demain 8h, vous recevez le vrai digest de votre zone, avec les vrais numéros. Vous jugez sur pièce. »
+Ne jamais raccrocher sur une promesse de doc sans date de rappel fixée.`,
+      },
+      {
+        title: "« Je dois en parler à mon associé / mon équipe »",
+        style: "",
+        text: `« Bien sûr. Je vous envoie la page, vous la regardez ensemble. Je vous rappelle demain, plutôt le matin ou l'après-midi ? »
+Toujours obtenir un créneau précis. Sans créneau, le deal est mort.`,
+      },
+      {
+        title: "« On a déjà nos clients / on fait déjà de la prospection »",
+        style: "",
+        text: `« Bien sûr, et ça reste votre socle. Ça, c'est pour capter les nouveaux avant qu'ils choisissent quelqu'un d'autre. »
+« Sur quel volume de reprises par mois ? En général, on n'en voit qu'une fraction, faute de temps. Il y en a 88 par mois dans votre région. »`,
+      },
+      {
+        title: "« Je n'ai pas le temps d'appeler tous les matins »",
+        style: "",
+        text: `« 5 minutes pour scanner la liste, c'est tout. Ensuite, vous choisissez qui vaut un appel. Et le badge "budgets ouverts" vous dit qui appeler en premier. »`,
+      },
+      {
+        title: "« Mes concurrents ne font pas ça »",
+        style: "",
+        text: `« Justement. C'est le moment d'avoir une longueur d'avance avant que ça se sache. »`,
+      },
+      {
+        title: "« Vous avez eu mon numéro où ? » / « Pourquoi moi ? »",
+        style: "",
+        text: `« Fiche professionnelle publique, comme tout le monde. »
+« Vous êtes dans le secteur qui achète juste après une reprise, c'est tout. »`,
+      },
+      {
+        title: "Le close qui lève toutes les objections",
+        style: "dark",
+        text: `« Sans engagement. Testez un mois, appelez 5 repreneurs, et vous saurez. »
+Le "sans engagement" existe exactement pour ça. Puis : « Département à 149 ou région à 299 ? » et rester en ligne pendant le paiement.`,
       },
     ],
   },
