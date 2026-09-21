@@ -754,6 +754,7 @@ function AppPageInner() {
               <>
                 {/* Commission estimée + paliers (masqué pour un fondateur qui close) */}
                 {!profile?.exclu_commissions && (
+                <>
                 <div className="perf-row">
                   <div className="perf-card">
                     <div className="perf-label">Commission estimée ce mois</div>
@@ -810,7 +811,8 @@ function AppPageInner() {
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
+                </>
                 )}
 
                 <div className="app-card dark" style={{ marginTop: 20 }}>
