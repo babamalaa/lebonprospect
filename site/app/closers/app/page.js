@@ -12,10 +12,11 @@ const STATUTS = [
   { v: "chaud", l: "Chaud" },
   { v: "signe", l: "Signé" },
   { v: "non", l: "Non" },
+  { v: "mauvais_prospect", l: "Mauvais prospect" },
 ];
 const STATUT_COLOR = {
   a_contacter: "#6f6a5c", repondeur: "#8a5a2e", barrage: "#8a5a2e",
-  a_rappeler: "#2e6b8a", chaud: "#d64a2e", signe: "#1e7a4d", non: "#6f6a5c",
+  a_rappeler: "#2e6b8a", chaud: "#d64a2e", signe: "#1e7a4d", non: "#6f6a5c", mauvais_prospect: "#9a3b3b",
 };
 const REGIONS = ["Île-de-France", "Auvergne-Rhône-Alpes", "Provence-Alpes-Côte d'Azur"];
 const fmt2 = (n) => Math.round(n).toLocaleString("fr-FR");
@@ -39,63 +40,72 @@ const BADGE_ICON = {
 const EMAILS = [
   {
     id: "premier_contact",
-    label: "Premier contact (pas de réponse au tel)",
-    desc: "Le closer a récupéré l'email (site, annuaire) mais n'a pas pu joindre le repreneur par téléphone.",
-    objet: "[Nom du commerce] — une info rapide sur votre reprise",
+    label: "Premier contact (pas de réponse au téléphone)",
+    desc: "Vous avez appelé le fournisseur (agenceur, équipementier, caisse, enseigne, boissons...) sans le joindre, et vous avez récupéré son email sur son site ou un annuaire. Remplacez les crochets, c'est tout.",
+    objet: "[Nom de son entreprise] : les restaurants qui viennent d'être repris près de chez vous",
     corps: `Bonjour [Prénom],
 
-J'ai essayé de vous joindre par téléphone au sujet de la reprise de [Nom du commerce], publiée le [date] au Journal officiel — sans succès, vous devez être en plein dans le démarrage.
+J'ai essayé de vous joindre par téléphone ce matin, sans succès. Je vous écris donc en deux lignes.
 
-En deux mots : LeBonProspect détecte chaque matin les commerces qui changent de propriétaire en France, et livre par email la liste des repreneurs de votre secteur à 8h — nom, adresse, téléphone. L'idée : équiper les nouveaux commerçants avant que vos concurrents ne les appellent.
+Chaque jour, des restaurants, bars et hôtels changent de propriétaire dans votre zone. C'est publié au Journal officiel, et le nouveau propriétaire refait tout dans les 90 jours : agencement, matériel, caisse, enseigne, contrats. Le premier fournisseur qui l'appelle prend la place.
 
-Voici votre page personnalisée, avec les chiffres réels de votre zone : [lien]
+LeBonProspect vous envoie chaque matin à 8h la liste de ces reprises, avec le nom du repreneur, l'adresse de l'établissement et le numéro de téléphone.
 
-Vous avez 2 minutes cette semaine pour qu'on en parle ? Je peux aussi vous rappeler à un moment qui vous arrange, dites-moi juste quand.
+Je vous ai préparé une page avec les chiffres réels de votre zone et les dernières reprises publiées : [lien de la page]
+
+Vous avez 5 minutes cette semaine pour que je vous montre ? Dites-moi le créneau qui vous arrange et je vous rappelle.
 
 Bonne journée,
 [Prénom du closer]
-LeBonProspect`,
+LeBonProspect
+[téléphone du closer]`,
   },
   {
     id: "follow_up",
-    label: "Follow-up après appel (pas de décision)",
-    desc: "Contact téléphonique établi, le prospect a écouté mais n'a rien décidé. Le closer envoie la plaquette et plus d'infos.",
-    objet: "Comme promis — LeBonProspect en détail",
+    label: "Après un appel, sans décision",
+    desc: "Vous l'avez eu au téléphone, il a écouté, il n'a pas tranché. Vous envoyez la page et la plaquette pour qu'il voie le produit, et vous fixez le prochain contact.",
+    objet: "Suite à notre échange : la plaquette et votre page LeBonProspect",
     corps: `Bonjour [Prénom],
 
-Merci pour votre temps au téléphone tout à l'heure. Comme convenu, voici de quoi voir le produit plus en détail :
+Merci pour votre temps au téléphone tout à l'heure.
 
-→ Votre page personnalisée (chiffres réels de votre zone) : [lien]
-→ La plaquette avec un exemple concret du digest reçu chaque matin : [lien plaquette]
+Comme convenu, voici de quoi voir concrètement ce que vous recevriez chaque matin :
 
-Pour résumer rapidement : [1 phrase rappelant le point qui l'a le plus intéressé pendant l'appel — le prix, la fraîcheur des données, le côté "avant les concurrents"…]
+1. Votre page, avec les chiffres réels de votre zone et les dernières reprises publiées : [lien de la page]
+2. La plaquette, avec un exemple de l'email tel qu'il arrive à 8h dans la boîte mail : [lien de la plaquette]
 
-Aucun engagement pour commencer : sans engagement, résiliable en un clic. Si le format vous convient sur 6 ou 12 mois, un mois ou deux sont offerts.
+Pour résumer ce qu'on s'est dit : un repreneur choisit ses fournisseurs dans les 90 jours qui suivent la reprise. Avec LeBonProspect, vous l'appelez le lendemain de la publication, avant vos concurrents. Un seul client signé dans l'année rembourse l'abonnement.
 
-Je vous rappelle [jour] pour en discuter, ou vous préférez qu'on programme un autre moment ?
+C'est sans engagement, résiliable en un clic. Vous pouvez tester un mois, appeler quelques repreneurs et juger sur pièce.
 
-Bonne fin de journée,
-[Prénom du closer]
-LeBonProspect`,
-  },
-  {
-    id: "relance",
-    label: "Relance silence radio",
-    desc: "5 à 7 jours sans réponse après le follow-up. Ton léger, sans pression — juste réactiver le sujet.",
-    objet: "Je reviens vers vous — LeBonProspect",
-    corps: `Bonjour [Prénom],
-
-Je me permets de revenir vers vous suite à notre échange de la semaine dernière au sujet de LeBonProspect.
-
-Pas de souci si le timing n'est pas bon en ce moment — je voulais juste m'assurer que ma page personnalisée ne s'était pas perdue dans votre boîte mail : [lien]
-
-Si une question reste en suspens (prix, zone, engagement…), j'y réponds en 2 minutes par téléphone ou par email, comme vous préférez.
-
-Sinon, je vous laisse tranquille et reste disponible si le besoin se présente plus tard.
+Je vous rappelle [jour] à [heure] comme convenu. Si ce créneau ne vous va plus, dites-le-moi et on en trouve un autre.
 
 Bonne journée,
 [Prénom du closer]
-LeBonProspect`,
+LeBonProspect
+[téléphone du closer]`,
+  },
+  {
+    id: "relance",
+    label: "Relance sans réponse",
+    desc: "5 à 7 jours après l'email précédent, toujours rien. Un email court, sans pression, qui remet le sujet en haut de la pile et propose une sortie facile.",
+    objet: "Re : Suite à notre échange : la plaquette et votre page LeBonProspect",
+    corps: `Bonjour [Prénom],
+
+Je reviens vers vous après notre échange de la semaine dernière. Vous avez sans doute été pris, je ne vous en tiens pas rigueur.
+
+Pour que ce soit simple, je vous remets le lien de votre page, avec les reprises de votre zone mises à jour : [lien de la page]
+
+Deux options, selon ce qui vous arrange :
+1. On se cale 5 minutes au téléphone cette semaine et je réponds à vos questions.
+2. Vous testez directement un mois, sans engagement, et vous jugez sur les premières reprises reçues.
+
+Si ce n'est pas le bon moment, dites-le-moi simplement, je vous laisse tranquille et je reste disponible quand le besoin se présentera.
+
+Bonne journée,
+[Prénom du closer]
+LeBonProspect
+[téléphone du closer]`,
   },
 ];
 
@@ -727,6 +737,7 @@ function AppPageInner() {
                       <div className="dash-stat ok"><div className="n">{adminStats.global.signed_this_month}</div><div className="l">deals signés ce mois (équipe)</div></div>
                       <div className="dash-stat"><div className="n">{fmt2(adminStats.global.total_du)} €</div><div className="l">total dû ce mois (commissions + paliers)</div></div>
                       <div className="dash-stat"><div className="n">{adminStats.global.unclaimed_prospects}</div><div className="l">prospects encore dans le pool</div></div>
+                      <div className="dash-stat"><div className="n" style={{ color: "#9a3b3b" }}>{adminStats.global.mauvais_prospects || 0}</div><div className="l">signalés « mauvais prospect »</div></div>
                     </div>
 
                     <div className="admin-closer-list">

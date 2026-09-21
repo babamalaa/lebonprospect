@@ -26,6 +26,7 @@ export async function POST(req) {
     .from("prospects_pool")
     .select("id, societe, nb_avis, type_num")
     .is("closer_id", null)
+    .eq("exclu_pool", false)
     .order("id", { ascending: true })
     .limit(FETCH_POOL_SIZE);
 

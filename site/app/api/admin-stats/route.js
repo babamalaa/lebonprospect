@@ -24,7 +24,7 @@ export async function GET(req) {
 
   const { data: rows, error: pErr } = await admin
     .from("prospects_pool")
-    .select("closer_id, statut, plan, montant, signed_at");
+    .select("closer_id, statut, plan, montant, signed_at, exclu_pool");
   if (pErr) return Response.json({ error: pErr.message }, { status: 400 });
 
   const now = new Date();
@@ -61,8 +61,9 @@ export async function GET(req) {
 
   const globalSignedThisMonth = perCloser.reduce((a, c) => a + c.signed_this_month, 0);
   const globalDu = perCloser.reduce((a, c) => a + c.total_du, 0);
-  const globalTotalProspects = rows.length;
-  const globalUnclaimed = rows.filter((r) => !r.closer_id).length;
+  const globalTotalProspects = rows.filter((r) => !r.exclu_pool).length;
+  const globalUnclaimed = rows.filter((r) => !r.closer_id && !r.exclu_pool).length;
+  const globalMauvais = rows.filter((r) => r.statut === "mauvais_prospect").length;
 
   return Response.json({
     closers: perCloser.sort((a, b) => b.signed_this_month - a.signed_this_month),
@@ -71,6 +72,7 @@ export async function GET(req) {
       total_du: globalDu,
       total_prospects_in_pool: globalTotalProspects,
       unclaimed_prospects: globalUnclaimed,
+      mauvais_prospects: globalMauvais,
     },
   });
 }

@@ -10,6 +10,7 @@ export async function GET(req) {
     .from("prospects_pool")
     .select("*")
     .not("closer_id", "is", null)
+    .or("exclu_pool.eq.false,statut.eq.mauvais_prospect")
     .order("region", { ascending: true })
     .order("nb_avis", { ascending: true });
 
@@ -43,6 +44,13 @@ export async function PATCH(req) {
   fields.updated_at = new Date().toISOString();
   if (fields.statut === "signe" && !fields.signed_at) {
     fields.signed_at = new Date().toISOString();
+  }
+  // "Mauvais prospect" : on retire definitivement du vivier (jamais redistribue a un autre closer)
+  if (fields.statut === "mauvais_prospect") {
+    fields.exclu_pool = true;
+    fields.exclu_raison = fields.exclu_raison || "mauvais_prospect";
+    fields.exclu_par = profile.id;
+    fields.exclu_at = new Date().toISOString();
   }
   const { data, error } = await admin
     .from("prospects_pool")
