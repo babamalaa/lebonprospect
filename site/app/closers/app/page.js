@@ -18,7 +18,7 @@ const STATUT_COLOR = {
   a_contacter: "#6f6a5c", repondeur: "#8a5a2e", barrage: "#8a5a2e",
   a_rappeler: "#2e6b8a", chaud: "#d64a2e", signe: "#1e7a4d", non: "#6f6a5c", mauvais_prospect: "#9a3b3b",
 };
-const REGIONS = ["Île-de-France", "Auvergne-Rhône-Alpes", "Provence-Alpes-Côte d'Azur"];
+const REGIONS_PRIORITAIRES = ["Île-de-France", "Auvergne-Rhône-Alpes", "Provence-Alpes-Côte d'Azur"];
 const fmt2 = (n) => Math.round(n).toLocaleString("fr-FR");
 const TAB_LABELS_CLOSER = { accueil: "Accueil", prospects: "Mes prospects", documents: "Documents", script: "Scripts d'appel" };
 const TAB_LABELS_ADMIN = { accueil: "Accueil", prospects: "Suivi équipe", documents: "Documents", script: "Scripts d'appel" };
@@ -362,6 +362,7 @@ function AppPageInner() {
   const [loadingAdminStats, setLoadingAdminStats] = useState(false);
   const [exportingCsv, setExportingCsv] = useState(false);
   const [closersList, setClosersList] = useState([]);
+  const [poolRegions, setPoolRegions] = useState([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session ?? null));
@@ -387,6 +388,11 @@ function AppPageInner() {
   }, [session, authedFetch]);
 
   useEffect(() => { if (session) loadRows(); }, [session, loadRows]);
+  const loadPoolRegions = useCallback(() => {
+    if (!session) return;
+    authedFetch("/api/pool-regions").then((r) => r.json()).then((d) => { if (Array.isArray(d)) setPoolRegions(d); }).catch(() => {});
+  }, [session]);
+  useEffect(() => { loadPoolRegions(); }, [loadPoolRegions, rows.length]);
 
   const patch = async (id, fields) => {
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...fields } : r)));
@@ -831,9 +837,18 @@ function AppPageInner() {
                   <p style={{ marginBottom: 14 }}>Piochez de nouveaux prospects CHR dans le vivier, non assignés à un autre closer. Par lot de 15.</p>
                   <div className="app-refill-row">
                     <button className="btn" onClick={() => doRefill(null)} disabled={refilling}>{refilling ? "..." : "+ 15 nouveaux leads (toutes zones)"}</button>
-                    {REGIONS.map((r) => (
-                      <button key={r} className="btn" onClick={() => doRefill(r)} disabled={refilling}>{refilling ? "..." : `+ ${r}`}</button>
-                    ))}
+                    {[...poolRegions]
+                      .sort((a, b) => {
+                        const pa = REGIONS_PRIORITAIRES.indexOf(a.region), pb = REGIONS_PRIORITAIRES.indexOf(b.region);
+                        if (pa !== -1 || pb !== -1) return (pa === -1 ? 99 : pa) - (pb === -1 ? 99 : pb);
+                        return b.n - a.n;
+                      })
+                      .filter((r) => r.n > 0)
+                      .map((r) => (
+                        <button key={r.region} className="btn" onClick={() => doRefill(r.region)} disabled={refilling}>
+                          {refilling ? "..." : `+ ${r.region}`}<span className="refill-count">{r.n}</span>
+                        </button>
+                      ))}
                   </div>
                   {refillMsg && <p style={{ marginTop: 12, color: "#a9d2d3", fontWeight: 700 }}>{refillMsg}</p>}
                 </div>
