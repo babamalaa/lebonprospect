@@ -810,7 +810,7 @@ function AppPageInner() {
                       </div>
                     </div>
                   </div>
-                )}
+                </div>
                 )}
 
                 <div className="app-card dark" style={{ marginTop: 20 }}>
