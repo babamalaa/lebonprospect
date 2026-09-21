@@ -23,7 +23,7 @@ export async function POST(req) {
   const profile = await getAuthedProfile(req);
   if (!profile) return Response.json({ error: "Non authentifié." }, { status: 401 });
 
-  const { prospect_id, plan } = await req.json();
+  const { prospect_id, plan, essai = false } = await req.json();
   if (!prospect_id || !plan) return Response.json({ error: "prospect_id et plan requis." }, { status: 400 });
 
   const admin = supabaseAdmin();
@@ -33,10 +33,11 @@ export async function POST(req) {
     return Response.json({ error: "Ce prospect ne vous appartient pas." }, { status: 403 });
   }
 
+  if (essai && !profile.essai_autorise) return Response.json({ error: "Essai non autorisé sur ce compte." }, { status: 403 });
   const montant = PLAN_PRICE[plan] ?? 0;
   const { error: uErr } = await admin
     .from("prospects_pool")
-    .update({ statut: "signe", plan, montant, signed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .update({ statut: "signe", plan, montant, essai: !!essai, signed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
     .eq("id", prospect_id);
   if (uErr) return Response.json({ error: uErr.message }, { status: 400 });
 
@@ -44,7 +45,7 @@ export async function POST(req) {
   try {
     await sendResend(
       "belinlawrenza@gmail.com",
-      `🎉 Deal signé : ${prospect.societe}`,
+      `${essai ? "Essai 7 jours démarré" : "🎉 Deal signé"} : ${prospect.societe}`,
       `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
         <h2 style="color:#31777A">Nouveau deal signé !</h2>
         <p><b>${profile.full_name}</b> vient de signer <b>${prospect.societe}</b>.</p>

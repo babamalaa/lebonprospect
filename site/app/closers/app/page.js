@@ -363,6 +363,7 @@ function AppPageInner() {
   const [exportingCsv, setExportingCsv] = useState(false);
   const [closersList, setClosersList] = useState([]);
   const [poolRegions, setPoolRegions] = useState([]);
+  const [essais, setEssais] = useState(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session ?? null));
@@ -393,6 +394,10 @@ function AppPageInner() {
     authedFetch("/api/pool-regions").then((r) => r.json()).then((d) => { if (Array.isArray(d)) setPoolRegions(d); }).catch(() => {});
   }, [session]);
   useEffect(() => { loadPoolRegions(); }, [loadPoolRegions, rows.length]);
+  useEffect(() => {
+    if (!session || !profile || !(profile.role === "admin" || profile.essai_autorise)) return;
+    authedFetch("/api/essais").then((r) => r.json()).then((d) => { if (d && d.stats) setEssais(d); }).catch(() => {});
+  }, [session, profile, authedFetch]);
 
   const patch = async (id, fields) => {
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...fields } : r)));
@@ -408,13 +413,15 @@ function AppPageInner() {
     else setRefillMsg(data.message || "Rien de nouveau pour le moment.");
   };
 
-  const signDeal = async (prospect, plan) => {
+  const signDeal = async (prospect, planValue) => {
+    const essai = planValue.endsWith("_essai");
+    const plan = essai ? planValue.replace("_essai", "") : planValue;
     if (!plan) return;
     setSigningId(prospect.id);
     const res = await authedFetch("/api/sign-deal", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prospect_id: prospect.id, plan }),
+      body: JSON.stringify({ prospect_id: prospect.id, plan, essai }),
     });
     setSigningId(null);
     if (res.ok) {
@@ -767,6 +774,29 @@ function AppPageInner() {
               </div>
             )}
 
+            {essais && (profile?.role === "admin" || profile?.essai_autorise) && (
+              <div className="app-card essai-panel">
+                <h3>Essais gratuits 7 jours</h3>
+                <p style={{ fontSize: 13, color: "#6f6a5c", marginTop: 4 }}>Alimenté automatiquement par Stripe. Un essai est « converti » au premier paiement encaissé, « résilié » s&apos;il est annulé avant.</p>
+                <div className="essai-kpis">
+                  <div className="essai-kpi"><div className="n">{essais.stats.total}</div><div className="l">essais démarrés</div></div>
+                  <div className="essai-kpi"><div className="n">{essais.stats.en_cours}</div><div className="l">en cours</div></div>
+                  <div className="essai-kpi"><div className="n" style={{ color: "#1e7a4d" }}>{essais.stats.convertis}</div><div className="l">convertis (1er paiement)</div></div>
+                  <div className="essai-kpi"><div className="n" style={{ color: "#9a3b3b" }}>{essais.stats.resilies}</div><div className="l">résiliés avant paiement</div></div>
+                </div>
+                {essais.stats.taux_conversion !== null && <p style={{ fontWeight: 700 }}>Taux de conversion essai → payant : {essais.stats.taux_conversion} %</p>}
+                {essais.rows.length === 0 && <p style={{ color: "#6f6a5c", fontSize: 13 }}>Aucun essai démarré pour le moment.</p>}
+                {essais.rows.map((r) => (
+                  <div className="essai-row" key={r.email}>
+                    <div><b>{r.societe || r.nom || r.email}</b><br /><span style={{ fontSize: 12, color: "#6f6a5c" }}>{r.email} · {r.plan} · {r.zone || "zone non reconnue"}{r.essai_fin ? ` · fin d'essai le ${new Date(r.essai_fin).toLocaleDateString("fr-FR")}` : ""}</span></div>
+                    <span className={`st${r.etat === "converti" ? " conv" : r.etat === "resilie" ? " perdu" : ""}`}>
+                      {r.etat === "converti" ? "converti" : r.etat === "resilie" ? "résilié" : r.etat === "fin_essai_attente" ? "fin d'essai, paiement en attente" : "en cours"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {profile?.role !== "admin" && (
               <>
                 {/* Commission estimée + paliers (masqué pour un fondateur qui close) */}
@@ -933,7 +963,7 @@ function AppPageInner() {
                           <td>
                             {r.statut === "signe" ? (
                               <select
-                                value={r.plan || ""}
+                                value={r.plan ? (r.essai ? r.plan + "_essai" : r.plan) : ""}
                                 onChange={(e) => signDeal(r, e.target.value)}
                                 disabled={signingId === r.id || profile?.role === "admin"}
                                 style={{ fontWeight: 700 }}
@@ -942,6 +972,8 @@ function AppPageInner() {
                                 <option value="departemental">Départemental (149€)</option>
                                 <option value="regional">Régional (299€)</option>
                                 <option value="national">National (sur devis)</option>
+                                {profile?.essai_autorise && <option value="departemental_essai">Essai 7 j · Départemental</option>}
+                                {profile?.essai_autorise && <option value="regional_essai">Essai 7 j · Régional</option>}
                               </select>
                             ) : (
                               <span className="dash-sub">—</span>
@@ -1002,7 +1034,7 @@ function AppPageInner() {
                         <div className="prospect-card-row">
                           <label>Plan</label>
                           <select
-                            value={r.plan || ""}
+                            value={r.plan ? (r.essai ? r.plan + "_essai" : r.plan) : ""}
                             onChange={(e) => signDeal(r, e.target.value)}
                             disabled={signingId === r.id || profile?.role === "admin"}
                             style={{ fontWeight: 700 }}
@@ -1011,6 +1043,8 @@ function AppPageInner() {
                             <option value="departemental">Départemental (149€)</option>
                             <option value="regional">Régional (299€)</option>
                             <option value="national">National (sur devis)</option>
+                            {profile?.essai_autorise && <option value="departemental_essai">Essai 7 j · Départemental</option>}
+                            {profile?.essai_autorise && <option value="regional_essai">Essai 7 j · Régional</option>}
                           </select>
                         </div>
                       )}
@@ -1054,6 +1088,20 @@ function AppPageInner() {
                 <b>Kit de démarrage complet →</b>
                 <span>Produit, rémunération, do&apos;s &amp; don&apos;ts, processus</span>
               </a>
+              {profile?.essai_autorise && (
+                <div className="app-doc app-doc-essai">
+                  <div className="app-doc-plaquette-txt">
+                    <b>Liens de paiement « Essai gratuit 7 jours »</b>
+                    <p style={{ margin: "6px 0 0", fontSize: 13, color: "#55524a" }}>
+                      Réservés à votre compte. Le client renseigne sa carte et sa zone, n&apos;est pas débité pendant 7 jours, puis passe au tarif normal. S&apos;il résilie avant, aucun débit. Il reçoit son premier digest dès le lendemain 8h.
+                    </p>
+                    <div className="essai-links">
+                      <button type="button" className="page-gen-btn" onClick={() => copyToClipboard("https://buy.stripe.com/8x26oHffzaSEc9faPL8N203", "Lien essai Départemental")}>Copier · Départemental 149 €</button>
+                      <button type="button" className="page-gen-btn" onClick={() => copyToClipboard("https://buy.stripe.com/00w7sLc3nbWI7SZcXT8N204", "Lien essai Régional")}>Copier · Régional 299 €</button>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="app-doc app-doc-plaquette">
                 <a
                   className="app-doc-plaquette-txt"
