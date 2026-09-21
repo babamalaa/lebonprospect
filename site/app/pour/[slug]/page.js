@@ -110,6 +110,12 @@ async function fetchGeneratedCible(slug) {
   const { data } = await admin.from("generated_pages").select("*").eq("slug", slug).single();
   if (!data) return null;
   const region = REGION_MAP[data.region] || data.region;
+  // Si la page a été générée par un compte autorisé à proposer l'essai 7 jours, l'offre bascule en mode essai
+  let essai = false;
+  if (data.closer_id) {
+    const { data: closer } = await admin.from("closer_profiles").select("essai_autorise").eq("id", data.closer_id).single();
+    essai = !!closer?.essai_autorise;
+  }
   return {
     slug: data.slug,
     societe: data.societe,
@@ -118,6 +124,7 @@ async function fetchGeneratedCible(slug) {
     region,
     ville: data.ville,
     masquerOffre: !!data.masquer_offre,
+    essai,
   };
 }
 
@@ -257,7 +264,10 @@ export default async function TeaserPage({ params }) {
       {/* L'offre (masquable par page) */}
       {!cible.masquerOffre && (
       <section className="pricing wrap tz-offer">
-        <h2 className="disp">Ce que ça coûte. Ce que ça rapporte.</h2>
+        <h2 className="disp">{cible.essai ? "Essayez 7 jours. Gratuitement." : "Ce que ça coûte. Ce que ça rapporte."}</h2>
+        {cible.essai && (
+          <p className="center-sub">Vous renseignez votre zone et votre carte, vous recevez le digest dès demain 8h00, et vous n&apos;êtes débité qu&apos;au 8e jour. Vous arrêtez avant, ça ne vous coûte rien.</p>
+        )}
         <div className="tz-maths">
           <div className="tz-math">
             <div className="big">{perLeadRegional} €</div>
@@ -270,14 +280,18 @@ export default async function TeaserPage({ params }) {
           </div>
         </div>
         <div className="tz-cta">
-          <a className="btn" href="https://buy.stripe.com/14A5kD4AVe4Q7SZe1X8N201">
-            Activer ma région · 299 €/mois
+          <a className="btn" href={cible.essai ? "https://buy.stripe.com/00w7sLc3nbWI7SZcXT8N204" : "https://buy.stripe.com/14A5kD4AVe4Q7SZe1X8N201"}>
+            {cible.essai ? "Démarrer mon essai 7 jours · Régional" : "Activer ma région · 299 €/mois"}
           </a>
-          <a className="btn inv" href="https://buy.stripe.com/8x26oH2sN1i4gpv0b78N200">
-            Mon département seul · 149 €/mois
+          <a className="btn inv" href={cible.essai ? "https://buy.stripe.com/8x26oHffzaSEc9faPL8N203" : "https://buy.stripe.com/8x26oH2sN1i4gpv0b78N200"}>
+            {cible.essai ? "Démarrer mon essai 7 jours · Département" : "Mon département seul · 149 €/mois"}
           </a>
         </div>
-        <p className="engage">Sans engagement · résiliable en un clic · premier digest dès demain 8h00</p>
+        <p className="engage">
+          {cible.essai
+            ? <>7 jours offerts, puis 299 €/mois (région) ou 149 €/mois (département) · sans engagement · résiliable en un clic</>
+            : <>Sans engagement · résiliable en un clic · premier digest dès demain 8h00</>}
+        </p>
       </section>
       )}
 
