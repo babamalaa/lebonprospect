@@ -43,6 +43,7 @@ async function fetchRegionPayload(region) {
 
   const c90 = await countQuery({ date_parution: { op: "gte", val: since90 } });
   const c30 = await countQuery({ date_parution: { op: "gte", val: since30 } });
+  const c90Tel = await countQuery({ date_parution: { op: "gte", val: since90 }, telephone: { op: "notnull" } });
 
   const { data: rows } = await admin
     .from("cessions")
@@ -97,8 +98,8 @@ async function fetchRegionPayload(region) {
   return {
     n90: c90,
     n30: c30,
-    n90_tel: n90Tel,
-    pct_tel: Math.round((100 * n90Tel) / Math.max(c90, 1)),
+    n90_tel: c90Tel,
+    pct_tel: Math.round((100 * c90Tel) / Math.max(c90, 1)),
     leads,
     depts,
   };
@@ -116,6 +117,7 @@ async function fetchGeneratedCible(slug) {
     metier: CAT_LABELS[data.categorie] || "votre métier",
     region,
     ville: data.ville,
+    masquerOffre: !!data.masquer_offre,
   };
 }
 
@@ -252,7 +254,8 @@ export default async function TeaserPage({ params }) {
         </p>
       </section>
 
-      {/* L'offre */}
+      {/* L'offre (masquable par page) */}
+      {!cible.masquerOffre && (
       <section className="pricing wrap tz-offer">
         <h2 className="disp">Ce que ça coûte. Ce que ça rapporte.</h2>
         <div className="tz-maths">
@@ -276,6 +279,7 @@ export default async function TeaserPage({ params }) {
         </div>
         <p className="engage">Sans engagement · résiliable en un clic · premier digest dès demain 8h00</p>
       </section>
+      )}
 
       <footer>
         <div className="wrap">
