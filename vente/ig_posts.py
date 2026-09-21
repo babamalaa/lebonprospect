@@ -133,6 +133,61 @@ p6 = [
 <div class="cta">Voir les reprises de ma zone</div><div class="url">lebonprospect.fr</div>''', "teal", n=4, total=4, tag="Stock vs signal"),
 ]
 
+
+# ---------- POST 7 : carrousel "Une journée au Journal officiel" (le 20 septembre, en vrai) ----------
+p7 = [
+    slide('''<div class="eyebrow">Samedi 20 septembre 2026</div>
+<h1>Une journée ordinaire <span class="hl">au Journal officiel.</span></h1>
+<p class="lead">Ce que contenait l'édition du jour, une fois triée par métier. Rien d'inventé : tout est vérifiable au BODACC.</p>''', n=1, total=5, tag="Une journée au Journal officiel"),
+    slide('''<div class="eyebrow">Édition du 20/09 · cessions de fonds de commerce</div>
+<div class="big">179</div>
+<h1 class="sm" style="margin-top:20px">commerces ont changé de propriétaire ce jour-là.</h1>
+<p class="lead">Dont 48 restaurants, bars et hôtels. 22 commerces alimentaires. 10 salons de coiffure et instituts. 7 pharmacies et commerces de santé. 4 garages.</p>''', "dark", n=2, total=5, tag="Une journée au Journal officiel"),
+    slide('''<div class="eyebrow">Ce que ça représente, concrètement</div>
+<h1 class="sm">48 restaurateurs qui, ce matin-là, avaient tout à acheter.</h1>
+<div class="list">
+<div class="item"><div class="n">48</div><div><b>enseignes à refaire</b><span>ou au minimum à remettre à leur nom</span></div></div>
+<div class="item"><div class="n">48</div><div><b>cuisines à inspecter</b><span>froid, cuisson, laverie : ce qui lâche se voit dans les 30 jours</span></div></div>
+<div class="item"><div class="n">48</div><div><b>contrats à renégocier</b><span>boissons, assurance, caisse, maintenance</span></div></div>
+</div>''', n=3, total=5, tag="Une journée au Journal officiel"),
+    slide('''<div class="eyebrow">Le détail que personne ne regarde</div>
+<div class="quote">44 % de ces repreneurs ont créé leur société il y a moins de 90 jours.<br><br>Ils viennent d'arriver. Leurs budgets sont ouverts. Ils n'ont encore dit oui à personne.</div>''', "teal", n=4, total=5, tag="Source : BODACC + registre des sociétés, 90 derniers jours"),
+    slide('''<div class="eyebrow">LeBonProspect</div>
+<h1 class="md">Ces 48-là, nos abonnés les ont eus dimanche à 8h.</h1>
+<p class="lead">Avec le nom du repreneur, l'adresse et le téléphone de l'établissement. Triés par métier, par zone. Vous, vous en avez appelé combien ?</p>
+<div class="cta">Recevoir ceux de ma zone</div><div class="url">lebonprospect.fr</div>''', n=5, total=5, tag="Une journée au Journal officiel"),
+]
+
+# ---------- POST 8 : image unique, le badge "budgets ouverts" (44 %) ----------
+p8 = [
+    slide('''<div class="eyebrow">Restaurants, bars et hôtels · 90 derniers jours</div>
+<div class="big">44 %</div>
+<h1 class="sm" style="margin-top:26px">des repreneurs ont créé leur société il y a moins de 90 jours.</h1>
+<p class="lead">Ce sont les nouveaux entrants. Pas encore de fournisseur attitré, un budget validé par la banque, et une liste de choses à changer qui s'allonge chaque jour. Dans nos emails, ils portent un badge : <b>budgets ouverts</b>. C'est eux qu'on appelle en premier.</p>
+<div class="url">lebonprospect.fr</div>''', "dark", tag="Source : BODACC + registre des sociétés, 2 865 reprises analysées"),
+]
+
+# ---------- POST 9 : carrousel "Où ça se passe" (top villes CHR 90 jours) ----------
+p9 = [
+    slide('''<div class="eyebrow">Restaurants, bars et hôtels · 90 derniers jours</div>
+<h1>Où les commerces changent de mains <span class="hl">en ce moment.</span></h1>
+<p class="lead">Les villes qui ont vu le plus de reprises CHR publiées au Journal officiel depuis fin juin.</p>''', n=1, total=4, tag="Où ça se passe"),
+    slide('''<div class="eyebrow">Top 6 · reprises CHR sur 90 jours</div>
+<div style="margin-top:30px">
+<div class="stat" style="flex-direction:row;align-items:baseline;gap:28px;padding:14px 0;border-top:2px solid #E6E0D0"><div class="n" style="font-size:96px;min-width:220px">233</div><div class="l" style="font-size:34px;font-family:Archivo,sans-serif;font-weight:800;color:#14181D">Paris</div></div>
+<div class="stat" style="flex-direction:row;align-items:baseline;gap:28px;padding:14px 0;border-top:2px solid #E6E0D0"><div class="n" style="font-size:96px;min-width:220px">51</div><div class="l" style="font-size:34px;font-family:Archivo,sans-serif;font-weight:800;color:#14181D">Brest</div></div>
+<div class="stat" style="flex-direction:row;align-items:baseline;gap:28px;padding:14px 0;border-top:2px solid #E6E0D0"><div class="n" style="font-size:96px;min-width:220px">43</div><div class="l" style="font-size:34px;font-family:Archivo,sans-serif;font-weight:800;color:#14181D">Nice</div></div>
+<div class="stat" style="flex-direction:row;align-items:baseline;gap:28px;padding:14px 0;border-top:2px solid #E6E0D0"><div class="n" style="font-size:96px;min-width:220px">36</div><div class="l" style="font-size:34px;font-family:Archivo,sans-serif;font-weight:800;color:#14181D">Lyon</div></div>
+<div class="stat" style="flex-direction:row;align-items:baseline;gap:28px;padding:14px 0;border-top:2px solid #E6E0D0;border-bottom:2px solid #E6E0D0"><div class="n" style="font-size:96px;min-width:220px">24</div><div class="l" style="font-size:34px;font-family:Archivo,sans-serif;font-weight:800;color:#14181D">Toulouse · Bordeaux</div></div>
+</div>''', n=2, total=4, tag="Source : BODACC, 90 derniers jours"),
+    slide('''<div class="eyebrow">Ce que ça veut dire</div>
+<div class="quote">Brest devant Nice et Lyon. Personne ne l'aurait parié.<br><br>Le marché des reprises ne suit pas la taille des villes. Il suit les départs à la retraite, les cessions, les fins de bail. Et il se lit tous les matins au Journal officiel.</div>''', "teal", n=3, total=4, tag="Où ça se passe"),
+    slide('''<div class="eyebrow">Votre ville, votre métier</div>
+<h1 class="md">Les chiffres de chaque région, mis à jour chaque jour.</h1>
+<p class="lead">Restaurants, boulangeries, salons, garages, pharmacies : le nombre de reprises sur 12 mois, région par région, et les dernières publiées. En accès libre.</p>
+<div class="cta">Voir ma région</div><div class="url">lebonprospect.fr/reprises</div>''', "dark", n=4, total=4, tag="Où ça se passe"),
+]
+
 POSTS = {
     "01_comment_ca_marche": p1,
     "02_chiffre_47305": p2,
@@ -140,4 +195,7 @@ POSTS = {
     "04_les_dernieres_en_vrai": p4,
     "05_repreneur_vs_createur": p5,
     "06_stock_vs_signal": p6,
+    "07_une_journee_au_jo": p7,
+    "08_budgets_ouverts_44": p8,
+    "09_ou_ca_se_passe": p9,
 }

@@ -94,3 +94,54 @@ Le signal, c'est lequel a changé de propriétaire hier. 3 à 5 par jour dans vo
 727 reprises CHR sur 30 jours en France, 82 % livrées avec le téléphone, 24 h entre la publication et votre email.
 
 Dès 149 € par mois, sans engagement. Lien en bio.
+
+---
+---
+
+# Série 2 · 3 posts supplémentaires (à publier après les 6 premiers)
+
+Ordre conseillé : 07, 09, 08. Chiffres réels, édition du 20 septembre 2026 et 90 derniers jours.
+
+---
+
+## 07 · Une journée ordinaire au Journal officiel (carrousel, 5 slides)
+
+**Légende**
+
+Samedi 20 septembre 2026. Une journée ordinaire au Journal officiel.
+
+179 commerces ont changé de propriétaire ce jour-là. Dont 48 restaurants, bars et hôtels, 22 commerces alimentaires, 10 salons de coiffure, 7 pharmacies, 4 garages.
+
+48 restaurateurs qui, ce matin-là, avaient tout à acheter : une enseigne à refaire, une cuisine à inspecter, des contrats à renégocier. Et 44 % d'entre eux ont créé leur société il y a moins de 90 jours : ils viennent d'arriver, ils n'ont encore dit oui à personne.
+
+Nos abonnés les ont eus le lendemain à 8h, avec le nom du repreneur et le téléphone de l'établissement. Vous, vous en avez appelé combien ?
+
+Lien en bio.
+
+---
+
+## 08 · Budgets ouverts (image unique)
+
+**Légende**
+
+44 %. C'est la part des repreneurs de restaurants, bars et hôtels qui ont créé leur société il y a moins de 90 jours (2 865 reprises analysées sur les 90 derniers jours).
+
+Ce sont les nouveaux entrants. Un budget validé par la banque, aucun fournisseur attitré, et une liste de choses à changer qui s'allonge chaque jour.
+
+Dans nos emails, ils portent un badge : budgets ouverts. C'est eux qu'on appelle en premier. Les autres, déjà en activité, sont en expansion : une deuxième adresse, une reprise de plus. Pas les mêmes besoins, pas le même appel.
+
+Recevoir les vôtres demain à 8h : lien en bio.
+
+---
+
+## 09 · Où ça se passe (carrousel, 4 slides)
+
+**Légende**
+
+Où les commerces changent de mains en ce moment.
+
+Sur les 90 derniers jours, pour les restaurants, bars et hôtels : Paris 233, Brest 51, Nice 43, Lyon 36, Toulouse et Bordeaux 24.
+
+Brest devant Nice et Lyon. Personne ne l'aurait parié. Le marché des reprises ne suit pas la taille des villes. Il suit les départs à la retraite, les cessions, les fins de bail. Et il se lit tous les matins au Journal officiel.
+
+Les chiffres de chaque région, métier par métier, mis à jour chaque jour et en accès libre : lebonprospect.fr/reprises (lien en bio).
