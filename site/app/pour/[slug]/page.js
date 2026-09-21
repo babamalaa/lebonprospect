@@ -3,6 +3,7 @@ import PhoneDemo from "../../components/PhoneDemo";
 import { supabaseAdmin } from "../../lib/supabaseAdmin";
 
 export const dynamicParams = true; // autorise les slugs générés après le build (servis dynamiquement)
+export const revalidate = 3600; // chiffres et derniers exemples rafraîchis chaque heure
 
 const REGION_MAP = { "Île-de-France": "Île-de-France", PACA: "Provence-Alpes-Côte d'Azur", "Auvergne-Rhône-Alpes": "Auvergne-Rhône-Alpes" };
 const CAT_LABELS = {
@@ -156,6 +157,7 @@ export default async function TeaserPage({ params }) {
   }
 
   const perLeadRegional = (299 / Math.max(reg.n30, 1)).toFixed(2).replace(".", ",");
+  const peuDeVolume = reg.n90 < 10;
 
   return (
     <main className="tz">
@@ -197,7 +199,7 @@ export default async function TeaserPage({ params }) {
       <section className="feed-sec wrap">
         <h2 className="disp">Les dernières, en vrai</h2>
         <p className="center-sub">
-          Publiées au Journal officiel ces derniers jours en {cible.region}. Réelles et vérifiables.
+          Publiées au Journal officiel {peuDeVolume ? "ces derniers mois" : "ces derniers jours"} en {cible.region}. Réelles et vérifiables.
         </p>
         <div className="feed">
           <div className="feed-head">
