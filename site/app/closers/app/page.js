@@ -739,7 +739,7 @@ function AppPageInner() {
                           <div className="admin-closer-stats">
                             <div><span className="n">{c.signed_this_month}</span><span className="l">signés ce mois</span></div>
                             <div><span className="n">{c.total_prospects}</span><span className="l">assignés</span></div>
-                            <div><span className="n hot">{fmt2(c.total_du)} €</span><span className="l">dû ce mois</span></div>
+                            {c.exclu_commissions ? <div><span className="n" style={{ color: "#6f6a5c", fontSize: 13 }}>fondatrice</span><span className="l">hors commissions</span></div> : <div><span className="n hot">{fmt2(c.total_du)} €</span><span className="l">dû ce mois</span></div>}
                           </div>
                         </div>
                       ))}
@@ -752,7 +752,8 @@ function AppPageInner() {
 
             {profile?.role !== "admin" && (
               <>
-                {/* Commission estimée + paliers */}
+                {/* Commission estimée + paliers (masqué pour un fondateur qui close) */}
+                {!profile?.exclu_commissions && (
                 <div className="perf-row">
                   <div className="perf-card">
                     <div className="perf-label">Commission estimée ce mois</div>
@@ -809,6 +810,7 @@ function AppPageInner() {
                       </div>
                     </div>
                   </div>
+                )}
                 )}
 
                 <div className="app-card dark" style={{ marginTop: 20 }}>

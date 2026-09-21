@@ -25,7 +25,7 @@ export async function GET(req) {
 
   const admin = supabaseAdmin();
 
-  const { data: closers } = await admin.from("closer_profiles").select("id, full_name, email").eq("role", "closer");
+  const { data: closers } = await admin.from("closer_profiles").select("id, full_name, email").eq("role", "closer").eq("exclu_commissions", false);
   const { data: rows } = await admin
     .from("prospects_pool")
     .select("closer_id, societe, statut, plan, montant, signed_at")

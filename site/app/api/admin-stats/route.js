@@ -43,17 +43,19 @@ export async function GET(req) {
       commission += montant * 0.25;
     });
     const bonus = bonusFor(nSignedMonth);
+    const exclu = !!c.exclu_commissions; // fondateur qui close : deals comptés, aucune commission due
 
     return {
+      exclu_commissions: exclu,
       id: c.id,
       full_name: c.full_name,
       email: c.email,
       total_prospects: total,
       signed_total: signed.length,
       signed_this_month: nSignedMonth,
-      commission_estimee: Math.round(commission),
-      bonus_palier: bonus,
-      total_du: Math.round(commission) + bonus,
+      commission_estimee: exclu ? 0 : Math.round(commission),
+      bonus_palier: exclu ? 0 : bonus,
+      total_du: exclu ? 0 : Math.round(commission) + bonus,
     };
   });
 
