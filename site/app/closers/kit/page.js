@@ -291,31 +291,23 @@ export default function KitPage() {
 
       <section id="appel" className="wrap cl-section">
         <h2 className="disp">7. Anatomie d&apos;un bon appel</h2>
-        <p className="center-sub">Le détail complet des 4 scripts est dans l&apos;onglet Scripts d&apos;appel de votre dashboard. Voici la structure commune.</p>
+        <p className="center-sub">Les 6 trames complètes (v2, 21 septembre) sont dans l&apos;onglet Scripts d&apos;appel de votre dashboard, dans l&apos;ordre d&apos;un appel. Quatre principes, tout le reste en découle.</p>
         <div className="cl-steps">
           <div className="cl-step">
             <div className="n">1</div>
-            <p><b>Accroche (10-15s)</b> — citez une reprise réelle et récente, jamais un exemple générique. C&apos;est ce qui capte l&apos;attention en B2B froid.</p>
+            <p><b>On qualifie avant de pitcher.</b> La question de disqualification (« vous cherchez des clients en ce moment, ou vous êtes déjà à fond ? ») tombe à la seconde 20, avant le moindre argument. Un prospect saturé n&apos;est pas un mauvais prospect, c&apos;est un prospect à rappeler dans six semaines. Lui dérouler le pitch, c&apos;est brûler l&apos;appel et la fiche.</p>
           </div>
           <div className="cl-step">
             <div className="n">2</div>
-            <p><b>Le pitch</b> — expliquez le mécanisme en une phrase : détection chaque matin, contact du repreneur livré à 8h.</p>
+            <p><b>On vend le résultat, pas le mécanisme.</b> « On détecte, vous recevez la liste à 8h » décrit du travail en plus. « Vous appelez un repreneur qui a du budget avant vos concurrents » décrit un chantier. Le BODACC, le tri, l&apos;enrichissement : on n&apos;en parle que si on nous le demande.</p>
           </div>
           <div className="cl-step">
             <div className="n">3</div>
-            <p><b>Le moment décisif</b> — envoyez le lien personnalisé en direct pendant l&apos;appel, puis laissez 10-15 secondes de silence pendant qu&apos;il/elle regarde. Ne rien dire, laisser la page convaincre.</p>
+            <p><b>On close sur un test, pas sur une décision d&apos;un an.</b> Un mois sans engagement, activé pendant l&apos;appel sur la page du prospect, résiliable en un clic. On sort de l&apos;appel avec un lien envoyé et une date de rappel, jamais avec un oui ou un non à 149 € décidé en quatre minutes.</p>
           </div>
           <div className="cl-step">
             <div className="n">4</div>
-            <p><b>Discovery</b> — 1 à 2 questions pour comprendre son mode de prospection actuel et son budget, avant de pivoter sur l&apos;offre.</p>
-          </div>
-          <div className="cl-step">
-            <div className="n">5</div>
-            <p><b>Objections</b> — chaque script contient les réponses aux objections les plus fréquentes pour ce profil de prospect.</p>
-          </div>
-          <div className="cl-step">
-            <div className="n">6</div>
-            <p><b>Le close</b> — proposez le choix entre 2 formules (jamais « voulez-vous » mais « lequel préférez-vous »), restez en ligne jusqu&apos;à confirmation du paiement.</p>
+            <p><b>On ne dit rien qu&apos;on ne puisse prouver.</b> Chaque chiffre cité doit être vérifiable sur la page du prospect ou au BODACC. Un argument faux qui fait signer produit une demande de remboursement trois semaines plus tard.</p>
           </div>
         </div>
 
@@ -323,8 +315,8 @@ export default function KitPage() {
           <b style={{ display: "block", marginBottom: 6 }}>Avant votre tout premier appel</b>
           <ul className="cl-list">
             <li>Avoir créé votre compte closer et reçu vos 15 premiers prospects</li>
-            <li>Avoir lu au moins 2 des 4 scripts d&apos;appel et choisi celui que vous maîtrisez le mieux</li>
-            <li>Avoir généré la page personnalisée d&apos;au moins un prospect pour voir le rendu</li>
+            <li>Savoir par cœur la fiche 1 (les 30 premières secondes) et avoir lu les fiches 4 (le close) et 6 (le non qui rapporte)</li>
+            <li>Avoir généré la page personnalisée du prospect que vous appelez, et repéré une reprise réelle de sa zone dessus</li>
             <li>Avoir votre SIRET prêt (nécessaire dès le premier deal signé pour percevoir la commission)</li>
           </ul>
         </div>
@@ -334,27 +326,32 @@ export default function KitPage() {
         <h2 className="disp">8. Ce qu&apos;on dit, ce qu&apos;on ne dit jamais</h2>
         <p className="center-sub">
           LeBonProspect vend de la donnée publique, vérifiable, jamais inventée. C&apos;est notre plus gros
-          argument de confiance : ne le cassez jamais pour closer plus vite.
+          argument de confiance : ne le cassez jamais pour closer plus vite. Un chiffre qu&apos;on ne peut pas montrer pendant l&apos;appel ne se prononce pas.
         </p>
         <div className="cl-dolist">
           <div className="cl-do">
             <b>À faire</b>
             <ul>
-              <li>Toujours citer une reprise réelle et récente, jamais un exemple inventé</li>
-              <li>Envoyer le lien personnalisé en direct pendant l&apos;appel</li>
-              <li>Dire clairement quand une fonctionnalité est en développement</li>
-              <li>Rappeler que c&apos;est sans engagement, résiliable en un clic</li>
-              <li>Reporter un deal signé le jour même, avec email + plan + zone</li>
+              <li>Citer une reprise réelle et récente de SA zone, lue sur sa page avant d&apos;appeler</li>
+              <li>Envoyer le lien de sa page par SMS pendant l&apos;appel, puis se taire 10 secondes</li>
+              <li>Chiffrer avec SES chiffres : lui demander son panier moyen, jamais le donner à sa place</li>
+              <li>Dire son propre prénom à l&apos;ouverture</li>
+              <li>Répondre honnêtement sur l&apos;exclusivité : il n&apos;y en a pas, la garantie c&apos;est 8h le lendemain</li>
+              <li>Proposer spontanément le retrait du fichier si on vous demande d&apos;où vient le numéro</li>
+              <li>Noter la date du prochain contact avant de raccrocher, systématiquement</li>
             </ul>
           </div>
           <div className="cl-dont">
-            <b>À ne jamais faire</b>
+            <b>À ne jamais dire</b>
             <ul>
-              <li>Inventer ou arrondir un chiffre, un numéro, une reprise</li>
-              <li>Promettre un délai ferme sur une fonctionnalité non livrée</li>
-              <li>Garantir un résultat commercial</li>
-              <li>Dénigrer le BODACC ou suggérer une donnée cachée</li>
-              <li>Signer sans formulaire secteur + zone rempli (sinon rien n&apos;est livrable)</li>
+              <li>« Jamais revendu », « non partagé » : faux, deux abonnés d&apos;une même zone reçoivent les mêmes fiches</li>
+              <li>Un nombre de reprises écrit en dur (« 88 par mois ») : c&apos;est le chiffre de SA zone, sur sa page, ou rien</li>
+              <li>Un panier moyen inventé (« 2 000 à 5 000 € ») : on demande le sien</li>
+              <li>Un nombre de clients ou un témoignage : on lance, on le dit</li>
+              <li>« Comme tout le monde » quand on vous demande d&apos;où vient le numéro</li>
+              <li>Une question fermée en ouverture (« c&apos;est le genre de client que vous cherchez, non ? ») : elle offre le non</li>
+              <li>Un tarif en trame B (structure avec commerciaux) : l&apos;offre est sur devis</li>
+              <li>Une remise ou un tarif qui n&apos;existe pas sur le site</li>
             </ul>
           </div>
         </div>

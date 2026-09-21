@@ -915,3 +915,5 @@ footer .wrap { display: flex; justify-content: space-between; }
 .essai-row .st.conv { background: #e6f4ec; color: #1e7a4d; }
 .essai-row .st.perdu { background: #f7e9e9; color: #9a3b3b; }
 @media (max-width: 880px) { .essai-panel .essai-kpis { grid-template-columns: repeat(2, 1fr); } }
+
+.qualif-select { margin-top: 6px; font-size: 11.5px !important; color: #6f6a5c !important; font-weight: 600 !important; }

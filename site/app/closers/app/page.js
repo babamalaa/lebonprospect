@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import { ToastProvider, useToast } from "../../lib/ToastContext";
+import SCRIPTS_V2 from "./scripts";
 
 const STATUTS = [
   { v: "a_contacter", l: "À contacter" },
@@ -13,6 +14,13 @@ const STATUTS = [
   { v: "signe", l: "Signé" },
   { v: "non", l: "Non" },
   { v: "mauvais_prospect", l: "Mauvais prospect" },
+];
+const QUALIFS = [
+  { v: "", l: "Qualif." },
+  { v: "cherche", l: "Cherche des clients" },
+  { v: "irregulier", l: "Irrégulier" },
+  { v: "plein", l: "Plein" },
+  { v: "pas_decideur", l: "Pas décideur" },
 ];
 const STATUT_COLOR = {
   a_contacter: "#6f6a5c", repondeur: "#8a5a2e", barrage: "#8a5a2e",
@@ -109,226 +117,7 @@ LeBonProspect
   },
 ];
 
-const SCRIPTS = [
-  {
-    id: "evenement",
-    label: "L'événement (par défaut)",
-    desc: "Ouvre sur une reprise réelle et récente. Le plus direct, fonctionne sur la majorité des cibles.",
-    blocks: [
-      {
-        title: "Accroche (10 secondes)",
-        style: "",
-        text: `« Bonjour [Prénom], Lawrenza de LeBonProspect. [Le Bousti], un resto à [Marseille], vient de changer de propriétaire, publié jeudi au Journal officiel. Le repreneur rééquipe en ce moment. C'est exactement le genre de client que vous cherchez, non ? »`,
-      },
-      {
-        title: "Le pitch (si l'accroche passe)",
-        style: "",
-        text: `« On détecte chaque matin les commerces qui changent de propriétaire dans votre secteur. Nos abonnés reçoivent la liste à 8h avec le nom du repreneur et le téléphone de l'établissement, pour être les premiers à appeler. »`,
-      },
-      {
-        title: "Le moment décisif",
-        style: "teal",
-        text: `« Je vous envoie votre page pendant qu'on parle... vous y êtes ? » Puis 10 à 15 secondes de silence pendant qu'il scrolle. Ne rien dire, laisser la page travailler.`,
-      },
-      {
-        title: "Discovery (2 questions)",
-        style: "",
-        text: `1. « Aujourd'hui, comment vous trouvez vos clients ? »
-2. « Vous payez combien pour un lead en ce moment ? » (pivot ensuite sur le coût par prospect nominatif LeBonProspect)`,
-      },
-      {
-        title: "Objections fréquentes",
-        style: "",
-        list: [
-          "« C'est public, je peux le faire moi-même » → « Vous avez raison, c'est public. Le BODACC d'hier fait 89 pages. Vous avez quelqu'un qui les lit tous les matins et qui trouve le numéro du repreneur avant votre concurrent ? » (voir la banque d'objections pour la version complète)",
-          "« Envoyez-moi une doc » → « La doc, c'est la page sous vos yeux. Mieux : demain 8h vous recevez le vrai digest de votre zone. »",
-          "« Trop cher » → « 3,50 à 5,50€ le prospect nominatif non partagé, vous payez combien ailleurs ? »",
-          "« Je dois en parler à mon associé » → « Bien sûr. Je vous envoie la page, vous la regardez ensemble. Je vous rappelle demain à quelle heure ? »",
-        ],
-      },
-      {
-        title: "Le close",
-        style: "dark",
-        text: `« Région à 299 ou département à 149, vous préférez lequel ? » Puis restez en ligne pendant le paiement, ne raccrochez pas avant confirmation.`,
-      },
-    ],
-  },
-  {
-    id: "concurrent",
-    label: "Le concurrent",
-    desc: "Joue sur l'aversion à la perte plutôt que le gain. Efficace sur les profils compétiteurs, un peu plus direct.",
-    blocks: [
-      {
-        title: "Accroche (question ouverte)",
-        style: "",
-        text: `« Bonjour [Prénom], Lawrenza de LeBonProspect. Une question directe : quand un restaurant change de propriétaire à [Nice], aujourd'hui, vous l'apprenez comment ? » (laisser répondre, sa réponse est la démonstration du problème) « ...Parce qu'en ce moment il y en a 88 par mois dans votre région, et quelqu'un les équipe. Si ce n'est pas vous, c'est un concurrent. »`,
-      },
-      {
-        title: "Enchaînement",
-        style: "",
-        text: `« On détecte ces reprises chaque matin, avec le téléphone du repreneur. Ceux qui appellent en premier prennent le marché. Je vous montre ce que ça donne concrètement ? »`,
-      },
-      {
-        title: "Le moment décisif",
-        style: "teal",
-        text: `« Je vous envoie votre page pendant qu'on parle... vous y êtes ? » Silence 10-15 secondes.`,
-      },
-      {
-        title: "Objections fréquentes",
-        style: "",
-        list: [
-          "« Mes concurrents ne font pas ça » → « Justement, c'est le moment d'avoir une longueur d'avance avant que ça se sache. »",
-          "« Je n'ai pas le temps d'appeler tous les matins » → « 5 minutes le matin pour scanner la liste. Le reste, c'est vous qui décidez qui vaut le coup. »",
-          "« Trop cher » → « Comparé à perdre un client à 20-200k€ de panier moyen au profit d'un concurrent qui a appelé avant vous ? »",
-        ],
-      },
-      {
-        title: "Le close",
-        style: "dark",
-        text: `« On démarre sur votre département à 149 ou directement la région à 299 ? » Rester en ligne pendant le paiement.`,
-      },
-    ],
-  },
-  {
-    id: "timing",
-    label: "Le mauvais timing",
-    desc: "Valide l'expertise du prospect puis nomme un insight métier qu'il vit sans l'avoir formulé. Le plus long à placer, très efficace sur cycles de vente longs (agenceurs, matériel).",
-    blocks: [
-      {
-        title: "Accroche (valorisation + insight)",
-        style: "",
-        text: `« Bonjour [Prénom], Lawrenza de LeBonProspect. Vous le savez mieux que moi : quand un commerçant a besoin d'une [enseigne / caisse / cuisine], en général il a déjà choisi son fournisseur avant même de vous appeler. Le seul moment où tout est encore ouvert, c'est les premières semaines d'une reprise. Nous, on vous dit exactement qui vient de reprendre, chaque matin. »`,
-      },
-      {
-        title: "Enchaînement",
-        style: "",
-        text: `« Ça vous est déjà arrivé de rater une reprise parce que vous l'avez su trop tard ? » (laisser répondre, souvent oui) « C'est exactement ce qu'on résout. »`,
-      },
-      {
-        title: "Le moment décisif",
-        style: "teal",
-        text: `« Je vous envoie votre page pendant qu'on parle... vous y êtes ? » Silence 10-15 secondes.`,
-      },
-      {
-        title: "Objections fréquentes",
-        style: "",
-        list: [
-          "« On a déjà nos clients réguliers » → « Bien sûr, et ça reste votre socle. Ça, c'est pour capter les nouveaux avant qu'ils choisissent quelqu'un d'autre. »",
-          "« On fait déjà de la prospection » → « Sur quel volume de reprises par mois ? En général les gens n'en voient qu'une fraction, faute de temps. »",
-          "« Il faut que je regarde avec mon équipe » → « Logique. Je vous envoie la page, vous leur montrez. On se recale quand ? »",
-        ],
-      },
-      {
-        title: "Le close",
-        style: "dark",
-        text: `« Pour démarrer, département ou région ? » Rester en ligne pendant le paiement.`,
-      },
-    ],
-  },
-  {
-    id: "transparence",
-    label: "La transparence désarmante",
-    desc: "Casse le réflexe de défense en nommant soi-même l'appel commercial. Excellent sur profil pressé ou méfiant, demande un ton détendu.",
-    blocks: [
-      {
-        title: "Accroche (pattern break)",
-        style: "",
-        text: `« Bonjour [Prénom], Lawrenza de LeBonProspect. Je vais être honnête : c'est un appel commercial, mais j'ai un truc à vous montrer qui prend 30 secondes et qui concerne [le Bousti, repris à Marseille jeudi]. Je vous envoie un lien, vous regardez, et vous me dites si je vous fais perdre votre temps. Ça marche ? »`,
-      },
-      {
-        title: "Le moment décisif (enchaîne directement)",
-        style: "teal",
-        text: `« Je vous l'envoie... vous l'avez ? » Silence 10-15 secondes pendant qu'il scrolle. Le ton doit rester léger, presque amusé.`,
-      },
-      {
-        title: "S'il dit « pas intéressé » après avoir vu la page",
-        style: "",
-        text: `« Aucun souci, merci d'avoir regardé. Une dernière chose : si jamais un jour un concurrent vous prend un client parce qu'il a appelé avant vous, vous saurez que ça existe. » (raccrocher proprement, laisser une bonne impression pour un futur contact)`,
-      },
-      {
-        title: "Objections fréquentes",
-        style: "",
-        list: [
-          "« Vous avez eu mon numéro où ? » → « Fiche professionnelle publique, comme tout le monde. »",
-          "« Pourquoi moi ? » → « Vous êtes dans le secteur qui achète après une reprise, c'est tout. »",
-        ],
-      },
-      {
-        title: "Le close",
-        style: "dark",
-        text: `« Si ça vous parle : département à 149 ou région à 299 ? » Rester en ligne pendant le paiement.`,
-      },
-    ],
-  },
-  {
-    id: "objections",
-    label: "Banque d'objections",
-    desc: "Toutes les objections rencontrées, avec la réponse qui marche. Règle d'or : ne jamais nier, toujours retourner, puis faire le calcul à voix haute avec les chiffres du prospect.",
-    blocks: [
-      {
-        title: "« C'est public, je peux le faire moi-même » (la plus fréquente)",
-        style: "",
-        text: `Ne jamais nier. Retourner :
-« Vous avez raison, c'est public. Le BODACC d'hier fait 89 pages. Vous avez quelqu'un qui les lit tous les matins et qui trouve le numéro du repreneur avant votre concurrent ? »
-
-Puis déplacer la valeur du temps vers le résultat :
-« Le tri n'est pas ce que vous achetez. Le BODACC ne donne ni le tri par métier, ni le téléphone, ni le nom du dirigeant, ni si le repreneur vient de s'installer. Nous, oui, à 8h, prêt à appeler. »
-
-Puis la vitesse :
-« Le repreneur signe ses fournisseurs dans les 90 jours. Celui qui l'appelle à J+1 signe. Celui qui le trouve à J+30 arrive après le concurrent. »`,
-      },
-      {
-        title: "« 149€ par mois, c'est cher »",
-        style: "",
-        text: `Faire le calcul à voix haute, avec SES chiffres :
-« Un client chez vous, c'est combien par an ? » (laisser répondre : en CHR, 2 000 à 5 000€ d'achats annuels chez un fournisseur)
-« Donc 149€ par mois, c'est 1 788€ par an. Un seul client signé rembourse l'année. Vous pensez en signer combien sur 300 reprises ? »
-
-Angle prix unitaire : « 5,50€ le prospect nominatif, avec le téléphone, jamais revendu. Vous payez combien ailleurs pour un lead qui n'a pas encore choisi son fournisseur ? »`,
-      },
-      {
-        title: "« Envoyez-moi une doc »",
-        style: "",
-        text: `« La doc, c'est la page sous vos yeux. Mieux : demain 8h, vous recevez le vrai digest de votre zone, avec les vrais numéros. Vous jugez sur pièce. »
-Ne jamais raccrocher sur une promesse de doc sans date de rappel fixée.`,
-      },
-      {
-        title: "« Je dois en parler à mon associé / mon équipe »",
-        style: "",
-        text: `« Bien sûr. Je vous envoie la page, vous la regardez ensemble. Je vous rappelle demain, plutôt le matin ou l'après-midi ? »
-Toujours obtenir un créneau précis. Sans créneau, le deal est mort.`,
-      },
-      {
-        title: "« On a déjà nos clients / on fait déjà de la prospection »",
-        style: "",
-        text: `« Bien sûr, et ça reste votre socle. Ça, c'est pour capter les nouveaux avant qu'ils choisissent quelqu'un d'autre. »
-« Sur quel volume de reprises par mois ? En général, on n'en voit qu'une fraction, faute de temps. Il y en a 88 par mois dans votre région. »`,
-      },
-      {
-        title: "« Je n'ai pas le temps d'appeler tous les matins »",
-        style: "",
-        text: `« 5 minutes pour scanner la liste, c'est tout. Ensuite, vous choisissez qui vaut un appel. Et le badge "budgets ouverts" vous dit qui appeler en premier. »`,
-      },
-      {
-        title: "« Mes concurrents ne font pas ça »",
-        style: "",
-        text: `« Justement. C'est le moment d'avoir une longueur d'avance avant que ça se sache. »`,
-      },
-      {
-        title: "« Vous avez eu mon numéro où ? » / « Pourquoi moi ? »",
-        style: "",
-        text: `« Fiche professionnelle publique, comme tout le monde. »
-« Vous êtes dans le secteur qui achète juste après une reprise, c'est tout. »`,
-      },
-      {
-        title: "Le close qui lève toutes les objections",
-        style: "dark",
-        text: `« Sans engagement. Testez un mois, appelez 5 repreneurs, et vous saurez. »
-Le "sans engagement" existe exactement pour ça. Puis : « Département à 149 ou région à 299 ? » et rester en ligne pendant le paiement.`,
-      },
-    ],
-  },
-];
+const SCRIPTS = SCRIPTS_V2;
 
 export default function AppPage() {
   return (
@@ -959,6 +748,9 @@ function AppPageInner() {
                             <select value={r.statut || "a_contacter"} onChange={(e) => patch(r.id, { statut: e.target.value })} disabled={profile?.role === "admin"} style={{ color: STATUT_COLOR[r.statut] || "#14181d", fontWeight: 700 }}>
                               {STATUTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
                             </select>
+                            <select className="qualif-select" value={r.qualification || ""} onChange={(e) => patch(r.id, { qualification: e.target.value || null })} disabled={profile?.role === "admin"} title="Réponse à la question de qualification">
+                              {QUALIFS.map((q) => <option key={q.v} value={q.v}>{q.l}</option>)}
+                            </select>
                           </td>
                           <td>
                             {r.statut === "signe" ? (
@@ -1028,6 +820,12 @@ function AppPageInner() {
                         <label>Statut</label>
                         <select value={r.statut || "a_contacter"} onChange={(e) => patch(r.id, { statut: e.target.value })} disabled={profile?.role === "admin"} style={{ color: STATUT_COLOR[r.statut] || "#14181d", fontWeight: 700 }}>
                           {STATUTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
+                        </select>
+                      </div>
+                      <div className="prospect-card-row">
+                        <label>Qualif.</label>
+                        <select value={r.qualification || ""} onChange={(e) => patch(r.id, { qualification: e.target.value || null })} disabled={profile?.role === "admin"}>
+                          {QUALIFS.map((q) => <option key={q.v} value={q.v}>{q.l}</option>)}
                         </select>
                       </div>
                       {r.statut === "signe" && (
@@ -1165,7 +963,7 @@ function AppPageInner() {
         {tab === "script" && (
           <div className="app-panel narrow">
             <h1 className="app-h1">Scripts d&apos;appel</h1>
-            <p className="app-lead" style={{ marginBottom: 16 }}>Choisissez celui que vous maîtrisez le mieux, ou alternez selon le profil au téléphone.</p>
+            <p className="app-lead" style={{ marginBottom: 16 }}>Trames v2, dans l'ordre d'un appel : on qualifie avant de pitcher, on vend des chantiers signés plutôt qu'une liste, et on sort de chaque appel avec un lien envoyé et une date de rappel.</p>
 
             <div className="script-tabs">
               {SCRIPTS.map((s) => (
@@ -1178,7 +976,7 @@ function AppPageInner() {
             <p className="script-note">{activeScript.desc}</p>
 
             <div className="script-block">
-              {activeScript.blocks.map((b, i) => (
+              {activeScript.blocks.filter((b) => !(b.essaiOnly && !profile?.essai_autorise) && !(b.noEssai && profile?.essai_autorise)).map((b, i) => (
                 <div key={i} className="script-sheet">
                   <div className="script-sheet-tab" style={{
                     background: b.style === "dark" ? "#14181d" : b.style === "teal" ? "#31777A" : "#d64a2e",
