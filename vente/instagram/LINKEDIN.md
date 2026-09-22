@@ -37,25 +37,35 @@ Pas de lien dans le corps du post (LinkedIn réduit la portée) : le lien va **e
 
 ---
 
-## Post 01 · Le chiffre
+## Post 01 · Le chiffre (version narrative, validée)
 
 **Visuel** : `li_01_47305/01.png`
 
 **Texte** :
 
-47 305.
+Jeudi dernier, un type a racheté un restaurant à Bordeaux.
 
-C'est le nombre de commerces qui ont changé de propriétaire en France sur les 12 derniers mois. Restaurants, bars, hôtels, boulangeries, salons de coiffure, garages, pharmacies.
+Il ne le sait pas encore, mais il va dépenser plus d'argent dans les trois prochains mois que dans les trois années qui suivront.
 
-3 942 par mois. 130 par jour ouvré.
+L'enseigne est encore au nom de l'ancien. La chambre froide fait un bruit qu'il préfère ignorer. Le logiciel de caisse date d'une époque où on disait « minitel ». Et il a rendez-vous jeudi avec un commercial en boissons dont il ne sait rien, sauf qu'il est le seul à avoir appelé.
 
-Chacun de ces rachats est publié au Journal officiel, parce que la loi l'impose. Et chacun de ces nouveaux patrons fait la même chose dans les 90 jours : il refait l'enseigne, il change ce qui ne tient plus en cuisine, il renégocie ses contrats, il choisit ses fournisseurs.
+Le seul. À avoir appelé.
 
-À ce moment précis, il n'a encore dit oui à personne.
+Pendant ce temps, dans la même ville, une quinzaine de fournisseurs cherchent des clients. Ils font des tournées. Ils épluchent Google Maps. Ils appellent des restaurants qui ont déjà un agenceur, déjà une caisse, déjà un brasseur, et zéro envie d'en changer.
 
-Si vous vendez aux commerces, la question n'est pas de savoir s'il va acheter. C'est de savoir qui l'appellera en premier.
+Personne n'a appelé le nouveau.
 
-Nous avons construit LeBonProspect pour répondre à cette question : chaque matin à 8h, les reprises de votre métier et de votre zone, avec le nom du repreneur et le téléphone de l'établissement.
+Le plus beau dans cette histoire, c'est que son rachat n'était pas secret. Il a été publié au Journal officiel, parce que la loi l'impose. Noir sur blanc, accessible à tous, gratuitement.
+
+Dans un bulletin de 89 pages que personne ne lit.
+
+Ce jeudi-là, ils étaient 130 comme lui. Le lendemain aussi. Et le jour d'après.
+
+47 305 sur les douze derniers mois. Restaurants, bars, hôtels, boulangeries, salons, garages, pharmacies. 3 942 par mois. Autant de nouveaux patrons qui, pendant 90 jours, n'ont dit oui à personne.
+
+On a construit LeBonProspect pour ça : on lit les 89 pages tous les matins, on garde celles de votre métier et de votre zone, on retrouve le nom du repreneur et le numéro où l'appeler.
+
+À 8h, c'est dans votre boîte mail. Le reste, c'est votre travail.
 
 Source : BODACC, cessions de fonds de commerce, 22 septembre 2025 au 20 septembre 2026.
 
@@ -112,6 +122,48 @@ C'est ce que fait LeBonProspect. Le stock, vous l'avez. Le signal, on vous l'env
 **Premier commentaire** : Pour les équipes commerciales, chaque commercial reçoit son secteur : contact@lebonprospect.fr
 
 ---
+
+## Post 04 · Le seul à avoir appelé (publié par Lawrenza)
+
+**Visuel** : `li_04_seul_a_avoir_appele/01.png`
+
+**À publier depuis le profil de Lawrenza**, pas depuis la page : c'est un post de terrain, il a besoin d'un visage. La page le repartage ensuite.
+
+**Texte** :
+
+« Vous êtes le seul à m'avoir appelé. »
+
+Je passe mes journées au téléphone avec des gens qui viennent de racheter un commerce. Un bar, un restaurant, un hôtel. Et cette phrase, je l'entends presque à chaque fois.
+
+Pas « je vais réfléchir ». Pas « envoyez-moi une doc ». Juste : personne d'autre n'a appelé.
+
+Réfléchissez deux secondes à ce que c'est, un repreneur. Un type qui a convaincu une banque, signé chez le notaire, récupéré les clés d'un local qu'il connaît à peine. Il a un budget validé, une enseigne au nom de quelqu'un d'autre, une cuisine dont il ne sait pas ce qui tiendra l'hiver, et aucun fournisseur attitré. Aucun.
+
+C'est, littéralement, le prospect le plus facile de France. Du tout cuit.
+
+Et son téléphone ne sonne pas.
+
+Pendant ce temps, les mêmes entreprises qui ne l'appellent pas m'expliquent que la prospection est difficile, que les commerces ont déjà tous leurs fournisseurs, que le marché est bouché. Le marché n'est pas bouché. Il se renouvelle de 130 commerces par jour ouvré. Ils sont simplement invisibles, publiés au Journal officiel dans un bulletin que personne n'ouvre.
+
+Alors je vais être honnête : si vous vendez aux cafés, hôtels et restaurants, votre problème n'est pas d'avoir plus de prospects. C'est d'appeler les trois bons cette semaine, avant les autres.
+
+Et très souvent, « avant les autres », ça veut juste dire : être le seul à avoir décroché son téléphone.
+
+**Premier commentaire** : On envoie ces reprises chaque matin à 8h, avec le nom du repreneur et le numéro : https://www.lebonprospect.fr
+
+---
+
+## La direction éditoriale (à garder pour tous les posts)
+
+Chaque post suit la même mécanique, celle du post 01 :
+
+1. **Ouvrir sur une scène, jamais sur un chiffre.** Un type, une ville, un jour de la semaine. La première ligne est la seule chose visible avant « voir plus » : elle doit donner envie, pas informer.
+2. **Un détail concret par paragraphe.** La chambre froide qui fait du bruit, le logiciel de caisse « époque minitel », l'enseigne au nom de l'ancien. C'est ce qui fait qu'un lecteur se reconnaît.
+3. **De l'humour sec, jamais au détriment du prospect.** On se moque des situations, jamais des gens qu'on veut vendre.
+4. **Une ligne isolée pour le coup de poing.** « Le seul. À avoir appelé. » Une phrase courte, seule sur sa ligne, au milieu du texte.
+5. **Le chiffre arrive tard,** quand le lecteur est déjà dedans. Il frappe plus fort qu'en ouverture.
+6. **Chute factuelle et sobre.** On redescend, on dit ce qu'on fait en deux phrases, on cite la source. C'est ce qui rend crédible tout ce qui précède.
+7. **Zéro superlatif, zéro emoji, zéro tiret cadratin.** Et aucun chiffre qu'on ne peut pas prouver.
 
 ## Hashtags
 
