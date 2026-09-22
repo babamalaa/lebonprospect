@@ -20,6 +20,8 @@ export default function CGV() {
 
         <h2 style={H2}>1. Objet</h2>
         <p>
+          Les présentes conditions régissent les abonnements souscrits auprès de Khira Agency LLC (Albuquerque,
+          Nouveau-Mexique, États-Unis), exploitant le service LeBonProspect, ci-après « l&apos;éditeur ».
           LeBonProspect fournit un service d&apos;information par abonnement : la livraison par email d&apos;une
           sélection d&apos;annonces officielles de ventes et cessions de fonds de commerce, triées par secteur
           d&apos;activité et par zone géographique, enrichies de données publiques d&apos;entreprises
@@ -68,7 +70,12 @@ export default function CGV() {
         </p>
 
         <h2 style={H2}>7. Droit applicable</h2>
-        <p>Les présentes CGV sont soumises au droit français.</p>
+        <p>
+          Les présentes CGV sont soumises au droit français. En cas de litige, les parties rechercheront une solution
+          amiable avant toute action ; à défaut, les tribunaux de Paris seront compétents. Le traitement des données
+          personnelles est décrit dans la{" "}
+          <a href="/confidentialite" style={{ color: "#31777A", fontWeight: 700 }}>politique de confidentialité</a>.
+        </p>
 
         <p style={{ marginTop: 32 }}>
           <a href="/" style={{ color: "#31777A", fontWeight: 700 }}>← Retour à l&apos;accueil</a>

@@ -19,7 +19,10 @@ export default function MentionsLegales() {
 
         <h2 style={H2}>Éditeur du site</h2>
         <p>
-          Le site lebonprospect.fr est édité par Baptiste Portugal (entrepreneur individuel).<br />
+          Le site lebonprospect.fr et le service LeBonProspect sont édités par Khira Agency LLC, société de droit
+          américain (Limited Liability Company) immatriculée dans l&apos;État du Nouveau-Mexique, dont le siège est situé
+          8206 Louisiana Blvd NE, Ste A #6588, Albuquerque, NM 87113, États-Unis.<br />
+          Directeur de la publication : Baptiste Portugal.<br />
           Contact : contact@lebonprospect.fr
         </p>
 
@@ -39,11 +42,11 @@ export default function MentionsLegales() {
 
         <h2 style={H2}>Données personnelles</h2>
         <p>
-          Les données traitées concernent des entreprises et leurs représentants légaux dans le cadre de leur
-          activité professionnelle, issues de publications légales obligatoires. Conformément au RGPD, toute
-          personne concernée peut exercer ses droits d&apos;accès, de rectification ou d&apos;opposition en écrivant à
-          contact@lebonprospect.fr. Les données des abonnés (email, coordonnées de facturation) ne sont ni
-          revendues ni partagées, et servent uniquement à la fourniture du service.
+          Les données traitées concernent des entreprises et leurs représentants dans le cadre de leur activité
+          professionnelle, issues de publications légales obligatoires et de sources publiques. Le détail des
+          traitements, des durées de conservation, des prestataires et de vos droits figure dans notre{" "}
+          <a href="/confidentialite" style={{ color: "#31777A", fontWeight: 700 }}>politique de confidentialité</a>.
+          Pour toute demande : contact@lebonprospect.fr.
         </p>
 
         <h2 style={H2}>Propriété intellectuelle</h2>

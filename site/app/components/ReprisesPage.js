@@ -169,7 +169,7 @@ export default function ReprisesPage({ verticaleKey, v, region, stats, autres })
       <footer>
         <div className="wrap">
           <span>© 2026 LeBonProspect · données publiques BODACC (licence ouverte)</span>
-          <span><a href="/mentions-legales" style={{ color: "inherit" }}>Mentions légales</a> · <a href="/cgv" style={{ color: "inherit" }}>CGV</a> · <a href="mailto:contact@lebonprospect.fr" style={{ color: "inherit" }}>Contact</a></span>
+          <span><a href="/mentions-legales" style={{ color: "inherit" }}>Mentions légales</a> · <a href="/cgv" style={{ color: "inherit" }}>CGV</a> · <a href="/confidentialite" style={{ color: "inherit" }}>Confidentialité</a> · <a href="mailto:contact@lebonprospect.fr" style={{ color: "inherit" }}>Contact</a></span>
         </div>
       </footer>
     </>

@@ -43,7 +43,7 @@ export default async function ReprisesIndex() {
       <footer>
         <div className="wrap">
           <span>© 2026 LeBonProspect · données publiques BODACC (licence ouverte)</span>
-          <span><a href="/mentions-legales" style={{ color: "inherit" }}>Mentions légales</a> · <a href="/cgv" style={{ color: "inherit" }}>CGV</a></span>
+          <span><a href="/mentions-legales" style={{ color: "inherit" }}>Mentions légales</a> · <a href="/cgv" style={{ color: "inherit" }}>CGV</a> · <a href="/confidentialite" style={{ color: "inherit" }}>Confidentialité</a></span>
         </div>
       </footer>
     </>
