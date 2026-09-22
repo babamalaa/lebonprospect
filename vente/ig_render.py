@@ -86,6 +86,18 @@ def slide(body, cls="", n=None, total=None, tag=""):
     foot = f'<div class="foot"><span>{tag}</span><span class="pg">{n} / {total}</span></div>' if n else f'<div class="foot"><span>{tag}</span><span class="pg">lebonprospect.fr</span></div>'
     return f'<!doctype html><html><head><meta charset="utf-8"><style>{CSS}</style></head><body><div class="slide {cls}">{brand(cls in ("dark","teal"))}<div class="body">{body}</div>{foot}</div></body></html>'
 
+def render_sq(post, slides):
+    """Variante LinkedIn 1080x1080 : meme DA, viewport carre."""
+    d = os.path.join(OUT, post); os.makedirs(d, exist_ok=True)
+    for i, html_doc in enumerate(slides, 1):
+        html_doc = html_doc.replace("html,body{width:1080px;height:1350px;overflow:hidden}", "html,body{width:1080px;height:1080px;overflow:hidden}").replace(".slide{width:1080px;height:1350px;", ".slide{width:1080px;height:1080px;")
+        hp = os.path.join(d, f"{i:02d}.html"); png = os.path.join(d, f"{i:02d}.png")
+        open(hp, "w", encoding="utf-8").write(html_doc)
+        subprocess.run([CHROME, "--headless", "--disable-gpu", "--hide-scrollbars", "--window-size=1080,1080",
+                        "--virtual-time-budget=6000", f"--screenshot={png}", f"file://{hp}"], capture_output=True)
+        os.remove(hp)
+    print(f"{post}: {len(slides)} visuel(s) 1080x1080")
+
 def render(post, slides):
     d = os.path.join(OUT, post); os.makedirs(d, exist_ok=True)
     for i, html_doc in enumerate(slides, 1):
