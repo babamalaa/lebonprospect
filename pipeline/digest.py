@@ -153,7 +153,7 @@ def render_digest(verticale, leads, region=None, departement=None, date=None):
 <tr><td align="center" style="padding:26px 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:{MUTED};line-height:1.6;">
   LeBonProspect · chaque reprise est un acte officiel, vérifiable, jamais inventé<br>
   <a href="https://lebonprospect.fr" style="color:{TEAL};">lebonprospect.fr</a> ·
-  <a href="{{{{unsubscribe_url}}}}" style="color:{MUTED};">se désabonner</a>
+  <a href="https://www.lebonprospect.fr/mon-compte" style="color:{MUTED};">gérer mon abonnement</a>
 </td></tr>
 
 </table>

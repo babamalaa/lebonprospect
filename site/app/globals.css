@@ -917,3 +917,17 @@ footer .wrap { display: flex; justify-content: space-between; }
 @media (max-width: 880px) { .essai-panel .essai-kpis { grid-template-columns: repeat(2, 1fr); } }
 
 .qualif-select { margin-top: 6px; font-size: 11.5px !important; color: #6f6a5c !important; font-weight: 600 !important; }
+
+/* ============ MON COMPTE ============ */
+.compte-card { max-width: 520px; margin: 0 auto; background: var(--card); border: 1.5px solid var(--line); border-radius: 22px; padding: 34px 36px; box-shadow: 0 10px 30px rgba(20,24,29,.06); }
+.compte-form { display: flex; flex-direction: column; gap: 12px; }
+.compte-form label { font-size: 13px; font-weight: 700; color: #55524a; }
+.compte-form input { padding: 14px 16px; border: 1.5px solid var(--line); border-radius: 12px; font-size: 16px; font-family: inherit; }
+.compte-form input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(49,119,122,.15); }
+.compte-form .btn { margin-top: 4px; }
+.compte-msg { margin-top: 16px; font-size: 14px; color: #9a3b3b; line-height: 1.5; }
+.compte-msg a { color: var(--teal); }
+.compte-help { margin-top: 28px; padding-top: 22px; border-top: 1.5px solid var(--line); font-size: 14px; color: #55524a; line-height: 1.55; }
+.compte-help b { display: block; color: var(--ink); margin-bottom: 8px; }
+.compte-help ul { padding-left: 18px; margin-bottom: 12px; }
+@media (max-width: 880px) { .compte-card { padding: 26px 22px; } }
