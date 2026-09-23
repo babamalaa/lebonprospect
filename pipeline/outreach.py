@@ -44,6 +44,24 @@ def pick_lead(dept, region, exclude_ids):
         if r: return r[0], "region"
     return None, None
 
+LAW_CLOSER_ID = "96686993-3801-4d3d-88ca-438d1adbd8ca"   # compte "Lawrenza Closing" (essai_autorise) : la page affiche l'offre essai 7 jours
+
+def slugify(x):
+    out = (x or "").lower()
+    for a, b in {"é":"e","è":"e","ê":"e","à":"a","ç":"c","ô":"o","î":"i","û":"u","ë":"e","ï":"i","â":"a","ù":"u"}.items(): out = out.replace(a, b)
+    return re.sub(r"^-+|-+$", "", re.sub(r"[^a-z0-9]+", "-", out))[:40]
+
+def ensure_page(p):
+    """Crée (ou réutilise) la page personnalisée /pour/<slug> du prospect, rattachée au compte de Law."""
+    slug = slugify(p["societe"])
+    esc = lambda x: (x or "").replace("'", "''")
+    sql_exec(f"""insert into generated_pages (slug, societe, categorie, region, ville, closer_id)
+                 values ('{esc(slug)}', '{esc(p["societe"])}', '{esc(p.get("categorie"))}', '{esc(p.get("region"))}', '{esc(p.get("ville"))}', '{LAW_CLOSER_ID}')
+                 on conflict (slug) do nothing;""")
+    url = f"https://www.lebonprospect.fr/pour/{slug}"
+    sql_exec(f"update prospects_pool set lien_teaser='{url}' where id={p['id']} and lien_teaser is null;")
+    return url
+
 def clean_name(d):
     return re.sub(r"\s*\([^)]*\)", "", d).strip().title()
 
@@ -66,16 +84,14 @@ def ville_courte(v):
     v = (v or "").split(",")[0].strip()
     return re.sub(r"\s+Arrondissement$", "", v, flags=re.I)
 
-def render(p, lead, scope):
-    prenom_societe = html.escape(p["societe"])
+def render(p, lead, scope, page_url):
+    societe = html.escape(p["societe"])
     raw_nom = lead.get("acheteur_nom") or ""
     raw_com = lead.get("commercant") or ""
     commerce_txt = titre(raw_com) or "un établissement"
     commerce = html.escape(commerce_txt)
-    # si la société repreneuse porte le même nom que le commerce, on ne répète pas
     nom = html.escape(titre(raw_nom)) if raw_nom and raw_nom.strip().lower()[:18] != raw_com.strip().lower()[:18] else ""
-    ville_txt = ville_courte(lead.get("ville"))
-    ville = html.escape(ville_txt)
+    ville_txt = ville_courte(lead.get("ville")); ville = html.escape(ville_txt)
     dept = html.escape(lead.get("departement") or "")
     adresse = html.escape((lead.get("acheteur_adresse") or "").title())
     tel = lead.get("telephone") or ""
@@ -89,8 +105,9 @@ def render(p, lead, scope):
         age = (datetime.date.today() - datetime.date.fromisoformat(str(creation))).days
         if age <= 180: neuf = "Société créée il y a moins de six mois : il n'a encore aucun fournisseur attitré."
     ou = f"dans le {dept}" if scope == "departement" else f"en {html.escape(lead.get('region') or '')}"
-
     subject = f"{commerce_txt} ({ville_txt}) a changé de propriétaire"
+
+    # Couleurs posées en dur sur chaque cellule (bgcolor + style) : Gmail sombre ne les inverse pas.
     rows = []
     if nom: rows.append(f'<tr><td style="padding:2px 0;font-size:14px;color:{INK};"><b>Repreneur :</b> {nom}</td></tr>')
     if dirigeant: rows.append(f'<tr><td style="padding:2px 0;font-size:14px;color:{INK};"><b>Dirigeant :</b> {dirigeant}</td></tr>')
@@ -98,33 +115,40 @@ def render(p, lead, scope):
     rows.append(f'<tr><td style="padding:2px 0;font-size:14px;color:{INK};"><b>Téléphone :</b> <a href="tel:{tel.replace(" ", "")}" style="color:{TEAL};font-weight:bold;text-decoration:none;">{tel}</a></td></tr>')
     if neuf: rows.append(f'<tr><td style="padding:8px 0 0;font-size:13px;color:#b23a3a;font-weight:bold;">{neuf}</td></tr>')
 
-    body = f"""<!doctype html><html><body style="margin:0;padding:0;background:#ffffff;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:28px 16px;">
-<table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;font-family:Arial,Helvetica,sans-serif;color:{INK};">
-<tr><td style="font-size:15px;line-height:1.55;padding-bottom:16px;">Bonjour,</td></tr>
-<tr><td style="font-size:15px;line-height:1.55;padding-bottom:16px;">
-Je vous écris pour une raison précise : <b>{commerce}</b>, à {ville}, vient de changer de propriétaire. La cession est parue au Journal officiel le {pub}. Le repreneur refait tout dans les trois mois, et il n'a encore appelé personne.
-</td></tr>
-<tr><td style="padding:0 0 18px;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1.5px solid #e6e0d0;border-radius:12px;background:#fbfaf7;">
-<tr><td style="padding:16px 18px;">
+    P = f'style="font-size:15px;line-height:1.55;color:{INK};padding-bottom:16px;font-family:Arial,Helvetica,sans-serif;"'
+    body = f"""<!doctype html><html><head><meta charset="utf-8"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only"></head>
+<body style="margin:0;padding:0;background:#f6f2ea;" bgcolor="#f6f2ea">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#f6f2ea" style="background:#f6f2ea;"><tr><td align="center" style="padding:28px 14px;">
+<table role="presentation" width="580" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="max-width:580px;background:#ffffff;border-radius:16px;">
+<tr><td style="padding:26px 34px 8px;"><img src="https://www.lebonprospect.fr/email/logo-email.png" width="179" height="37" alt="LeBonProspect" style="display:block;border:0;"></td></tr>
+<tr><td style="padding:0 34px 22px;font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:{TEAL};font-weight:bold;">Le repreneur avant tout le monde</td></tr>
+<tr><td style="padding:0 34px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr><td {P}>Bonjour,</td></tr>
+<tr><td {P}>Je vous écris pour une raison précise : <b>{commerce}</b>, à {ville}, vient de changer de propriétaire. La cession est parue au Journal officiel le {pub}. Le repreneur refait tout dans les trois mois, et il n'a encore appelé personne.</td></tr>
+<tr><td style="padding:0 0 18px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#fbfaf7" style="border:1.5px solid #e6e0d0;border-radius:12px;background:#fbfaf7;"><tr><td style="padding:16px 18px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;">
 <tr><td style="font-size:16px;font-weight:bold;color:{INK};padding-bottom:2px;">{commerce}</td></tr>
 <tr><td style="font-size:12.5px;color:{TEAL};font-weight:bold;padding-bottom:8px;">{ville} · {dept} · publié le {pub}</td></tr>
 {''.join(rows)}
-</table></td></tr></table>
+</table></td></tr></table></td></tr>
+<tr><td {P}>Il est à vous. Appelez-le, présentez-vous, et si ça donne quelque chose, on en reparle.</td></tr>
+<tr><td {P}>C'est ce que nous faisons chaque matin pour les fournisseurs des cafés, hôtels et restaurants : les reprises {ou}, avec le nom du repreneur et le numéro, à 8h dans votre boîte mail.</td></tr>
+<tr><td style="padding:2px 0 22px;">
+<table role="presentation" cellpadding="0" cellspacing="0"><tr><td bgcolor="{TEAL}" style="background:{TEAL};border-radius:10px;">
+<a href="{page_url}" style="display:inline-block;padding:13px 22px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;">Voir les reprises de mon secteur</a></td></tr></table>
+<div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;color:{MUTED};padding-top:10px;line-height:1.5;">Une page préparée pour {societe} : les chiffres de votre zone, les dernières reprises, et <b style="color:{INK};">7 jours d'essai gratuit</b>, sans engagement. Vous recevez la première liste demain à 8h.</div>
 </td></tr>
-<tr><td style="font-size:15px;line-height:1.55;padding-bottom:16px;">
-Il est à vous. Appelez-le, présentez-vous, et si ça donne quelque chose, on en reparle.
-</td></tr>
-<tr><td style="font-size:15px;line-height:1.55;padding-bottom:16px;">
-C'est ce que nous faisons chaque matin pour les fournisseurs des cafés, hôtels et restaurants : les reprises {ou}, avec le nom du repreneur et le numéro, à 8h dans votre boîte mail. Je vous appellerai dans les prochains jours pour savoir si ce contact vous a été utile.
-</td></tr>
-<tr><td style="font-size:15px;line-height:1.55;padding-bottom:6px;">Bonne journée,</td></tr>
-<tr><td style="font-size:15px;line-height:1.55;"><b>Lawrenza</b><br><span style="color:{MUTED};font-size:13px;">Responsable développement commercial · LeBonProspect<br><a href="https://www.lebonprospect.fr" style="color:{TEAL};text-decoration:none;">lebonprospect.fr</a></span></td></tr>
-<tr><td style="padding-top:28px;font-size:11px;line-height:1.5;color:{MUTED};border-top:1px solid #eee9dc;margin-top:20px;">
-Vous recevez ce message parce que {prenom_societe} fournit des établissements CHR. Les informations ci-dessus proviennent du Bulletin officiel des annonces civiles et commerciales et de sources publiques, elles sont vérifiables.
-Pour ne plus être contacté, <a href="mailto:lawrenza@lebonprospect.fr?subject=Ne%20plus%20me%20contacter" style="color:{MUTED};">répondez « stop »</a> et votre fiche est retirée le jour même.
+<tr><td {P}>Si vous préférez en parler de vive voix, répondez à ce message et je vous rappelle.</td></tr>
+<tr><td style="padding:6px 0 26px;">
+<table role="presentation" cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;"><tr>
+<td style="padding-right:14px;border-right:2px solid {TEAL};"><img src="https://www.lebonprospect.fr/email/logo-email.png" width="120" height="25" alt="LeBonProspect" style="display:block;border:0;"></td>
+<td style="padding-left:14px;font-size:14px;line-height:1.45;color:{INK};"><b>Lawrenza</b><br><span style="color:{MUTED};font-size:12.5px;">Responsable développement commercial<br><a href="https://www.lebonprospect.fr" style="color:{TEAL};text-decoration:none;">lebonprospect.fr</a> · <a href="mailto:lawrenza@lebonprospect.fr" style="color:{TEAL};text-decoration:none;">lawrenza@lebonprospect.fr</a></span></td>
+</tr></table></td></tr>
+</table></td></tr>
+<tr><td style="padding:16px 34px 26px;border-top:1px solid #eee9dc;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.5;color:{MUTED};">
+Vous recevez ce message parce que {societe} fournit des établissements CHR. Les informations ci-dessus proviennent du Bulletin officiel des annonces civiles et commerciales et de sources publiques, elles sont vérifiables. Pour ne plus être contacté, <a href="mailto:lawrenza@lebonprospect.fr?subject=Ne%20plus%20me%20contacter" style="color:{MUTED};">répondez « stop »</a> : votre fiche est retirée le jour même.
 </td></tr>
 </table></td></tr></table></body></html>"""
     return subject, body
@@ -159,7 +183,8 @@ def main():
         lead, scope = pick_lead(dept, p.get("region"), used)
         if not lead:
             continue
-        subject, body = render(p, lead, scope)
+        page_url = ensure_page(p) if not a.dry_run else f"https://www.lebonprospect.fr/pour/{slugify(p['societe'])}"
+        subject, body = render(p, lead, scope, page_url)
         if a.test:
             print(f"TEST -> {a.test} | prospect: {p['societe']} ({p['ville']}) | lead: {lead.get('commercant')} {lead.get('ville')} | {subject}")
             open("/tmp/outreach_preview.html", "w").write(body)
