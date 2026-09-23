@@ -85,12 +85,15 @@ def ville_courte(v):
     return re.sub(r"\s+Arrondissement$", "", v, flags=re.I)
 
 def render(p, lead, scope, page_url):
-    societe = html.escape(p["societe"])
+    # nom court de l'entreprise : on coupe au premier tiret / virgule (« G.R.INOX - Chaudronnier, ... » -> « G.R.INOX »)
+    societe_txt = re.split(r"\s+[-–|·]\s+|,", p["societe"])[0].strip() or p["societe"]
+    societe = html.escape(societe_txt)
     raw_nom = lead.get("acheteur_nom") or ""
     raw_com = lead.get("commercant") or ""
     commerce_txt = titre(raw_com) or "un établissement"
     commerce = html.escape(commerce_txt)
-    nom = html.escape(titre(raw_nom)) if raw_nom and raw_nom.strip().lower()[:18] != raw_com.strip().lower()[:18] else ""
+    nom_txt = titre(raw_nom)
+    nom = html.escape(nom_txt) if nom_txt and nom_txt.lower() != commerce_txt.lower() else ""
     ville_txt = ville_courte(lead.get("ville")); ville = html.escape(ville_txt)
     dept = html.escape(lead.get("departement") or "")
     adresse = html.escape((lead.get("acheteur_adresse") or "").title())
