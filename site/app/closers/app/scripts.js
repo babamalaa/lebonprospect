@@ -26,6 +26,18 @@ const SCRIPTS_V2 = [
 Une raison précise d'appeler, jamais une présentation d'entreprise. On ne demande pas « vous avez deux minutes ? » : ça invite le non, alors que la raison précise fait le même travail sans offrir de sortie.`,
       },
       {
+        title: "Variante : le prospect a reçu l'email « un lead gratuit »",
+        style: "",
+        text: `Quand la fiche porte la mention « A reçu [commerce] le [date] », l'appel n'est plus à froid. On ouvre dessus, pas sur une autre reprise :
+
+« Bonjour [Prénom], [votre prénom] de LeBonProspect. Je vous ai envoyé [lundi] le contact de [Hotel de la Poste], à [Bantzenheim], qui vient de changer de propriétaire. Vous avez eu le temps de l'appeler ? »
+
+Trois réponses possibles :
+· « Oui » : « Et ça a donné quoi ? » On écoute. C'est la démonstration du produit, faite par lui.
+· « Non, pas encore » : « Il est toujours à vous. Vous cherchez à prendre de nouveaux clients en ce moment, ou vous êtes déjà à fond ? » On revient sur la question de qualification.
+· « Je ne l'ai pas vu » : « Je vous le renvoie là, maintenant, regardez votre boîte. » Puis la question de qualification.`,
+      },
+      {
         title: "La question de qualification (5 secondes)",
         style: "teal",
         text: `« Avant de vous en dire plus : vous cherchez à prendre de nouveaux clients en ce moment, ou vous êtes déjà à fond ? »

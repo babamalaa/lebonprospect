@@ -20,6 +20,18 @@ export async function GET(req) {
 
   const { data, error } = await query;
   if (error) return Response.json({ error: error.message }, { status: 400 });
+
+  // Prospects ayant reçu l'email « un lead gratuit » : on joint le nom de la reprise envoyée,
+  // pour que le closer puisse ouvrir l'appel dessus (« vous avez reçu la reprise de X ? »).
+  const leadIds = [...new Set((data || []).map((r) => r.outreach_lead_id).filter(Boolean))];
+  if (leadIds.length) {
+    const { data: leads } = await admin.from("cessions").select("id, commercant, ville, date_parution").in("id", leadIds);
+    const byId = Object.fromEntries((leads || []).map((l) => [l.id, l]));
+    for (const r of data) {
+      const l = r.outreach_lead_id ? byId[r.outreach_lead_id] : null;
+      r.outreach_lead = l ? { commercant: (l.commercant || "").split(",")[0], ville: (l.ville || "").split(",")[0], date: l.date_parution } : null;
+    }
+  }
   return Response.json(data);
 }
 

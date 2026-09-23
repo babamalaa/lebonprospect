@@ -1,0 +1,37 @@
+name: outreach-daily
+
+on:
+  schedule:
+    # 07:30 UTC = 09:30 Paris (été) / 08:30 (hiver), du lundi au vendredi.
+    # Après le digest de 8h, avant le pic d'appels de Lawrenza.
+    - cron: "30 7 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Nombre d'emails à envoyer"
+        default: "30"
+      dry_run:
+        description: "Simulation (true/false)"
+        default: "false"
+
+jobs:
+  outreach:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Envoi « un lead gratuit » aux fournisseurs du pool
+        env:
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_TOKEN: ${{ secrets.SUPABASE_TOKEN }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          OUTREACH_PAUSE: ${{ vars.OUTREACH_PAUSE }}
+        run: |
+          if [ "$OUTREACH_PAUSE" = "true" ]; then echo "Outreach en pause (variable OUTREACH_PAUSE)"; exit 0; fi
+          cd pipeline
+          LIMIT="${{ github.event.inputs.limit || '30' }}"
+          DRY="${{ github.event.inputs.dry_run || 'false' }}"
+          if [ "$DRY" = "true" ]; then python3 outreach.py --limit "$LIMIT" --dry-run; else python3 outreach.py --limit "$LIMIT"; fi

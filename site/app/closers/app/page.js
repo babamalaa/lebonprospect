@@ -730,7 +730,12 @@ function AppPageInner() {
                     <tbody>
                       {filteredRows.map((r) => (
                         <tr key={r.id}>
-                          <td><b>{r.societe}</b><div className="dash-sub">{r.categorie}</div></td>
+                          <td><b>{r.societe}</b><div className="dash-sub">{r.categorie}</div>{r.outreach_lead && (
+                              <div className="outreach-tag" title={`Email « un lead gratuit » envoyé le ${new Date(r.outreach_sent_at).toLocaleDateString("fr-FR")}`}>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                                A reçu {r.outreach_lead.commercant} ({r.outreach_lead.ville}) le {new Date(r.outreach_sent_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+                              </div>
+                            )}</td>
                           <td className="dash-sub">{r.region}<br />{r.ville}</td>
                           <td>{r.telephone && <a href={`tel:${r.telephone.replace(/\s/g, "")}`} className="mono">{r.telephone}</a>}</td>
                           <td>
@@ -802,6 +807,12 @@ function AppPageInner() {
                         <div>
                           <b>{r.societe}</b>
                           <div className="dash-sub">{r.categorie} · {r.region}{r.ville ? ` · ${r.ville}` : ""}</div>
+                          {r.outreach_lead && (
+                            <div className="outreach-tag">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                              A reçu {r.outreach_lead.commercant} ({r.outreach_lead.ville}) le {new Date(r.outreach_sent_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+                            </div>
+                          )}
                         </div>
                         {r.lien_teaser ? (
                           <a href={r.lien_teaser} target="_blank" rel="noreferrer" className="dash-link">voir →</a>

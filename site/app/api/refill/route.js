@@ -24,7 +24,7 @@ export async function POST(req) {
 
   let query = admin
     .from("prospects_pool")
-    .select("id, societe, nb_avis, type_num")
+    .select("id, societe, nb_avis, type_num, outreach_sent_at")
     .is("closer_id", null)
     .eq("exclu_pool", false)
     .order("id", { ascending: true })
@@ -40,8 +40,18 @@ export async function POST(req) {
   }
 
   // Score puis tri décroissant (meilleurs prospects en premier), on garde le batch
+  // Bonus fort pour les prospects qui ont reçu l'email « un lead gratuit » il y a 2 à 7 jours :
+  // l'appel n'est plus à froid (« vous avez reçu la reprise de X ? »), c'est là que le décroché est le meilleur.
+  const now = Date.now();
+  const outreachBonus = (r) => {
+    if (!r.outreach_sent_at) return 0;
+    const days = (now - new Date(r.outreach_sent_at).getTime()) / 86400000;
+    if (days >= 2 && days <= 7) return 6;
+    if (days > 7 && days <= 14) return 3;
+    return 0;
+  };
   const ranked = rows
-    .map((r) => ({ ...r, _score: scoreProspect(r) }))
+    .map((r) => ({ ...r, _score: scoreProspect(r) + outreachBonus(r) }))
     .sort((a, b) => b._score - a._score)
     .slice(0, BATCH_SIZE);
 
