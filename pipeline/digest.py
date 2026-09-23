@@ -26,6 +26,7 @@ VERT_LABELS = {
     "sante": "pharmacies & santé",
     "fleuriste": "fleuristes",
     "tabac_presse": "tabacs & presse",
+    "tous": "tous commerces",
 }
 
 MONTHS_FR = ["", "janvier", "février", "mars", "avril", "mai", "juin", "juillet",
@@ -35,8 +36,12 @@ def date_fr(iso):
     d = datetime.date.fromisoformat(str(iso))
     return f"{d.day} {MONTHS_FR[d.month]} {d.year}"
 
-def fetch_leads(verticale, region=None, departement=None, date=None):
-    where = [f"verticale = '{verticale}'"]
+def fetch_leads(verticale, region=None, departement=None, date=None, villes=None):
+    # verticale "tous" = toutes activités (abonné zone sur mesure : enseigniste, assureur, caisse...)
+    where = [] if verticale == "tous" else [f"verticale = '{verticale}'"]
+    if villes:
+        vl = ",".join("'" + v.replace("'", "''") + "'" for v in villes)
+        where.append(f"split_part(ville, ',', 1) in ({vl})")
     if region:
         where.append(f"region = '{region.replace(chr(39), chr(39)*2)}'")
     if departement:
@@ -44,7 +49,7 @@ def fetch_leads(verticale, region=None, departement=None, date=None):
     where.append(f"date_parution = '{date}'" if date else
                  "date_parution = (select max(date_parution) from cessions)")
     q = f"""select * from cessions where {' and '.join(where)}
-            order by departement, ville limit 60;"""
+            order by (telephone is not null) desc, departement, ville limit 60;"""
     return sql_exec(q)
 
 def lead_block(r):
@@ -88,8 +93,8 @@ def lead_block(r):
 </td></tr>
 </table>"""
 
-def render_digest(verticale, leads, region=None, departement=None, date=None):
-    zone = region or departement or "France entière"
+def render_digest(verticale, leads, region=None, departement=None, date=None, zone_label=None):
+    zone = zone_label or region or departement or "France entière"
     label = VERT_LABELS.get(verticale, verticale)
     date_str = date_fr(date or datetime.date.today().isoformat())
     n = len(leads)

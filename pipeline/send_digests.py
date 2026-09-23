@@ -42,10 +42,15 @@ def main():
         depts = s.get("departements") or []
         if isinstance(depts, str):
             depts = [d.strip() for d in depts.strip("{}").split(",") if d.strip()]
+        villes = s.get("villes") or []
+        if isinstance(villes, str):
+            villes = [v.strip().strip('"') for v in villes.strip("{}").split(",") if v.strip()]
         # collecte multi-verticales / multi-zones
         all_leads = []
         for v in verticales:
-            if regions:
+            if villes:   # zone sur mesure : liste de communes (dans le département indiqué si présent)
+                all_leads += fetch_leads(v, departement=depts[0] if depts else None, date=str(last_ed), villes=villes)
+            elif regions:
                 for reg in regions:
                     all_leads += fetch_leads(v, region=reg, date=str(last_ed))
             elif depts:
@@ -56,12 +61,12 @@ def main():
         if not all_leads:
             empty += 1
             continue
-        zone = ", ".join(regions) if regions else (", ".join(depts) if depts else "France entière")
+        zone = (s.get("zone_label") or (villes[0] + " et alentours" if villes else None)) or (", ".join(regions) if regions else (", ".join(depts) if depts else "France entière"))
         v_main = verticales[0]
         html_body = render_digest(v_main, all_leads,
                                   region=", ".join(regions) if regions else None,
                                   departement=", ".join(depts) if depts else None,
-                                  date=str(last_ed))
+                                  date=str(last_ed), zone_label=zone if villes else None)
         n = len(all_leads)
         subject = f"{n} reprise{'s' if n > 1 else ''} de commerces · {zone}"
         if args.dry_run:

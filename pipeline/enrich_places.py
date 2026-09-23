@@ -60,9 +60,15 @@ def main():
     ap.add_argument("--date")
     ap.add_argument("--verticale")
     ap.add_argument("--limit", type=int, default=2000)
+    ap.add_argument("--villes", help="liste de communes séparées par | : enrichit TOUTES les verticales sur ces communes (abonné zone sur mesure)")
+    ap.add_argument("--departement")
     args = ap.parse_args()
     conds = ["telephone is null", "enrichi_places = false"]
-    if args.verticale:
+    if args.villes:
+        vl = ",".join("'" + v.strip().replace("'", "''") + "'" for v in args.villes.split("|") if v.strip())
+        conds.append(f"split_part(ville, ',', 1) in ({vl})")
+        if args.departement: conds.append(f"departement = '{args.departement.replace(chr(39), chr(39)*2)}'")
+    elif args.verticale:
         conds.append(f"verticale = '{args.verticale}'")
     else:
         conds.append("verticale in " + str(VENDABLES))
@@ -74,26 +80,35 @@ def main():
                     f"from cessions where {' and '.join(conds)} order by date_parution desc limit {args.limit};")
     print(f"{len(rows)} cessions à enrichir")
     found = 0
+    pending = []   # (id, set_clause) : écriture groupée toutes les 25 lignes pour ménager l'API Supabase
+    def flush():
+        if not pending: return
+        for attempt in range(4):
+            try:
+                sql_exec("update cessions set " + "; update cessions set ".join(f"{sc} where id = {i}" for i, sc in pending) + ";")
+                pending.clear(); return
+            except Exception as e:
+                time.sleep(3 * (attempt + 1))
+        pending.clear()
     for i, row in enumerate(rows):
         q = best_query(row)
         if len(q.strip()) < 8:
-            sql_exec(f"update cessions set enrichi_places = true where id = {row['id']};")
+            pending.append((row['id'], "enrichi_places = true"))
             continue
         place = places_search(q)
         tel = (place or {}).get("nationalPhoneNumber")
         if tel:
             conf = confiance(tel)
             pname = (place.get("displayName") or {}).get("text", "").replace("'", "''")
-            sql_exec(f"update cessions set telephone = '{tel}', telephone_confiance = '{conf}', "
-                     f"place_name = '{pname}', enrichi_places = true, "
-                     f"places_tentatives = places_tentatives + 1 where id = {row['id']};")
+            pending.append((row['id'], f"telephone = '{tel}', telephone_confiance = '{conf}', place_name = '{pname}', enrichi_places = true, places_tentatives = places_tentatives + 1"))
             found += 1
         else:
-            sql_exec(f"update cessions set enrichi_places = true, "
-                     f"places_tentatives = places_tentatives + 1 where id = {row['id']};")
+            pending.append((row['id'], "enrichi_places = true, places_tentatives = places_tentatives + 1"))
+        if len(pending) >= 25: flush()
         if (i + 1) % 50 == 0:
             print(f"  {i+1}/{len(rows)} traités, {found} téléphones", flush=True)
         time.sleep(0.06)  # ~15 req/s max
+    flush()
     print(f"DONE: {found}/{len(rows)} téléphones trouvés ({100*found/max(len(rows),1):.0f}%)")
 
 if __name__ == "__main__":

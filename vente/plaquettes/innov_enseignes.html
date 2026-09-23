@@ -1,0 +1,96 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--teal:#31777A;--teal-soft:#eaf3f3;--ink:#14181d;--muted:#6f6a5c;--line:#e6e0d0;--cream:#f6f2ea;--red:#b23a3a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,sans-serif;color:var(--ink);background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{width:794px;height:1123px;padding:44px 52px;position:relative;overflow:hidden;page-break-after:always}
+.page:last-child{page-break-after:auto}
+.logo{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px}
+.logo img{height:28px}
+.prep{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);font-weight:600}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);font-weight:600;margin-bottom:12px}
+h1{font-family:Archivo,sans-serif;font-size:34px;font-weight:900;line-height:1.08;letter-spacing:-.02em;margin-bottom:14px}
+h1 .hl{color:var(--teal)}
+h2{font-family:Archivo,sans-serif;font-size:20px;font-weight:800;letter-spacing:-.01em;margin:26px 0 10px}
+p{font-size:13.5px;line-height:1.55;color:#3f3b33}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0}
+.stat{background:var(--cream);border-radius:14px;padding:16px 16px 14px}
+.stat .n{font-family:Archivo,sans-serif;font-size:32px;font-weight:900;letter-spacing:-.03em;color:var(--teal);line-height:1}
+.stat .l{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.3}
+.villes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 18px;margin-top:8px}
+.ville{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0;border-bottom:1px solid var(--line)}
+.ville b{font-family:'JetBrains Mono',monospace;color:var(--teal)}
+.calc{background:var(--ink);color:#fff;border-radius:16px;padding:22px 26px;margin-top:22px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+.calc .n{font-family:Archivo,sans-serif;font-size:30px;font-weight:900;letter-spacing:-.03em;line-height:1}
+.calc .l{font-size:11.5px;color:rgba(255,255,255,.75);margin-top:6px;line-height:1.35}
+.calc .n.t{color:#a9d2d3}
+.lead{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px dashed var(--line);gap:14px}
+.lead-l b{font-size:13.5px;display:block}
+.lead-meta{font-size:11.5px;color:var(--muted)}
+.lead-r{text-align:right;flex-shrink:0}
+.tel{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--ink);display:block}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;color:var(--red);background:#f7e9e9;border-radius:6px;padding:2px 7px;margin-top:4px}
+.offer{border:2px solid var(--teal);border-radius:16px;padding:22px 26px;margin-top:22px;background:var(--teal-soft)}
+.offer h3{font-family:Archivo,sans-serif;font-size:18px;font-weight:800;margin-bottom:8px}
+.offer .price{font-family:Archivo,sans-serif;font-size:30px;font-weight:900;color:var(--teal);letter-spacing:-.02em}
+.offer .price small{font-size:14px;font-weight:600;color:var(--muted)}
+.offer ul{list-style:none;margin-top:12px}
+.offer li{font-size:13px;padding:5px 0 5px 22px;position:relative;line-height:1.4}
+.offer li:before{content:"";position:absolute;left:0;top:10px;width:12px;height:12px;border-radius:50%;background:var(--teal)}
+.foot{position:absolute;left:52px;right:52px;bottom:34px;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+.step{display:flex;gap:10px;align-items:flex-start}
+.step .n{font-family:Archivo,sans-serif;font-weight:900;font-size:22px;color:var(--teal);line-height:1;min-width:22px}
+.step b{display:block;font-size:13px;margin-bottom:3px}
+.step span{font-size:12px;color:var(--muted);line-height:1.45}
+.note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:14px}
+</style></head><body>
+
+<div class="page">
+  <div class="logo"><img src="file:///Users/baptisteportugal/Downloads/LeBonProspect_logo_signature.png" alt="LeBonProspect"><span class="prep">Préparé pour Innov Enseignes · La Garde</span></div>
+  <div class="eyebrow">Toulon et 10 km · tous commerces · 12 derniers mois</div>
+  <h1>381 commerces ont changé de propriétaire <span class="hl">dans votre rayon.</span></h1>
+  <p>Restaurants, mais aussi salons, garages, boutiques, commerces alimentaires : chacun est un nouveau patron qui, dans les trois mois, refait son enseigne, remet la vitrine à son nom et cherche qui va le faire. Vous nous avez dit Toulon et 10 km autour. Voici exactement ce qui s'y passe, publié au Journal officiel.</p>
+  <div class="stats">
+    <div class="stat"><div class="n">381</div><div class="l">reprises sur 12 mois dans votre rayon</div></div>
+    <div class="stat"><div class="n">32</div><div class="l">par mois en moyenne, tous commerces</div></div>
+    <div class="stat"><div class="n">89 %</div><div class="l">livrées avec le téléphone de l'établissement</div></div>
+    <div class="stat"><div class="n">69</div><div class="l">sur les 90 derniers jours</div></div>
+  </div>
+  <h2>Ville par ville, sur 12 mois</h2>
+  <div class="villes"><div class="ville"><span>Toulon</span><b>110</b></div><div class="ville"><span>Hyères</span><b>52</b></div><div class="ville"><span>Six-Fours-les-Plages</span><b>42</b></div><div class="ville"><span>La Valette-du-Var</span><b>27</b></div><div class="ville"><span>La Garde</span><b>27</b></div><div class="ville"><span>La Seyne-sur-Mer</span><b>27</b></div><div class="ville"><span>Sanary-sur-Mer</span><b>22</b></div><div class="ville"><span>La Crau</span><b>17</b></div><div class="ville"><span>Bandol</span><b>16</b></div><div class="ville"><span>Ollioules</span><b>11</b></div><div class="ville"><span>La Farlède</span><b>8</b></div><div class="ville"><span>Le Pradet</span><b>6</b></div><div class="ville"><span>Saint-Mandrier-sur-Mer</span><b>4</b></div><div class="ville"><span>Solliès-Ville</span><b>4</b></div><div class="ville"><span>Évenos</span><b>3</b></div><div class="ville"><span>Solliès-Pont</span><b>2</b></div><div class="ville"><span>Carqueiranne</span><b>2</b></div><div class="ville"><span>Le Revest-les-Eaux</span><b>1</b></div></div>
+  <div class="calc">
+    <div><div class="n t">4,66 €</div><div class="l">le contact nominatif avec téléphone (32 reprises par mois pour 149 €)</div></div>
+    <div><div class="n">1 enseigne</div><div class="l">signée dans l'année rembourse les douze mois d'abonnement</div></div>
+    <div><div class="n">J+1</div><div class="l">vous l'avez le lendemain de la publication, avant vos concurrents</div></div>
+  </div>
+<h2>Comment ça se passe, concrètement</h2>
+  <div class="steps">
+    <div class="step"><div class="n">1</div><div><b>Chaque nuit</b><span>on lit le Journal officiel et on garde les reprises de vos 18 communes, tous commerces.</span></div></div>
+    <div class="step"><div class="n">2</div><div><b>On identifie le repreneur</b><span>sa société, son adresse, et on retrouve le téléphone de l'établissement.</span></div></div>
+    <div class="step"><div class="n">3</div><div><b>8h, dans votre boîte mail</b><span>vous lisez, vous appelez. Vous êtes le premier enseigniste qu'il entend.</span></div></div>
+  </div>
+  <div class="foot"><span>Source : BODACC, cessions de fonds de commerce, 18 communes du Var</span><span>lebonprospect.fr · 1 / 2</span></div>
+</div>
+
+<div class="page">
+  <div class="logo"><img src="file:///Users/baptisteportugal/Downloads/LeBonProspect_logo_signature.png" alt="LeBonProspect"><span class="prep">Préparé pour Innov Enseignes · La Garde</span></div>
+  <div class="eyebrow">Les dernières, en vrai</div>
+  <h1 style="font-size:26px">Publiées ces dernières semaines dans votre rayon.</h1>
+  <p>Numéros masqués ici, complets dans votre email chaque matin. Chaque ligne est vérifiable au Journal officiel.</p>
+  <div style="margin-top:14px"><div class="lead"><div class="lead-l"><b>Laporte Pere et Fils</b><span class="lead-meta">Six-Fours-les-Plages · Commerce · publié le 22 septembre</span></div><div class="lead-r"><span class="tel">04 94 34 ██ ██</span></div></div><div class="lead"><div class="lead-l"><b>Le Phenix</b><span class="lead-meta">Hyères · Restaurant / bar · publié le 22 septembre</span></div><div class="lead-r"><span class="tel">04 94 48 ██ ██</span></div></div><div class="lead"><div class="lead-l"><b>Tabac-Cave a Cigares Font de Fillol-Tessie</b><span class="lead-meta">Six-Fours-les-Plages · Commerce alimentaire · publié le 20 septembre</span></div><div class="lead-r"><span class="tel">04 94 25 ██ ██</span></div></div><div class="lead"><div class="lead-l"><b>La Fin&#x27;heure</b><span class="lead-meta">La Valette-du-Var · Commerce alimentaire · publié le 17 septembre</span></div><div class="lead-r"><span class="tel">04 94 58 ██ ██</span></div></div><div class="lead"><div class="lead-l"><b>Chez les Frangins</b><span class="lead-meta">Six-Fours-les-Plages · Restaurant / bar · publié le 13 septembre</span></div><div class="lead-r"><span class="tel">04 94 06 ██ ██</span><span class="tag">budgets ouverts</span></div></div><div class="lead"><div class="lead-l"><b>La Petite Cabane</b><span class="lead-meta">Six-Fours-les-Plages · Commerce · publié le 13 septembre</span></div><div class="lead-r"><span class="tel">04 83 73 ██ ██</span></div></div><div class="lead"><div class="lead-l"><b>Gotosushi Hyeres Gare</b><span class="lead-meta">Hyères · Restaurant / bar · publié le 11 septembre</span></div><div class="lead-r"><span class="tel">04 94 33 ██ ██</span></div></div><div class="lead"><div class="lead-l"><b>Le Comptoir de Sanary</b><span class="lead-meta">Sanary-sur-Mer · Restaurant / bar · publié le 8 septembre</span></div><div class="lead-r"><span class="tel">04 65 40 ██ ██</span><span class="tag">budgets ouverts</span></div></div></div>
+  <div class="offer">
+    <h3>Votre abonnement, configuré sur votre rayon</h3>
+    <div class="price">149 € <small>/ mois · sans engagement · résiliable en un clic</small></div>
+    <ul>
+      <li><b>Votre périmètre, pas un département</b> : Toulon et les 17 communes autour, celles où vous vous déplacez. Rien d'autre.</li>
+      <li><b>Tous les commerces</b>, pas seulement les restaurants : tout ce qui a une vitrine et une enseigne à refaire.</li>
+      <li><b>Chaque matin à 8h</b>, par email : le commerce repris, le repreneur, l'adresse, le téléphone.</li>
+      <li><b>Le badge « budgets ouverts »</b> quand le repreneur vient de créer sa société : c'est lui qu'on appelle en premier.</li>
+    </ul>
+    <p class="note">Vous souscrivez l'offre Départementale sur votre page lebonprospect.fr/pour/innov-enseignes. Dès votre paiement, nous configurons votre périmètre sur vos communes et vous recevez votre première liste le lendemain matin à 8h.</p>
+  </div>
+  <div class="foot"><span>Aurélie Cavarretta · Responsable développement commercial · lebonprospect.fr</span><span>2 / 2</span></div>
+</div>
+</body></html>
