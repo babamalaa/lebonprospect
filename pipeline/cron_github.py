@@ -57,6 +57,15 @@ def main():
     rr = subprocess.run([sys.executable, "send_digests.py"],
                         capture_output=True, text=True, cwd=HERE)
     print("digests:", (rr.stdout or "").strip().splitlines()[-1] if rr.stdout else rr.stderr[-300:])
+    # RAPPEL J+5 des essais dashboard : une erreur ici ne fait jamais échouer le cron
+    try:
+        rr = subprocess.run([sys.executable, "remind_essais.py"],
+                            capture_output=True, text=True, cwd=HERE)
+        print("rappels:", (rr.stdout or "").strip().splitlines()[-1] if rr.stdout else rr.stderr[-300:])
+        if rr.stdout and rr.stderr:
+            print("rappels (erreurs):", rr.stderr[-300:])
+    except Exception as e:
+        print(f"rappels: erreur {e}")
     print(f"OK: {total} cessions ingérées, stats rafraîchies.")
 
 if __name__ == "__main__":

@@ -212,10 +212,18 @@ function AppPageInner() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prospect_id: prospect.id, plan, essai }),
     });
+    const data = await res.json().catch(() => ({}));
     setSigningId(null);
+    if (!res.ok || data.error) {
+      toast(data.error || "Erreur lors de l'enregistrement du plan.", "error");
+      // select contrôlé : un nouveau rendu de la ligne lui rend sa valeur précédente
+      setRows((prev) => prev.map((r) => (r.id === prospect.id ? { ...r } : r)));
+      return;
+    }
     if (res.ok) {
       const montant = plan === "departemental" ? 149 : plan === "regional" ? 299 : 0;
-      setRows((prev) => prev.map((r) => (r.id === prospect.id ? { ...r, statut: "signe", plan, montant } : r)));
+      setRows((prev) => prev.map((r) => (r.id === prospect.id ? { ...r, statut: "signe", plan, montant, essai } : r)));
+      if (data.essai_demarre) toast("Essai démarré. Premier digest demain 8h.", "success");
       setCelebrating({ societe: prospect.societe });
       setTimeout(() => setCelebrating(null), 3200);
     }

@@ -2,9 +2,9 @@ name: tests
 
 on:
   push:
-    paths: ["pipeline/**", ".github/workflows/test.yml"]
+    paths: ["pipeline/**", "site/**", ".github/workflows/test.yml"]
   pull_request:
-    paths: ["pipeline/**", ".github/workflows/test.yml"]
+    paths: ["pipeline/**", "site/**", ".github/workflows/test.yml"]
 
 jobs:
   pytest:
@@ -17,3 +17,12 @@ jobs:
           python-version: "3.12"
       - run: pip install -r pipeline/requirements-dev.txt
       - run: cd pipeline && python3 -m pytest -v
+  vitest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "20", cache: npm, cache-dependency-path: site/package-lock.json }
+      - run: cd site && npm ci
+      - run: cd site && npm test
