@@ -1,0 +1,46 @@
+{
+  "987654321": {
+    "naf": "56.10A",
+    "nom_complet": "LE BISTROT TEST (VENDEUR)",
+    "date_creation": "2012-03-15",
+    "dirigeants": [
+      "ALAIN FICTIF"
+    ],
+    "siege_adresse": "1 PLACE DU TEST 69999 VILLENEUVE-TEST"
+  },
+  "123456789": {
+    "naf": "56.10A",
+    "nom_complet": "SAS REPRISE TEST",
+    "date_creation": "2026-06-01",
+    "dirigeants": [
+      "JEAN TEST"
+    ],
+    "siege_adresse": "12 RUE DE L'EXEMPLE 69999 VILLENEUVE-TEST"
+  },
+  "333444555": {
+    "naf": "96.01B",
+    "nom_complet": "LAVERIE DE LA GARE TEST",
+    "date_creation": "2015-01-10",
+    "dirigeants": [
+      "LUCIE FICTIVE"
+    ],
+    "siege_adresse": "3 AVENUE FICTIVE 13999 MARSEILLE-TEST"
+  },
+  "555666777": null,
+  "444555666": {
+    "naf": "00.00Z",
+    "nom_complet": "CAFE DU CENTRE (VENDEUR)",
+    "date_creation": "2001-05-20",
+    "dirigeants": [],
+    "siege_adresse": null
+  },
+  "111222333": {
+    "naf": "56.30Z",
+    "nom_complet": "CAFE DU CENTRE",
+    "date_creation": "2026-07-01",
+    "dirigeants": [
+      "MARIE TEST"
+    ],
+    "siege_adresse": "5 PLACE DU TEST 83999 TESTEVILLE-SUR-MER"
+  }
+}

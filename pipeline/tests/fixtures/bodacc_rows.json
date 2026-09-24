@@ -1,0 +1,67 @@
+[
+  {
+    "id": "A202600001",
+    "dateparution": "2026-09-23",
+    "typeavis_lib": "Avis initial",
+    "commercant": "LE BISTROT TEST",
+    "ville": "Villeneuve-Test",
+    "cp": "69999",
+    "registre": [
+      "123456789",
+      "987654321"
+    ],
+    "tribunal": "GREFFE DU TRIBUNAL DE COMMERCE DE TESTVILLE",
+    "listepersonnes": "{\"personne\": {\"typePersonne\": \"pm\", \"denomination\": \"SAS REPRISE TEST\", \"formeJuridique\": \"Société par actions simplifiée\", \"numeroImmatriculation\": {\"numeroIdentification\": \"123 456 789\", \"codeRCS\": \"RCS\", \"nomGreffeImmat\": \"Testville\"}, \"adresseSiegeSocial\": {\"numeroVoie\": \"12\", \"typeVoie\": \"rue\", \"nomVoie\": \"de l'Exemple\", \"codePostal\": \"69999\", \"ville\": \"Villeneuve-Test\"}}}",
+    "acte": "{\"descriptif\": \"Vente d'un fonds de commerce de restauration traditionnelle (fictif).\"}",
+    "departement_nom_officiel": "Rhône",
+    "region_nom_officiel": "Auvergne-Rhône-Alpes"
+  },
+  {
+    "id": "A202600002",
+    "dateparution": "2026-09-23",
+    "typeavis_lib": "Avis initial",
+    "commercant": "LAVERIE DE LA GARE TEST",
+    "ville": "Marseille-Test",
+    "cp": "13999",
+    "registre": [
+      "555666777",
+      "333444555"
+    ],
+    "tribunal": "GREFFE DU TRIBUNAL DE COMMERCE DE TESTPORT",
+    "listepersonnes": "{\"personne\": [{\"typePersonne\": \"pm\", \"denomination\": \"SARL LAVAGE TEST\", \"formeJuridique\": \"Société à responsabilité limitée\", \"numeroImmatriculation\": {\"numeroIdentification\": \"555666777\"}, \"adresseSiegeSocial\": {\"numeroVoie\": \"3\", \"typeVoie\": \"avenue\", \"nomVoie\": \"Fictive\", \"codePostal\": \"13999\", \"ville\": \"Marseille-Test\"}}, {\"typePersonne\": \"pp\", \"prenom\": \"Paul\", \"nom\": \"EXEMPLE\", \"adresse\": {\"numeroVoie\": \"8\", \"typeVoie\": \"impasse\", \"nomVoie\": \"du Test\", \"codePostal\": \"13999\", \"ville\": \"Marseille-Test\"}}]}",
+    "acte": "{\"descriptif\": \"Cession d'un fonds de laverie automatique (fictif).\"}",
+    "departement_nom_officiel": "Bouches-du-Rhône",
+    "region_nom_officiel": "Provence-Alpes-Côte d'Azur"
+  },
+  {
+    "id": "A202600003",
+    "dateparution": "2026-09-23",
+    "typeavis_lib": "Avis initial",
+    "commercant": "COMMERCE SANS REGISTRE TEST",
+    "ville": "Testbourg",
+    "cp": "33999",
+    "registre": [],
+    "tribunal": "GREFFE DU TRIBUNAL DE COMMERCE DE TESTBOURG",
+    "listepersonnes": null,
+    "acte": null,
+    "departement_nom_officiel": "Gironde",
+    "region_nom_officiel": "Nouvelle-Aquitaine"
+  },
+  {
+    "id": "A202600004",
+    "dateparution": "2026-09-23",
+    "typeavis_lib": "Avis initial",
+    "commercant": "CAFE DU CENTRE",
+    "ville": "Testeville-sur-Mer",
+    "cp": "83999",
+    "registre": [
+      "111222333",
+      "444555666"
+    ],
+    "tribunal": "GREFFE DU TRIBUNAL DE COMMERCE DE TESTEVILLE",
+    "listepersonnes": "{\"personne\": {\"typePersonne\": \"pm\", \"denomination\": [\"CAFE\", \"DU CENTRE\"], \"numeroImmatriculation\": {\"numeroIdentification\": \"111222333\"}}}",
+    "acte": "{pas du json",
+    "departement_nom_officiel": "Var",
+    "region_nom_officiel": "Provence-Alpes-Côte d'Azur"
+  }
+]
