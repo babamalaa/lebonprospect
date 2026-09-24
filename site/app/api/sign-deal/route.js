@@ -1,5 +1,6 @@
 import { supabaseAdmin } from "../../lib/supabaseAdmin";
 import { getAuthedProfile } from "../../lib/auth";
+import { buildEssaiSubscriber, essaiRefuse } from "../../lib/essai";
 
 const PLAN_PRICE = { departemental: 149, regional: 299, national: 0 };
 const PLAN_LABEL = { departemental: "Départemental (149€/mois)", regional: "Régional (299€/mois)", national: "National (sur devis)" };
@@ -34,10 +35,25 @@ export async function POST(req) {
   }
 
   if (essai && !profile.essai_autorise) return Response.json({ error: "Essai non autorisé sur ce compte." }, { status: 403 });
+
+  let subscriberId = null;
+  if (essai) {
+    const { row, error: bErr } = buildEssaiSubscriber(prospect, plan);
+    if (bErr) return Response.json({ error: bErr }, { status: 400 });
+    // Un abonné payant ou déjà en essai ne doit jamais être écrasé par un essai.
+    const { data: existing, error: eErr } = await admin.from("subscribers").select("id, essai, premier_paiement_at, statut").eq("email", row.email).maybeSingle();
+    if (eErr) return Response.json({ error: eErr.message }, { status: 400 });
+    const refus = essaiRefuse(existing);
+    if (refus) return Response.json({ error: refus }, { status: 409 });
+    const { data: created, error: sErr } = await admin.from("subscribers").upsert(row, { onConflict: "email" }).select("id").single();
+    if (sErr) return Response.json({ error: sErr.message }, { status: 400 });
+    subscriberId = created.id;
+  }
+
   const montant = PLAN_PRICE[plan] ?? 0;
   const { error: uErr } = await admin
     .from("prospects_pool")
-    .update({ statut: "signe", plan, montant, essai: !!essai, signed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .update({ statut: "signe", plan, montant, essai: !!essai, ...(essai ? { subscriber_id: subscriberId } : {}), signed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
     .eq("id", prospect_id);
   if (uErr) return Response.json({ error: uErr.message }, { status: 400 });
 
@@ -55,12 +71,12 @@ export async function POST(req) {
           <tr><td style="color:#666;padding:4px 0">Catégorie</td><td>${prospect.categorie || "-"}</td></tr>
           <tr><td style="color:#666;padding:4px 0">Téléphone</td><td>${prospect.telephone || "-"}</td></tr>
         </table>
-        <p style="margin-top:16px;color:#888;font-size:12px">Reste à activer l'abonnement Stripe côté client.</p>
+        <p style="margin-top:16px;color:#888;font-size:12px">${essai ? "Essai démarré : premier digest demain 8h. Rappel carte automatique à J+5." : "Reste à activer l'abonnement Stripe côté client."}</p>
       </div>`
     );
   } catch (e) {
     // silencieux : le deal est signé même si l'email échoue
   }
 
-  return Response.json({ ok: true });
+  return Response.json({ ok: true, essai_demarre: !!essai, subscriber_id: subscriberId });
 }
