@@ -36,6 +36,19 @@ def plan_for_subscriber(s):
            or (", ".join(regions) if regions else (", ".join(depts) if depts else "France entière"))
     return verticales, regions, depts, villes, zone
 
+def essai_expire(s, now):
+    """True si l'essai dashboard est terminé depuis plus de 24 h sans premier paiement.
+    Les essais Stripe ne sont pas concernés : le webhook Stripe gère déjà leur fin."""
+    if not s.get("essai") or s.get("premier_paiement_at") or s.get("essai_source") != "dashboard":
+        return False
+    fin = s.get("essai_fin")
+    if not fin:
+        return False
+    fin_dt = datetime.datetime.fromisoformat(str(fin).replace("Z", "+00:00"))
+    if fin_dt.tzinfo is None:
+        fin_dt = fin_dt.replace(tzinfo=datetime.timezone.utc)
+    return (now - fin_dt) > datetime.timedelta(hours=24)
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
@@ -47,10 +60,16 @@ def main():
         return
     # dernière édition disponible en base
     last_ed = sql_exec("select max(date_parution) as d from cessions;")[0]["d"]
-    sent = skipped = empty = 0
+    sent = skipped = empty = expired = 0
     for s in subs:
         if str(s.get("dernier_digest") or "") == today:
             skipped += 1
+            continue
+        if essai_expire(s, datetime.datetime.now(datetime.timezone.utc)):
+            if not args.dry_run:
+                sql_exec(f"update subscribers set statut = 'pause', essai_expire_at = now() where id = {s['id']};")
+            expired += 1
+            print(f"ESSAI EXPIRÉ: {s['email']} (fin {s.get('essai_fin')})")
             continue
         verticales, regions, depts, villes, zone = plan_for_subscriber(s)
         # collecte multi-verticales / multi-zones
@@ -89,7 +108,7 @@ def main():
         except Exception as e:
             print(f"ERREUR {s['email']}: {e}", file=sys.stderr)
         time.sleep(0.3)
-    print(f"BILAN: {sent} envoyés, {empty} sans leads (pas d'email), {skipped} déjà servis")
+    print(f"BILAN: {sent} envoyés, {empty} sans leads (pas d'email), {skipped} déjà servis, {expired} essais expirés")
 
 if __name__ == "__main__":
     main()
