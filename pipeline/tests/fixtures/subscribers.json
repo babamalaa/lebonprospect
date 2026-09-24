@@ -1,0 +1,71 @@
+[
+  {
+    "statut": "actif",
+    "verticales": [
+      "chr"
+    ],
+    "regions": [
+      "Occitanie"
+    ],
+    "departements": null,
+    "villes": null,
+    "zone_label": null,
+    "dernier_digest": null,
+    "id": 1,
+    "email": "regional@example.com"
+  },
+  {
+    "statut": "actif",
+    "verticales": [
+      "chr"
+    ],
+    "regions": [
+      "Bretagne"
+    ],
+    "departements": null,
+    "villes": null,
+    "zone_label": null,
+    "dernier_digest": "2026-09-24",
+    "id": 2,
+    "email": "deja-servi@example.com"
+  },
+  {
+    "statut": "actif",
+    "verticales": "{chr,alimentaire}",
+    "regions": null,
+    "departements": "{Rhône,Isère}",
+    "villes": null,
+    "zone_label": null,
+    "dernier_digest": null,
+    "id": 3,
+    "email": "departemental@example.com"
+  },
+  {
+    "statut": "actif",
+    "verticales": [
+      "tous"
+    ],
+    "regions": null,
+    "departements": [
+      "Var"
+    ],
+    "villes": "{\"Toulon\",\"La Seyne-sur-Mer\"}",
+    "zone_label": "Toulon + 10 km",
+    "dernier_digest": null,
+    "id": 4,
+    "email": "sur-mesure@example.com"
+  },
+  {
+    "statut": "actif",
+    "verticales": [
+      "alimentaire"
+    ],
+    "regions": null,
+    "departements": null,
+    "villes": null,
+    "zone_label": null,
+    "dernier_digest": null,
+    "id": 5,
+    "email": "national@example.com"
+  }
+]

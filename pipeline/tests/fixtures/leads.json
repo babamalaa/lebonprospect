@@ -1,0 +1,59 @@
+[
+  {
+    "acheteur_nom": "SAS REPRISE TEST",
+    "commercant": "LE BISTROT TEST",
+    "ville": "Villeneuve-Test",
+    "departement": "Rhône",
+    "acheteur_dirigeants": [
+      "JEAN TEST",
+      "MARIE TEST"
+    ],
+    "acheteur_adresse": "12 RUE DE L'EXEMPLE 69999 VILLENEUVE-TEST",
+    "telephone": "04 00 00 00 00",
+    "acheteur_date_creation": "2026-09-01"
+  },
+  {
+    "acheteur_nom": "SARL LAVAGE TEST",
+    "commercant": "LAVERIE DE LA GARE TEST",
+    "ville": "Marseille-Test",
+    "departement": "Bouches-du-Rhône",
+    "acheteur_dirigeants": [
+      "PAUL EXEMPLE"
+    ],
+    "acheteur_adresse": "3 AVENUE FICTIVE 13999 MARSEILLE-TEST",
+    "telephone": null,
+    "acheteur_date_creation": "2021-09-01"
+  },
+  {
+    "acheteur_nom": "EURL BOULANGERIE TEST",
+    "commercant": "BOULANGERIE TEST",
+    "ville": "Isère-Test",
+    "departement": "Isère",
+    "acheteur_dirigeants": "{JEAN TEST (Nom d'usage),MARIE TEST}",
+    "acheteur_adresse": null,
+    "telephone": null,
+    "acheteur_date_creation": null
+  },
+  {
+    "acheteur_nom": null,
+    "commercant": "CAFE DU CENTRE",
+    "ville": "Testeville-sur-Mer",
+    "departement": "Var",
+    "acheteur_dirigeants": [],
+    "acheteur_adresse": null,
+    "telephone": null,
+    "acheteur_date_creation": null
+  },
+  {
+    "acheteur_nom": "SAS SECOND REPRENEUR TEST",
+    "commercant": "BRASSERIE TEST",
+    "ville": "Lyon-Test",
+    "departement": "Rhône",
+    "acheteur_dirigeants": [
+      "LUC FICTIF"
+    ],
+    "acheteur_adresse": null,
+    "telephone": null,
+    "acheteur_date_creation": "2019-02-01"
+  }
+]
