@@ -17,6 +17,25 @@ sys.path.insert(0, HERE)
 from load_db import sql_exec
 from digest import fetch_leads, render_digest, send_resend, VERT_LABELS
 
+def _as_list(v):
+    """Champ Supabase liste : déjà une liste, ou str postgres '{a,b}' / '{"a b","c"}'."""
+    if not v:
+        return []
+    if isinstance(v, str):
+        return [x.strip().strip('"') for x in v.strip("{}").split(",") if x.strip()]
+    return list(v)
+
+def plan_for_subscriber(s):
+    """Retourne (verticales, regions, depts, villes, zone) pour un abonné, sans réseau."""
+    # défaut appliqué avant parsing, comme l'ancien code : "{}" donne [] et non ["chr"]
+    verticales = _as_list(s.get("verticales") or ["chr"])
+    regions = _as_list(s.get("regions"))
+    depts = _as_list(s.get("departements"))
+    villes = _as_list(s.get("villes"))
+    zone = (s.get("zone_label") or (villes[0] + " et alentours" if villes else None)) \
+           or (", ".join(regions) if regions else (", ".join(depts) if depts else "France entière"))
+    return verticales, regions, depts, villes, zone
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
@@ -33,18 +52,7 @@ def main():
         if str(s.get("dernier_digest") or "") == today:
             skipped += 1
             continue
-        verticales = s.get("verticales") or ["chr"]
-        if isinstance(verticales, str):
-            verticales = [v.strip() for v in verticales.strip("{}").split(",") if v.strip()]
-        regions = s.get("regions") or []
-        if isinstance(regions, str):
-            regions = [r.strip() for r in regions.strip("{}").split(",") if r.strip()]
-        depts = s.get("departements") or []
-        if isinstance(depts, str):
-            depts = [d.strip() for d in depts.strip("{}").split(",") if d.strip()]
-        villes = s.get("villes") or []
-        if isinstance(villes, str):
-            villes = [v.strip().strip('"') for v in villes.strip("{}").split(",") if v.strip()]
+        verticales, regions, depts, villes, zone = plan_for_subscriber(s)
         # collecte multi-verticales / multi-zones
         all_leads = []
         for v in verticales:
@@ -61,7 +69,6 @@ def main():
         if not all_leads:
             empty += 1
             continue
-        zone = (s.get("zone_label") or (villes[0] + " et alentours" if villes else None)) or (", ".join(regions) if regions else (", ".join(depts) if depts else "France entière"))
         v_main = verticales[0]
         html_body = render_digest(v_main, all_leads,
                                   region=", ".join(regions) if regions else None,
