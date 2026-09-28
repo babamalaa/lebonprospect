@@ -55,6 +55,34 @@ function donnees(s) {
 - Dernières reprises CHR réelles avec téléphone (noms utilisables tels quels, numéros jamais) : ${d}`;
 }
 
+
+const SLIDE_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    bg: { type: "STRING", enum: ["", "dark", "teal"] },
+    eyebrow: { type: "STRING" }, big: { type: "STRING" }, title: { type: "STRING" }, hl: { type: "STRING" },
+    lead: { type: "STRING" }, quote: { type: "STRING" }, cta: { type: "STRING" }, tag: { type: "STRING" },
+    items: { type: "ARRAY", items: { type: "OBJECT", properties: { b: { type: "STRING" }, s: { type: "STRING" } }, required: ["b"] } },
+    stats: { type: "ARRAY", items: { type: "OBJECT", properties: { n: { type: "STRING" }, l: { type: "STRING" } }, required: ["n", "l"] } },
+  },
+  required: ["bg"],
+};
+const RESPONSE_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    titre_interne: { type: "STRING" },
+    format: { type: "STRING", enum: ["image", "carrousel"] },
+    slides: { type: "ARRAY", items: SLIDE_SCHEMA },
+    legende_instagram: { type: "STRING" },
+    legende_linkedin: { type: "STRING" },
+    premier_commentaire_linkedin: { type: "STRING" },
+    hashtags_instagram: { type: "STRING" },
+    hashtags_linkedin: { type: "STRING" },
+    chiffres_utilises: { type: "ARRAY", items: { type: "STRING" } },
+  },
+  required: ["titre_interne", "format", "slides", "legende_instagram", "legende_linkedin", "premier_commentaire_linkedin", "hashtags_instagram", "hashtags_linkedin", "chiffres_utilises"],
+};
+
 const SUJETS_AUTO = [
   "Un repreneur de restaurant qui ne reçoit aucun appel de fournisseur pendant ses trois premiers mois",
   "Le bulletin du BODACC de 89 pages que personne ne lit, et ce qu'il contient vraiment",
@@ -122,7 +150,7 @@ ${donnees(stats)}
     const { model, txt } = await gemini({
       systemInstruction: { parts: [{ text: SYSTEM }] },
       contents: [{ role: "user", parts: [{ text: consigne }] }],
-      generationConfig: { temperature: 0.8, responseMimeType: "application/json", maxOutputTokens: 4000 },
+      generationConfig: { temperature: 0.8, responseMimeType: "application/json", responseSchema: RESPONSE_SCHEMA, maxOutputTokens: 6000 },
     });
     const parseLoose = (raw) => {
       let t = (raw || "").trim().replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "");
@@ -138,7 +166,7 @@ ${donnees(stats)}
     const out = parseLoose(txt);
     if (!out || !Array.isArray(out.slides)) {
       console.error("IA JSON illisible:", txt.slice(0, 800));
-      return Response.json({ error: "L'IA a répondu dans un format illisible, relancez (ça arrive une fois sur dix)." }, { status: 502 });
+      return Response.json({ error: "L'IA a répondu dans un format illisible, relancez.", brut: txt.slice(0, 600) }, { status: 502 });
     }
     // garde-fous : aucun emoji ni cadratin ne passe, quoi qu'il arrive
     const clean = (t) => (t || "").replace(/[\u2014\u2013]/g, ",").replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, "").replace(/ ,/g, ",");
