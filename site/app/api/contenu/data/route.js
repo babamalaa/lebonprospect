@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req) {
   const profile = await getAuthedProfile(req);
   if (!profile) return Response.json({ error: "Non authentifié." }, { status: 401 });
+  if (profile.role !== "admin") return Response.json({ error: "Accès réservé." }, { status: 403 });
   const admin = supabaseAdmin();
   const { data, error } = await admin.rpc("contenu_stats");
   if (error) return Response.json({ error: error.message }, { status: 400 });

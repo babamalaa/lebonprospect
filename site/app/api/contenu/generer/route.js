@@ -152,7 +152,7 @@ export async function GET(req) {
 export async function POST(req) {
   const profile = await getAuthedProfile(req);
   if (!profile) return Response.json({ error: "Non authentifié." }, { status: 401 });
-  if (profile.role !== "admin" && !profile.essai_autorise) return Response.json({ error: "Accès réservé." }, { status: 403 });
+  if (profile.role !== "admin") return Response.json({ error: "Accès réservé." }, { status: 403 });
 
   const { idee, format, reseau, auto } = await req.json().catch(() => ({}));
   const admin = supabaseAdmin();
