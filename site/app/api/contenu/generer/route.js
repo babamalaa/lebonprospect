@@ -56,7 +56,7 @@ function donnees(s) {
   return `DONNÉES RÉELLES (base LeBonProspect au ${s.date}, dernière édition BODACC du ${s.derniere_edition}). Ce sont les SEULS chiffres autorisés :
 - Commerces ayant changé de propriétaire en France sur 12 mois (tous types) : ${s.total_12m}
 - Soit par mois : ${s.par_mois} ; par jour ouvré : ${s.par_jour_ouvre}
-- Restaurants, bars et hôtels (CHR) repris sur 12 mois : ${s.chr_12m} ; sur 90 jours : ${s.chr_90j} ; sur 30 jours : ${s.chr_30j}
+- Restaurants, bars et hôtels (CHR) repris : environ ${s.chr_par_mois} par mois (moyenne des 90 derniers jours : ${s.chr_90j} sur 90 jours, ${s.chr_30j} sur 30 jours). Ne jamais donner de chiffre CHR « sur 12 mois »
 - Part des fiches CHR livrées avec le téléphone (90 j) : ${s.pct_tel_chr_90j} %
 - Part des repreneurs CHR ayant créé leur société il y a moins de 90 jours (« budgets ouverts ») : ${s.pct_neufs_chr_90j} %
 - Dernière édition du BODACC : ${s.jour_type_total} commerces repris, dont ${s.jour_type_chr} CHR
