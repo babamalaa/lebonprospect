@@ -29,8 +29,8 @@ INTERDITS ABSOLUS
 - Pas de lien dans la légende LinkedIn (le lien va en premier commentaire). Instagram : « Lien en bio ».
 
 VISUELS
-Tu produis des slides pour un moteur de rendu fixe. Chaque slide est un objet JSON : { "bg": "" | "dark" | "teal", "eyebrow": surtitre court en capitales (optionnel), "big": chiffre géant (optionnel, uniquement un chiffre des DONNÉES, formaté à la française avec espace des milliers), "title": titre (max 9 mots), "hl": 1 à 3 mots de fin de titre mis en couleur (optionnel), "lead": 1 à 2 phrases (max 32 mots, optionnel), "quote": phrase forte seule (remplace title, max 25 mots, optionnel), "items": liste de 3 à 4 { "b": 3-6 mots, "s": 6-10 mots } (optionnel), "stats": 2 à 4 { "n": chiffre, "l": libellé 2-4 mots } (optionnel), "cta": texte de bouton 3-6 mots (optionnel, dernière slide uniquement), "tag": source en pied (ex : « Source : BODACC, 90 derniers jours ») }.
-Règles visuelles : alterner les fonds (jamais deux « dark » ou deux « teal » d'affilée, commencer par "" crème sauf si le post est un chiffre choc). Une image unique = 1 slide. Un carrousel = 4 à 6 slides : accroche, développement (2 à 4), chute avec cta. Une slide « items » ou « stats » ne porte ni lead ni big.
+Tu produis des slides pour un moteur de rendu fixe. Chaque slide est un objet JSON : { "bg": "cream" | "dark" | "teal", "eyebrow": surtitre court en capitales (optionnel), "big": chiffre géant (optionnel, uniquement un chiffre des DONNÉES, formaté à la française avec espace des milliers), "title": titre (max 9 mots), "hl": 1 à 3 mots de fin de titre mis en couleur (optionnel), "lead": 1 à 2 phrases (max 32 mots, optionnel), "quote": phrase forte seule (remplace title, max 25 mots, optionnel), "items": liste de 3 à 4 { "b": 3-6 mots, "s": 6-10 mots } (optionnel), "stats": 2 à 4 { "n": chiffre, "l": libellé 2-4 mots } (optionnel), "cta": texte de bouton 3-6 mots (optionnel, dernière slide uniquement), "tag": source en pied (ex : « Source : BODACC, 90 derniers jours ») }.
+Règles visuelles : alterner les fonds (jamais deux « dark » ou deux « teal » d'affilée, commencer par "cream" sauf si le post est un chiffre choc). Une image unique = 1 slide. Un carrousel = 4 à 6 slides : accroche, développement (2 à 4), chute avec cta. Une slide « items » ou « stats » ne porte ni lead ni big.
 
 Réponds UNIQUEMENT avec un JSON valide, sans texte autour, de la forme :
 { "titre_interne": "…", "format": "image" | "carrousel", "slides": [ … ], "legende_instagram": "…", "legende_linkedin": "…", "premier_commentaire_linkedin": "…", "hashtags_instagram": "…", "hashtags_linkedin": "…", "chiffres_utilises": ["…"] }
@@ -59,7 +59,7 @@ function donnees(s) {
 const SLIDE_SCHEMA = {
   type: "OBJECT",
   properties: {
-    bg: { type: "STRING", enum: ["", "dark", "teal"] },
+    bg: { type: "STRING", enum: ["cream", "dark", "teal"] },
     eyebrow: { type: "STRING" }, big: { type: "STRING" }, title: { type: "STRING" }, hl: { type: "STRING" },
     lead: { type: "STRING" }, quote: { type: "STRING" }, cta: { type: "STRING" }, tag: { type: "STRING" },
     items: { type: "ARRAY", items: { type: "OBJECT", properties: { b: { type: "STRING" }, s: { type: "STRING" } }, required: ["b"] } },
@@ -169,6 +169,7 @@ ${donnees(stats)}
       return Response.json({ error: "L'IA a répondu dans un format illisible, relancez.", brut: txt.slice(0, 600) }, { status: 502 });
     }
     // garde-fous : aucun emoji ni cadratin ne passe, quoi qu'il arrive
+    for (const sl of out.slides) if (sl.bg === "cream") sl.bg = "";
     const clean = (t) => (t || "").replace(/[\u2014\u2013]/g, ",").replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, "").replace(/ ,/g, ",");
     for (const s of out.slides) for (const k of ["eyebrow", "title", "hl", "lead", "quote", "cta", "tag", "big"]) if (s[k]) s[k] = clean(String(s[k]));
     for (const s of out.slides) { if (s.items) s.items = s.items.map((i) => ({ b: clean(i.b), s: clean(i.s) })); if (s.stats) s.stats = s.stats.map((i) => ({ n: clean(String(i.n)), l: clean(i.l) })); }
