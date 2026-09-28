@@ -34,7 +34,7 @@ INTERDITS ABSOLUS
 - Pas de lien dans la légende LinkedIn (le lien va en premier commentaire). Instagram : « Lien en bio ».
 
 VISUELS
-Tu produis des slides pour un moteur de rendu fixe. Chaque slide est un objet JSON : { "bg": "cream" | "dark" | "teal", "eyebrow": surtitre court en capitales (optionnel), "big": chiffre géant (optionnel, uniquement un chiffre des DONNÉES, formaté à la française avec espace des milliers), "title": titre court, 4 à 9 mots MAXIMUM, jamais une phrase complète ni une question longue (le développement va dans "lead"), "hl": 1 à 3 mots de fin de titre mis en couleur (optionnel), "lead": 1 à 2 phrases (max 32 mots, optionnel), "quote": phrase forte seule (remplace title, max 25 mots, optionnel), "items": liste de 3 à 4 { "b": 3-6 mots, "s": 6-10 mots } (optionnel), "stats": 2 à 4 { "n": chiffre, "l": libellé 2-4 mots } (optionnel), "cta": texte de bouton 3-6 mots (optionnel, dernière slide uniquement), "tag": pied de slide OBLIGATOIRE sur chaque slide : « Source : BODACC » ou le nom de la série (ex : « Stock vs signal ») }.
+Tu produis des slides pour un moteur de rendu fixe. Chaque slide est un objet JSON : { "bg": "cream" | "dark" | "teal", "eyebrow": surtitre court en capitales (optionnel), "big": chiffre géant (optionnel, uniquement un chiffre des DONNÉES, formaté à la française avec espace des milliers), "title": titre court, 4 à 9 mots MAXIMUM, jamais une phrase complète ni une question longue (le développement va dans "lead"), "hl": 1 à 3 mots de fin de titre mis en couleur (optionnel), "lead": 1 à 2 phrases (max 32 mots, optionnel), "quote": phrase forte seule, max 25 mots (optionnel ; une slide "quote" n'a NI title NI lead NI stats, la citation est seule sur la slide), "items": liste de 3 à 4 { "b": 3-6 mots, "s": 6-10 mots } (optionnel), "stats": 2 à 4 { "n": chiffre, "l": libellé 2-4 mots } (optionnel), "cta": texte de bouton 3-6 mots (optionnel, dernière slide uniquement), "tag": pied de slide OBLIGATOIRE sur chaque slide : « Source : BODACC » ou le nom de la série (ex : « Stock vs signal ») }.
 Règles visuelles ABSOLUES : une slide n'est JAMAIS un titre seul. Chaque slide contient obligatoirement, en plus du titre, AU MOINS UN de : "lead" (1 à 2 phrases), "big" (chiffre), "items", "stats", "quote" ou "cta". Une slide avec seulement un titre est un échec ; le lead porte la phrase, le titre porte l'idée en peu de mots. Alterner les fonds (jamais deux « dark » ou deux « teal » d'affilée, commencer par "cream" sauf si le post est un chiffre choc). Une image unique = 1 slide. Un carrousel = 4 à 6 slides : accroche, développement (2 à 4), chute avec cta. Une slide « items » ou « stats » ne porte ni lead ni big.
 
 Réponds UNIQUEMENT avec un JSON valide, sans texte autour, de la forme :
@@ -70,7 +70,7 @@ const SLIDE_SCHEMA = {
     items: { type: "ARRAY", items: { type: "OBJECT", properties: { b: { type: "STRING" }, s: { type: "STRING" } }, required: ["b"] } },
     stats: { type: "ARRAY", items: { type: "OBJECT", properties: { n: { type: "STRING" }, l: { type: "STRING" } }, required: ["n", "l"] } },
   },
-  required: ["bg", "title", "tag"],
+  required: ["bg", "tag"],
 };
 const RESPONSE_SCHEMA = {
   type: "OBJECT",
@@ -197,6 +197,18 @@ ${donnees(stats)}
     for (const sl of out.slides) {
       if (sl.bg === "cream") sl.bg = "";
       if (!sl.tag) sl.tag = "Source : BODACC";
+      if (sl.quote && (sl.title || sl.lead || (sl.stats && sl.stats.length) || (sl.items && sl.items.length))) {
+        // une citation vit seule : si la slide a déjà un titre/lead, la citation devient le lead (ou disparaît si un lead existe)
+        if (!sl.lead) sl.lead = sl.quote.replace(/^[«"“]\s*|\s*[»"”]$/g, "");
+        delete sl.quote;
+      }
+      // slide "stats" : pas de lead en plus (trop chargé) ; on garde le titre et les stats
+      if (sl.stats && sl.stats.length && sl.lead && sl.title) delete sl.lead;
+      if (sl.title && sl.title.split(/\s+/).length > 9 && sl.lead) sl.title = sl.title.split(/\s+/).slice(0, 9).join(" ").replace(/[,:;.]$/, "");
+      if (sl.title && !sl.lead && !sl.big && !sl.quote && !(sl.items && sl.items.length) && !(sl.stats && sl.stats.length)) {
+        // titre seul restant : le titre devient lead, on garde 6 mots en titre
+        const w = sl.title.split(/\s+/); if (w.length > 6) { sl.lead = sl.title; sl.title = w.slice(0, 6).join(" "); }
+      }
       // un titre de plus de 12 mots n'est pas un titre : on le déplace en lead et on garde ses 8 premiers mots en titre
       if (sl.title && sl.title.split(/\s+/).length > 12 && !sl.lead) {
         const w = sl.title.split(/\s+/); sl.lead = sl.title; sl.title = w.slice(0, 8).join(" ").replace(/[,:;.]$/, "");
