@@ -30,7 +30,7 @@ INTERDITS ABSOLUS
 
 VISUELS
 Tu produis des slides pour un moteur de rendu fixe. Chaque slide est un objet JSON : { "bg": "cream" | "dark" | "teal", "eyebrow": surtitre court en capitales (optionnel), "big": chiffre géant (optionnel, uniquement un chiffre des DONNÉES, formaté à la française avec espace des milliers), "title": titre court, 4 à 9 mots MAXIMUM, jamais une phrase complète ni une question longue (le développement va dans "lead"), "hl": 1 à 3 mots de fin de titre mis en couleur (optionnel), "lead": 1 à 2 phrases (max 32 mots, optionnel), "quote": phrase forte seule (remplace title, max 25 mots, optionnel), "items": liste de 3 à 4 { "b": 3-6 mots, "s": 6-10 mots } (optionnel), "stats": 2 à 4 { "n": chiffre, "l": libellé 2-4 mots } (optionnel), "cta": texte de bouton 3-6 mots (optionnel, dernière slide uniquement), "tag": pied de slide OBLIGATOIRE sur chaque slide : « Source : BODACC » ou le nom de la série (ex : « Stock vs signal ») }.
-Règles visuelles : chaque slide a un titre court ET un lead (sauf les slides items/stats/quote) ; le lead porte la phrase, le titre porte l'idée en peu de mots. Alterner les fonds (jamais deux « dark » ou deux « teal » d'affilée, commencer par "cream" sauf si le post est un chiffre choc). Une image unique = 1 slide. Un carrousel = 4 à 6 slides : accroche, développement (2 à 4), chute avec cta. Une slide « items » ou « stats » ne porte ni lead ni big.
+Règles visuelles ABSOLUES : une slide n'est JAMAIS un titre seul. Chaque slide contient obligatoirement, en plus du titre, AU MOINS UN de : "lead" (1 à 2 phrases), "big" (chiffre), "items", "stats", "quote" ou "cta". Une slide avec seulement un titre est un échec ; le lead porte la phrase, le titre porte l'idée en peu de mots. Alterner les fonds (jamais deux « dark » ou deux « teal » d'affilée, commencer par "cream" sauf si le post est un chiffre choc). Une image unique = 1 slide. Un carrousel = 4 à 6 slides : accroche, développement (2 à 4), chute avec cta. Une slide « items » ou « stats » ne porte ni lead ni big.
 
 Réponds UNIQUEMENT avec un JSON valide, sans texte autour, de la forme :
 { "titre_interne": "…", "format": "image" | "carrousel", "slides": [ … ], "legende_instagram": "…", "legende_linkedin": "…", "premier_commentaire_linkedin": "…", "hashtags_instagram": "…", "hashtags_linkedin": "…", "chiffres_utilises": ["…"] }
@@ -65,7 +65,7 @@ const SLIDE_SCHEMA = {
     items: { type: "ARRAY", items: { type: "OBJECT", properties: { b: { type: "STRING" }, s: { type: "STRING" } }, required: ["b"] } },
     stats: { type: "ARRAY", items: { type: "OBJECT", properties: { n: { type: "STRING" }, l: { type: "STRING" } }, required: ["n", "l"] } },
   },
-  required: ["bg"],
+  required: ["bg", "title", "tag"],
 };
 const RESPONSE_SCHEMA = {
   type: "OBJECT",
@@ -173,6 +173,17 @@ ${donnees(stats)}
       try { return JSON.parse(t); } catch { return null; }
     };
     const out = parseLoose(txt);
+    const vide = (sl) => sl && !sl.lead && !sl.big && !sl.quote && !(sl.items && sl.items.length) && !(sl.stats && sl.stats.length) && !sl.cta;
+    if (out && Array.isArray(out.slides) && out.slides.some(vide) && !req.headers.get("x-retry")) {
+      // slides creuses : on relance une fois en le disant explicitement au modele
+      const { txt: txt2, model: m2 } = await gemini({
+        systemInstruction: { parts: [{ text: SYSTEM }] },
+        contents: [{ role: "user", parts: [{ text: consigne + "\n\nATTENTION : ta réponse précédente contenait des slides avec un titre seul. Chaque slide DOIT avoir un lead, un chiffre, une liste, des stats, une citation ou un bouton en plus du titre." }] }],
+        generationConfig: { temperature: 0.7, responseMimeType: "application/json", responseSchema: RESPONSE_SCHEMA, maxOutputTokens: 8000, thinkingConfig: { thinkingBudget: 0 } },
+      });
+      const o2 = parseLoose(txt2);
+      if (o2 && Array.isArray(o2.slides) && !o2.slides.some(vide)) { Object.assign(out, o2); out._model = m2; }
+    }
     if (!out || !Array.isArray(out.slides)) {
       console.error("IA JSON illisible:", txt.slice(0, 800));
       return Response.json({ error: "L'IA a répondu dans un format illisible, relancez.", brut: txt.slice(0, 600) }, { status: 502 });
@@ -190,7 +201,7 @@ ${donnees(stats)}
     for (const s of out.slides) for (const k of ["eyebrow", "title", "hl", "lead", "quote", "cta", "tag", "big"]) if (s[k]) s[k] = clean(String(s[k]));
     for (const s of out.slides) { if (s.items) s.items = s.items.map((i) => ({ b: clean(i.b), s: clean(i.s) })); if (s.stats) s.stats = s.stats.map((i) => ({ n: clean(String(i.n)), l: clean(i.l) })); }
     for (const k of ["legende_instagram", "legende_linkedin", "premier_commentaire_linkedin", "titre_interne"]) out[k] = clean(out[k]);
-    return Response.json({ ...out, sujet, model });
+    return Response.json({ ...out, sujet, model: out._model || model });
   } catch (e) {
     return Response.json({ error: e.message }, { status: 503 });
   }
