@@ -4,7 +4,7 @@ import { getAuthedProfile } from "../../../lib/auth";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-const MODELS = (process.env.TEXT_MODELS || "gemini-2.5-flash,gemini-2.5-pro").split(",").map((m) => m.trim());
+const MODELS = (process.env.TEXT_MODELS || "gemini-3.8-flash,gemini-3.7-flash,gemini-3.5-flash,gemini-3.1-pro-preview,gemini-2.5-flash").split(",").map((m) => m.trim());
 const BASE = process.env.GEMINI_BASE_URL || "https://generativelanguage.googleapis.com/v1beta";
 
 const SYSTEM = `Tu écris les posts Instagram et LinkedIn de LeBonProspect, un service français qui envoie chaque matin à 8h, aux fournisseurs B2B des commerces (agenceurs, équipementiers de cuisine, enseignistes, solutions de caisse, brasseurs, hottes, mobilier), la liste des commerces qui viennent de changer de propriétaire, avec le nom du repreneur et le téléphone de l'établissement. Source : BODACC (cessions de fonds de commerce, publiées au Journal officiel par obligation légale). Tarifs : Départemental 149 €/mois, Régional 299 €/mois, sans engagement. Tagline : « Le repreneur avant tout le monde. »
@@ -83,9 +83,20 @@ async function gemini(body) {
       return { model, txt };
     }
     lastErr = `${model}: ${r.status} ${(await r.text()).slice(0, 200)}`;
-    if (r.status !== 404 && r.status !== 429 && r.status !== 503) break;
+    if (![400, 404, 429, 503].includes(r.status)) break;
   }
   throw new Error("IA indisponible (" + lastErr + ")");
+}
+
+export async function GET(req) {
+  const profile = await getAuthedProfile(req);
+  if (!profile || profile.role !== "admin") return Response.json({ error: "Non autorisé." }, { status: 403 });
+  const key = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+  if (!key) return Response.json({ error: "Clé absente" }, { status: 503 });
+  const r = await fetch(`${BASE}/models?key=${key}&pageSize=100`);
+  const j = await r.json();
+  const models = (j.models || []).filter((m) => (m.supportedGenerationMethods || []).includes("generateContent")).map((m) => m.name.replace("models/", ""));
+  return Response.json({ configured: MODELS, available: models });
 }
 
 export async function POST(req) {
