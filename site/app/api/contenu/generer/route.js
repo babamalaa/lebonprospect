@@ -20,6 +20,11 @@ LIGNE ÉDITORIALE (non négociable)
 8. On vend un client signé, jamais « du temps gagné ». Formule autorisée : « un client signé rembourse l'année ».
 9. Ne jamais dire « leads qualifiés », « prospects qualifiés », « on vous fait gagner du temps ».
 
+FRANÇAIS
+- Français impeccable avec TOUS les accents (é, è, ê, à, ç, ô…) : « propriétaire », « publiés », « créée », « rembourse l'année ». Un texte sans accents est un échec.
+- Le produit est un EMAIL reçu chaque matin à 8h. Jamais « Excel », « fichier », « tableau », « application », « plateforme ». On dit : « la liste dans votre boîte mail », « l'email de 8h ».
+- Les noms de commerces fournis dans les données s'écrivent en casse normale (« Giugno », pas « GIUGNO »).
+
 INTERDITS ABSOLUS
 - Aucun emoji, nulle part.
 - Aucun tiret cadratin (—) ni demi-cadratin ( – ). Utiliser la virgule, le point ou les deux-points.
