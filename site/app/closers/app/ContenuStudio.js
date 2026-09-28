@@ -105,6 +105,31 @@ export default function ContenuStudio({ authedFetch, toast }) {
   const [legende, setLegende] = useState("");
   const [sel, setSel] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [mode, setMode] = useState("idee");          // "idee" (IA) | "modeles"
+  const [idee, setIdee] = useState("");
+  const [fmtIdee, setFmtIdee] = useState("auto");
+  const [gen, setGen] = useState(false);
+  const [genErr, setGenErr] = useState("");
+  const [legendeLI, setLegendeLI] = useState("");
+  const [commentaireLI, setCommentaireLI] = useState("");
+  const [chiffres, setChiffres] = useState([]);
+
+  const generer = async (auto = false) => {
+    setGen(true); setGenErr("");
+    try {
+      const r = await authedFetch("/api/contenu/generer", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ idee, format: fmtIdee, reseau: format, auto }) });
+      const d = await r.json();
+      if (!r.ok || d.error) { setGenErr(d.error || "Erreur"); return; }
+      setSlides(d.slides); setSel(0);
+      setLegende((d.legende_instagram || "") + (d.hashtags_instagram ? "\n\n" + d.hashtags_instagram : ""));
+      setLegendeLI((d.legende_linkedin || "") + (d.hashtags_linkedin ? "\n\n" + d.hashtags_linkedin : ""));
+      setCommentaireLI(d.premier_commentaire_linkedin || "");
+      setChiffres(d.chiffres_utilises || []);
+      if (auto) setIdee(d.sujet || "");
+      toast?.(`Post généré : ${d.titre_interne || d.sujet}`);
+    } catch (e) { setGenErr(String(e.message || e)); }
+    finally { setGen(false); }
+  };
 
   useEffect(() => {
     authedFetch("/api/contenu/data").then((r) => r.json()).then((d) => { if (d && !d.error) setStats(d); else toast?.("Chiffres indisponibles", "error"); }).catch(() => {});
@@ -116,7 +141,7 @@ export default function ContenuStudio({ authedFetch, toast }) {
     setSlides(b.slides); setLegende(b.legende ? b.legende + "\n\n" + (format === "li" ? HASHTAGS_LI : HASHTAGS_IG) : ""); setSel(0);
   }, [format]);
 
-  useEffect(() => { if (stats) applyModele(modele, stats); }, [stats, modele, applyModele]);
+  useEffect(() => { if (stats && mode === "modeles") applyModele(modele, stats); }, [stats, modele, applyModele, mode]);
 
   const urlFor = (s, i) => `/api/contenu/render?f=${format}&p=${i + 1}&n=${slides.length}&s=${encodeURIComponent(JSON.stringify(s))}`;
   const update = (k, v) => setSlides((arr) => arr.map((s, i) => (i === sel ? { ...s, [k]: v } : s)));
@@ -136,20 +161,51 @@ export default function ContenuStudio({ authedFetch, toast }) {
 
   return (
     <div className="studio">
-      <div className="studio-top">
-        <div>
-          <label>Modèle</label>
-          <select value={modele} onChange={(e) => setModele(e.target.value)}>{MODELES.map((m) => <option key={m.id} value={m.id}>{m.nom}</option>)}</select>
-        </div>
-        <div>
-          <label>Réseau</label>
-          <select value={format} onChange={(e) => setFormat(e.target.value)}><option value="ig">Instagram (1080 × 1350)</option><option value="li">LinkedIn (1080 × 1080)</option></select>
-        </div>
-        <button className="page-gen-btn" onClick={() => stats && applyModele(modele, stats)} title="Recharge les chiffres du jour dans le modèle">Réinitialiser</button>
-        <button className="page-gen-btn primary" onClick={downloadAll} disabled={busy || !slides.length}>{busy ? "Génération…" : `Télécharger ${slides.length > 1 ? `les ${slides.length} visuels` : "le visuel"}`}</button>
+      <div className="studio-modes">
+        <button className={mode === "idee" ? "active" : ""} onClick={() => setMode("idee")}>À partir d&apos;une idée</button>
+        <button className={mode === "modeles" ? "active" : ""} onClick={() => { setMode("modeles"); if (stats) applyModele(modele, stats); }}>Modèles prêts</button>
       </div>
-      {stats && <p className="studio-note">Chiffres du {stats.date}, dernière édition BODACC du {stats.derniere_edition ? new Date(stats.derniere_edition).toLocaleDateString("fr-FR") : ""}. Tout est vérifiable.</p>}
 
+      {mode === "idee" && (
+        <div className="studio-idee">
+          <label>Votre idée, votre angle, une stat, une scène vue au téléphone… une phrase suffit</label>
+          <textarea rows={3} value={idee} onChange={(e) => setIdee(e.target.value)} placeholder="Ex : un enseigniste de Toulon m'a dit que son secteur était trop petit pour un département. On a regardé : 381 commerces ont changé de main dans son rayon." />
+          <div className="studio-idee-row">
+            <div>
+              <label>Format</label>
+              <select value={fmtIdee} onChange={(e) => setFmtIdee(e.target.value)}><option value="auto">Au choix de l&apos;IA</option><option value="image">Image unique</option><option value="carrousel">Carrousel</option></select>
+            </div>
+            <div>
+              <label>Réseau principal</label>
+              <select value={format} onChange={(e) => setFormat(e.target.value)}><option value="ig">Instagram (1080 × 1350)</option><option value="li">LinkedIn (1080 × 1080)</option></select>
+            </div>
+            <button className="page-gen-btn primary" onClick={() => generer(false)} disabled={gen || !idee.trim()}>{gen ? "Écriture en cours…" : "Fabriquer le post"}</button>
+            <button className="page-gen-btn" onClick={() => generer(true)} disabled={gen} title="Plus d'inspiration ? L'IA choisit un angle et fait tout.">{gen ? "…" : "L'IA choisit le sujet"}</button>
+          </div>
+          {genErr && <p className="studio-err">{genErr}</p>}
+          {chiffres.length > 0 && <p className="studio-note">Chiffres utilisés (à vérifier avant de publier) : {chiffres.join(" · ")}</p>}
+        </div>
+      )}
+
+      {mode === "modeles" && (
+        <div className="studio-top">
+          <div>
+            <label>Modèle</label>
+            <select value={modele} onChange={(e) => setModele(e.target.value)}>{MODELES.map((m) => <option key={m.id} value={m.id}>{m.nom}</option>)}</select>
+          </div>
+          <div>
+            <label>Réseau</label>
+            <select value={format} onChange={(e) => setFormat(e.target.value)}><option value="ig">Instagram (1080 × 1350)</option><option value="li">LinkedIn (1080 × 1080)</option></select>
+          </div>
+          <button className="page-gen-btn" onClick={() => stats && applyModele(modele, stats)} title="Recharge les chiffres du jour dans le modèle">Réinitialiser</button>
+        </div>
+      )}
+      {stats && mode === "modeles" && <p className="studio-note">Chiffres du {stats.date}, dernière édition BODACC du {stats.derniere_edition ? new Date(stats.derniere_edition).toLocaleDateString("fr-FR") : ""}. Tout est vérifiable.</p>}
+      {slides.length > 0 && (
+        <div className="studio-top" style={{ marginTop: 4 }}>
+          <button className="page-gen-btn primary" onClick={downloadAll} disabled={busy || !slides.length}>{busy ? "Génération…" : `Télécharger ${slides.length > 1 ? `les ${slides.length} visuels` : "le visuel"}`}</button>
+        </div>
+      )}
       <div className="studio-body">
         <div className="studio-preview">
           <div className="studio-thumbs">
@@ -184,10 +240,24 @@ export default function ContenuStudio({ authedFetch, toast }) {
 
       <div className="studio-caption">
         <div className="studio-caption-head">
-          <h3>Légende</h3>
+          <h3>{legendeLI ? "Légende Instagram" : "Légende"}</h3>
           <button className="page-gen-btn" onClick={() => { navigator.clipboard?.writeText(legende); toast?.("Légende copiée"); }}>Copier</button>
         </div>
         <textarea rows={10} value={legende} onChange={(e) => setLegende(e.target.value)} />
+        {legendeLI && (
+          <>
+            <div className="studio-caption-head" style={{ marginTop: 18 }}>
+              <h3>Légende LinkedIn</h3>
+              <button className="page-gen-btn" onClick={() => { navigator.clipboard?.writeText(legendeLI); toast?.("Légende LinkedIn copiée"); }}>Copier</button>
+            </div>
+            <textarea rows={12} value={legendeLI} onChange={(e) => setLegendeLI(e.target.value)} />
+            <div className="studio-caption-head" style={{ marginTop: 14 }}>
+              <h3>Premier commentaire LinkedIn (le lien va ici, pas dans le post)</h3>
+              <button className="page-gen-btn" onClick={() => { navigator.clipboard?.writeText(commentaireLI); toast?.("Commentaire copié"); }}>Copier</button>
+            </div>
+            <textarea rows={2} value={commentaireLI} onChange={(e) => setCommentaireLI(e.target.value)} />
+          </>
+        )}
         <p className="studio-note">Règles : ouvrir sur une scène, un détail concret par paragraphe, le chiffre arrive tard, chute factuelle, zéro emoji, zéro tiret cadratin, aucun chiffre qu'on ne peut pas prouver.</p>
       </div>
     </div>
