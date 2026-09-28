@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import { ToastProvider, useToast } from "../../lib/ToastContext";
 import SCRIPTS_V2 from "./scripts";
+import ContenuStudio from "./ContenuStudio";
 
 const STATUTS = [
   { v: "a_contacter", l: "À contacter" },
@@ -413,7 +414,7 @@ function AppPageInner() {
             <span>{profile?.role === "admin" ? "Admin" : "Closer"}</span>
           </div>
           <nav className="app-nav app-nav-mobile">
-            {Object.entries(profile?.role === "admin" ? TAB_LABELS_ADMIN : TAB_LABELS_CLOSER).map(([key, label]) => (
+            {[...Object.entries(profile?.role === "admin" ? TAB_LABELS_ADMIN : TAB_LABELS_CLOSER), ...((profile?.role === "admin" || profile?.essai_autorise) ? [["contenu", "Contenu"]] : [])].map(([key, label]) => (
               <button
                 key={key}
                 className={tab === key ? "active" : ""}
@@ -449,6 +450,7 @@ function AppPageInner() {
           <button className={tab === "prospects" ? "active" : ""} onClick={() => setTab("prospects")}>{profile?.role === "admin" ? "Suivi équipe" : "Mes prospects"}</button>
           <button className={tab === "documents" ? "active" : ""} onClick={() => setTab("documents")}>Documents</button>
           <button className={tab === "script" ? "active" : ""} onClick={() => setTab("script")}>Scripts d&apos;appel</button>
+          {(profile?.role === "admin" || profile?.essai_autorise) && <button className={tab === "contenu" ? "active" : ""} onClick={() => setTab("contenu")}>Contenu</button>}
           <a className="app-nav-link" href="https://mail.zoho.eu" target="_blank" rel="noreferrer">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -968,6 +970,14 @@ function AppPageInner() {
                 );
               })}
             </div>
+          </div>
+        )}
+
+        {tab === "contenu" && (profile?.role === "admin" || profile?.essai_autorise) && (
+          <div className="app-panel">
+            <h1 className="app-h1">Contenu</h1>
+            <p className="app-lead" style={{ marginBottom: 16 }}>Générez vos visuels Instagram et LinkedIn avec les chiffres du jour, dans la charte du site. Choisissez un modèle, ajustez les textes, téléchargez. Chaque chiffre vient de la base et reste vérifiable au BODACC.</p>
+            <ContenuStudio authedFetch={authedFetch} toast={toast} />
           </div>
         )}
 
