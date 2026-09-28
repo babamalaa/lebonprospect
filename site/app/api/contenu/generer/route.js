@@ -34,7 +34,7 @@ Règles visuelles : alterner les fonds (jamais deux « dark » ou deux « teal �
 
 Réponds UNIQUEMENT avec un JSON valide, sans texte autour, de la forme :
 { "titre_interne": "…", "format": "image" | "carrousel", "slides": [ … ], "legende_instagram": "…", "legende_linkedin": "…", "premier_commentaire_linkedin": "…", "hashtags_instagram": "…", "hashtags_linkedin": "…", "chiffres_utilises": ["…"] }
-Les légendes utilisent \\n\\n entre paragraphes. La légende LinkedIn fait 150 à 220 mots, l'Instagram 90 à 150 mots. « chiffres_utilises » liste chaque chiffre cité, avec sa source, pour vérification.`;
+Les légendes utilisent la séquence \\n\\n (backslash n, échappée JSON) entre paragraphes, jamais un retour à la ligne brut dans une chaîne. La légende LinkedIn fait 150 à 220 mots, l'Instagram 90 à 150 mots. « chiffres_utilises » liste chaque chiffre cité, avec sa source, pour vérification.`;
 
 function donnees(s) {
   const r = (s.regions_chr_90j || []).map((x) => `${x.region} ${x.n}`).join(", ");
@@ -122,11 +122,24 @@ ${donnees(stats)}
     const { model, txt } = await gemini({
       systemInstruction: { parts: [{ text: SYSTEM }] },
       contents: [{ role: "user", parts: [{ text: consigne }] }],
-      generationConfig: { temperature: 0.9, responseMimeType: "application/json", maxOutputTokens: 4000 },
+      generationConfig: { temperature: 0.8, responseMimeType: "application/json", maxOutputTokens: 4000 },
     });
-    let out;
-    try { out = JSON.parse(txt); } catch { const m = txt.match(/\{[\s\S]*\}/); out = m ? JSON.parse(m[0]) : null; }
-    if (!out || !Array.isArray(out.slides)) return Response.json({ error: "Réponse IA illisible, relancez." }, { status: 502 });
+    const parseLoose = (raw) => {
+      let t = (raw || "").trim().replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "");
+      const a = t.indexOf("{"), b = t.lastIndexOf("}");
+      if (a >= 0 && b > a) t = t.slice(a, b + 1);
+      try { return JSON.parse(t); } catch {}
+      // virgules pendantes, retours a la ligne bruts dans les chaines
+      t = t.replace(/,\s*([}\]])/g, "$1");
+      try { return JSON.parse(t); } catch {}
+      t = t.replace(/(?<=":\s*"[^"]*)\n(?=[^"]*")/g, "\\n");
+      try { return JSON.parse(t); } catch { return null; }
+    };
+    const out = parseLoose(txt);
+    if (!out || !Array.isArray(out.slides)) {
+      console.error("IA JSON illisible:", txt.slice(0, 800));
+      return Response.json({ error: "L'IA a répondu dans un format illisible, relancez (ça arrive une fois sur dix)." }, { status: 502 });
+    }
     // garde-fous : aucun emoji ni cadratin ne passe, quoi qu'il arrive
     const clean = (t) => (t || "").replace(/[\u2014\u2013]/g, ",").replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, "").replace(/ ,/g, ",");
     for (const s of out.slides) for (const k of ["eyebrow", "title", "hl", "lead", "quote", "cta", "tag", "big"]) if (s[k]) s[k] = clean(String(s[k]));
