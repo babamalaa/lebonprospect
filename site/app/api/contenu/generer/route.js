@@ -4,7 +4,7 @@ import { getAuthedProfile } from "../../../lib/auth";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-const MODELS = (process.env.TEXT_MODELS || "gemini-2.5-flash,gemini-3.5-flash,gemini-3.8-flash").split(",").map((m) => m.trim());
+const MODELS = (process.env.TEXT_MODELS || "gemini-2.5-flash,gemini-3.5-flash,gemini-2.5-flash-lite,gemini-3.1-flash-lite").split(",").map((m) => m.trim());
 const BASE = process.env.GEMINI_BASE_URL || "https://generativelanguage.googleapis.com/v1beta";
 
 const SYSTEM = `Tu écris les posts Instagram et LinkedIn de LeBonProspect, un service français qui envoie chaque matin à 8h, aux fournisseurs B2B des commerces (agenceurs, équipementiers de cuisine, enseignistes, solutions de caisse, brasseurs, hottes, mobilier), la liste des commerces qui viennent de changer de propriétaire, avec le nom du repreneur et le téléphone de l'établissement. Source : BODACC (cessions de fonds de commerce, publiées au Journal officiel par obligation légale). Tarifs : Départemental 149 €/mois, Régional 299 €/mois, sans engagement. Tagline : « Le repreneur avant tout le monde. »
@@ -105,12 +105,12 @@ async function gemini(body) {
     try {
       r = await fetch(`${BASE}/models/${model}:generateContent?key=${key}`, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body), signal: AbortSignal.timeout(25000),
+        body: JSON.stringify(body), signal: AbortSignal.timeout(20000),
       });
     } catch (e) { lastErr = `${model}: trop lent`; continue; }
     if (!r.ok && r.status === 400 && body.generationConfig?.thinkingConfig) {
       const b2 = { ...body, generationConfig: { ...body.generationConfig } }; delete b2.generationConfig.thinkingConfig;
-      try { r = await fetch(`${BASE}/models/${model}:generateContent?key=${key}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b2), signal: AbortSignal.timeout(25000) }); } catch { lastErr = `${model}: trop lent`; continue; }
+      try { r = await fetch(`${BASE}/models/${model}:generateContent?key=${key}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b2), signal: AbortSignal.timeout(20000) }); } catch { lastErr = `${model}: trop lent`; continue; }
     }
     if (r.ok) {
       const j = await r.json();
