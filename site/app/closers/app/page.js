@@ -907,8 +907,8 @@ function AppPageInner() {
                       Réservés à votre compte. Le client renseigne sa carte et sa zone, n&apos;est pas débité pendant 7 jours, puis passe au tarif normal. S&apos;il résilie avant, aucun débit. Il reçoit son premier digest dès le lendemain 8h.
                     </p>
                     <div className="essai-links">
-                      <button type="button" className="page-gen-btn" onClick={() => copyToClipboard("https://buy.stripe.com/8x26oHffzaSEc9faPL8N203", "Lien essai Départemental")}>Copier · Départemental 149 €</button>
-                      <button type="button" className="page-gen-btn" onClick={() => copyToClipboard("https://buy.stripe.com/00w7sLc3nbWI7SZcXT8N204", "Lien essai Régional")}>Copier · Régional 299 €</button>
+                      <button type="button" className="page-gen-btn" onClick={() => copyToClipboard(`https://buy.stripe.com/8x26oHffzaSEc9faPL8N203?client_reference_id=cl_${profile?.id}`, "Lien essai Départemental")}>Copier · Départemental 149 €</button>
+                      <button type="button" className="page-gen-btn" onClick={() => copyToClipboard(`https://buy.stripe.com/00w7sLc3nbWI7SZcXT8N204?client_reference_id=cl_${profile?.id}`, "Lien essai Régional")}>Copier · Régional 299 €</button>
                     </div>
                   </div>
                 </div>

@@ -149,6 +149,8 @@ const fmtDate = (iso) => {
 };
 
 export default async function TeaserPage({ params }) {
+  // étiquette Stripe : permet au webhook de savoir quel closer / quel prospect a généré ce paiement
+  const ref = `?client_reference_id=pg_${String(params.slug).replace(/[^A-Za-z0-9_-]/g, "-").slice(0, 150)}`;
   let cible = teasers.cibles.find((x) => x.slug === params.slug);
   let reg = cible ? teasers.regions[cible.region] : null;
 
@@ -280,10 +282,10 @@ export default async function TeaserPage({ params }) {
           </div>
         </div>
         <div className="tz-cta">
-          <a className="btn" href={cible.essai ? "https://buy.stripe.com/00w7sLc3nbWI7SZcXT8N204" : "https://buy.stripe.com/14A5kD4AVe4Q7SZe1X8N201"}>
+          <a className="btn" href={cible.essai ? `https://buy.stripe.com/00w7sLc3nbWI7SZcXT8N204${ref}` : `https://buy.stripe.com/14A5kD4AVe4Q7SZe1X8N201${ref}`}>
             {cible.essai ? "Démarrer mon essai 7 jours · Régional" : "Activer ma région · 299 €/mois"}
           </a>
-          <a className="btn inv" href={cible.essai ? "https://buy.stripe.com/8x26oHffzaSEc9faPL8N203" : "https://buy.stripe.com/8x26oH2sN1i4gpv0b78N200"}>
+          <a className="btn inv" href={cible.essai ? `https://buy.stripe.com/8x26oHffzaSEc9faPL8N203${ref}` : `https://buy.stripe.com/8x26oH2sN1i4gpv0b78N200${ref}`}>
             {cible.essai ? "Démarrer mon essai 7 jours · Département" : "Mon département seul · 149 €/mois"}
           </a>
         </div>
