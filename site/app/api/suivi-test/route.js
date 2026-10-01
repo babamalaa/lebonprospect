@@ -29,7 +29,11 @@ export async function GET(req) {
     const { data } = await admin.from("cessions").select("date_parution, departement").in("departement", depts).gte("date_parution", since);
     const parJour = {};
     for (const r of data || []) { parJour[r.date_parution] = (parJour[r.date_parution] || 0) + 1; }
-    jours = Object.entries(parJour).sort((a, b) => (a[0] < b[0] ? 1 : -1)).map(([d, n]) => ({ d, n }));
+    // 30 jours consécutifs, zéros compris (les jours creux sont justement ceux qui déclenchent le « filet »)
+    for (let i = 0; i < 30; i++) {
+      const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+      jours.push({ d, n: parJour[d] || 0 });
+    }
   }
   return Response.json({ subs: subs || [], logs, jours });
 }

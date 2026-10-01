@@ -105,10 +105,13 @@ export default function SuiviTest({ authedFetch }) {
 
       <div className="app-card" style={{ marginTop: 14 }}>
         <b>Ce qui est publié chaque jour dans leurs départements (30 jours)</b>
-        <p style={{ fontSize: 12.5, color: "#6f6a5c", margin: "4px 0 10px" }}>Tous avis confondus, avant le tri « vrai commerce ». Les jours à zéro sont ceux où le « filet » prend le relais.</p>
+        <p style={{ fontSize: 12.5, color: "#6f6a5c", margin: "4px 0 10px" }}>Tous avis confondus, avant le tri « vrai commerce » : le nombre réel de commerces envoyés est plus bas. Les jours à zéro (barre rouge) sont ceux où le « filet » prend le relais.</p>
         <div className="suivi-jours">
-          {data.jours.map((j) => (
-            <div key={j.d} title={`${fmtDate(j.d)} : ${j.n}`} style={{ height: 6 + (48 * j.n) / maxJ }} className="suivi-jour"><span>{j.n}</span></div>
+          {[...data.jours].reverse().map((j) => (
+            <div key={j.d} className="suivi-col" title={`${fmtDate(j.d)} : ${j.n} avis`}>
+              <div className={`suivi-jour${j.n === 0 ? " zero" : ""}`} style={{ height: j.n === 0 ? 3 : 6 + (48 * j.n) / maxJ }}><span>{j.n}</span></div>
+              <i>{new Date(j.d).getDate()}</i>
+            </div>
           ))}
           {data.jours.length === 0 && <span style={{ color: "#6f6a5c", fontSize: 13 }}>Aucune donnée.</span>}
         </div>
