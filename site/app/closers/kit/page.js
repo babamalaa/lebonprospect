@@ -151,6 +151,18 @@ export default function KitPage() {
           </p>
         </div>
 
+        <div className="cl-card">
+          <div className="cl-badge">prospect apporté par vous</div>
+          <h3 style={{ marginTop: 8 }}>Si le lead vient de vous</h3>
+          <p>
+            Un prospect que vous avez trouvé vous-même (votre réseau, vos contacts, vos apports), et pas tiré du pool, vous rapporte{" "}
+            <b>70% du premier mois</b> et <b>20% du deuxième mois</b>, au lieu de 25% et 10%. Le deuxième mois reste conditionné à un client toujours abonné et à jour de paiement.
+          </p>
+          <p style={{ marginTop: 8 }}>
+            Pour que le prospect vous soit attribué, prévenez Lawrenza par email <b>avant votre premier contact</b>, avec le nom de l&apos;entreprise et son SIREN.
+          </p>
+        </div>
+
         <div className="cl-card dark">
           <div className="cl-badge">bonus de lancement</div>
           <h3 style={{ marginTop: 8, color: "#fff" }}>Les 30 premiers jours</h3>
