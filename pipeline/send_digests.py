@@ -15,7 +15,7 @@ import os, sys, argparse, datetime, time
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from load_db import sql_exec
-from digest import fetch_leads, render_digest, send_resend, VERT_LABELS
+from digest import fetch_leads, fetch_range, build_email, render_digest, send_resend, VERT_LABELS, REPLY_TO
 
 def _as_list(v):
     """Champ Supabase liste : déjà une liste, ou str postgres '{a,b}' / '{"a b","c"}'."""
@@ -36,6 +36,58 @@ def plan_for_subscriber(s):
            or (", ".join(regions) if regions else (", ".join(depts) if depts else "France entière"))
     return verticales, regions, depts, villes, zone
 
+def _snapshot(leads):
+    out = []
+    for r in leads:
+        c = r.get("acheteur_date_creation")
+        neuf = bool(c and (datetime.date.fromisoformat(str(r["date_parution"])[:10]) - datetime.date.fromisoformat(str(c)[:10])).days <= 180)
+        out.append({"id": r.get("id"), "nom": (r.get("acheteur_nom") or r.get("commercant") or "").split("(")[0].strip()[:80],
+                    "ville": (r.get("ville") or "").split(",")[0], "dept": r.get("departement"), "tel": bool(r.get("telephone")), "neuf": neuf,
+                    "date": str(r.get("date_parution")), "naf": r.get("naf_fonds") or r.get("acheteur_naf")})
+    return out
+
+def _log_test(s, kind, subject, html_body, leads, edition, resend_id, today):
+    import json
+    snap = json.dumps(_snapshot(leads), ensure_ascii=False).replace("$lbp$", "")
+    h = html_body.replace("$lbp$", "")
+    sql_exec(f"insert into digests_log (subscriber_id, date_digest, nb_leads, resend_id, statut, type, sujet, edition, lead_snapshot, html) "
+             f"values ({s['id']}, '{today}', {len(leads)}, '{resend_id}', 'envoye', '{kind}', $lbp${subject}$lbp$, '{edition}', $lbp${snap}$lbp$::jsonb, $lbp${h}$lbp$);")
+
+def handle_test_subscriber(s, last_ed, today, dry):
+    """Abonné suivi (essai Verisure) : bienvenue au premier passage, sinon quotidien ou « filet » (jamais de silence),
+    plus un récapitulatif le lundi. Un seul passage par édition BODACC, jamais deux fois le même jour."""
+    verticales, regions, depts, villes, zone = plan_for_subscriber(s)
+    vert = verticales[0] if verticales else "commerces"
+    deja = sql_exec(f"select type, edition from digests_log where subscriber_id = {s['id']} and type is not null order by id;")
+    types_faits = [d["type"] for d in deja]
+    editions = {str(d["edition"]) for d in deja if d.get("edition")}
+    jour = datetime.date.fromisoformat(today)
+    envois = []   # (kind, leads, date_from)
+    ed = datetime.date.fromisoformat(str(last_ed))
+    if "bienvenue" not in types_faits:
+        d1 = (ed - datetime.timedelta(days=14)).isoformat()
+        envois.append(("bienvenue", fetch_range(vert, depts, d1, str(last_ed), limit=60), d1))
+    elif str(last_ed) not in editions:
+        leads = fetch_range(vert, depts, str(last_ed), str(last_ed), limit=60)
+        if leads: envois.append(("quotidien", leads, None))
+        else: envois.append(("filet", fetch_range(vert, depts, None, str(last_ed), limit=5), None))
+        if jour.weekday() == 0 and not any(d["type"] == "hebdo" and str(d["edition"]) == str(last_ed) for d in deja):
+            d1 = (ed - datetime.timedelta(days=6)).isoformat()
+            envois.append(("hebdo", fetch_range(vert, depts, d1, str(last_ed), limit=60), d1))
+    res = []
+    for kind, leads, d1 in envois:
+        if not leads:
+            print(f"  (test) {s['email']} : {kind} sans aucune reprise exploitable, rien envoyé"); continue
+        subject, body = build_email(kind, leads, zone, depts, last_ed, d1, nom=s.get("nom"))
+        if dry:
+            print(f"DRY[{kind}]: {s['email']:35s} ← {len(leads)} leads · {subject}"); continue
+        r = send_resend(s["email"], subject, body, reply_to=REPLY_TO)
+        _log_test(s, kind, subject, body, leads, last_ed, r.get("id", ""), today)
+        sql_exec(f"update subscribers set dernier_digest = '{today}' where id = {s['id']};")
+        print(f"OK[{kind}]: {s['email']} ← {len(leads)} leads")
+        res.append(kind); time.sleep(0.3)
+    return res
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
@@ -51,6 +103,10 @@ def main():
     for s in subs:
         if str(s.get("dernier_digest") or "") == today:
             skipped += 1
+            continue
+        if s.get("suivi_test"):
+            if handle_test_subscriber(s, last_ed, today, args.dry_run): sent += 1
+            else: empty += 1
             continue
         verticales, regions, depts, villes, zone = plan_for_subscriber(s)
         # collecte multi-verticales / multi-zones
