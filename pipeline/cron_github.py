@@ -11,6 +11,17 @@ sys.path.insert(0, HERE)
 from ingest import process_day, save_day
 from load_db import sql_exec
 
+def envoyer_digests():
+    """Envoi des digests aux abonnés actifs. Idempotent : un abonné déjà servi aujourd'hui est sauté."""
+    import subprocess
+    rr = subprocess.run([sys.executable, "send_digests.py"], capture_output=True, text=True, cwd=HERE)
+    out = (rr.stdout or "").strip()
+    print("digests:", out.splitlines()[-1] if out else rr.stderr[-300:])
+    for ln in out.splitlines()[:-1]:
+        print("  ", ln)
+    if rr.returncode != 0:
+        print(rr.stderr[-800:]); sys.exit(1)
+
 def main():
     r = sql_exec("select coalesce(max(date_parution), current_date - 3) as last from cessions;")
     last = datetime.date.fromisoformat(str(r[0]["last"]))
@@ -21,7 +32,8 @@ def main():
         days.append(d.isoformat())
         d += datetime.timedelta(1)
     if not days:
-        print(f"Rien à faire: base à jour jusqu'au {last}")
+        print(f"Rien à ingérer: base à jour jusqu'au {last}. Envoi des digests quand même.")
+        envoyer_digests()
         return
     print(f"Jours à ingérer: {days}")
     cache = {}
@@ -53,10 +65,7 @@ def main():
     rr = subprocess.run([sys.executable, "enrich_places.py", "--days", "30"],
                         capture_output=True, text=True, cwd=HERE)
     print("places-retry:", (rr.stdout or "").strip().splitlines()[-1] if rr.stdout else "rien")
-    # ENVOI DES DIGESTS aux abonnés actifs
-    rr = subprocess.run([sys.executable, "send_digests.py"],
-                        capture_output=True, text=True, cwd=HERE)
-    print("digests:", (rr.stdout or "").strip().splitlines()[-1] if rr.stdout else rr.stderr[-300:])
+    envoyer_digests()
     print(f"OK: {total} cessions ingérées, stats rafraîchies.")
 
 if __name__ == "__main__":
