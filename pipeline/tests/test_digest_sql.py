@@ -39,3 +39,16 @@ def test_fetch_leads_tri_et_limite(monkeypatch):
     digest.fetch_leads("chr", date="2026-09-23")
     assert "order by (telephone is not null) desc" in seen["q"]
     assert "limit 60" in seen["q"]
+
+
+def test_fetch_leads_exclut_les_annulations(monkeypatch):
+    captured = []
+    monkeypatch.setattr(digest, "sql_exec", lambda q: captured.append(q) or [])
+    digest.fetch_leads("chr", date="2026-09-23")
+    assert "annulation" in captured[0]
+
+def test_fetch_range_exclut_les_annulations(monkeypatch):
+    captured = []
+    monkeypatch.setattr(digest, "sql_exec", lambda q: captured.append(q) or [])
+    digest.fetch_range("commerces", ["Marne"], "2026-09-01", "2026-09-30")
+    assert "annulation" in captured[0]

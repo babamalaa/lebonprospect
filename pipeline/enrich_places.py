@@ -31,7 +31,7 @@ def places_search(query):
                          "regionCode": "FR", "maxResultCount": 1}).encode(),
         headers={"Content-Type": "application/json",
                  "X-Goog-Api-Key": key,
-                 "X-Goog-FieldMask": "places.displayName,places.nationalPhoneNumber,places.formattedAddress"},
+                 "X-Goog-FieldMask": "places.displayName,places.nationalPhoneNumber,places.formattedAddress,places.types,places.primaryType"},
         method="POST")
     try:
         with urllib.request.urlopen(req, timeout=20) as r:
@@ -39,6 +39,23 @@ def places_search(query):
         return (d.get("places") or [None])[0]
     except Exception:
         return None
+
+# Un numéro de mairie, de poste ou d'administration n'est JAMAIS celui du commerce repris (cas MG2P, Charleville-Mézières :
+# la recherche s'accrochait à l'adresse « place de l'Hôtel de Ville »). On refuse ces lieux plutôt que d'envoyer un faux numéro.
+TYPES_PUBLICS = {"city_hall", "local_government_office", "government_office", "courthouse", "police", "post_office", "embassy",
+                 "fire_station", "library", "school", "primary_school", "secondary_school", "university", "hospital", "town_square"}
+NOMS_PUBLICS = re.compile(
+    r"^(mairie|hôtel de ville|hotel de ville|la poste|bureau de poste|agence postale|centre des finances|préfecture|sous-préfecture|"
+    r"tribunal|palais de justice|gendarmerie|police municipale|commissariat|cpam|caf( |$)|pôle emploi|france travail|"
+    r"communauté de communes|communauté d.agglomération|office de tourisme|trésor public|service des impôts|sdis|caserne|"
+    r"médiathèque|bibliothèque|école|collège|lycée|centre hospitalier|hôpital|ccas|cci( |$)|chambre d)", re.I)
+
+def lieu_public(place):
+    """True si le lieu renvoyé par Google est un bâtiment public ou administratif, pas un commerce."""
+    if not place: return False
+    nom = (place.get("displayName") or {}).get("text", "")
+    types = set(place.get("types") or []) | {place.get("primaryType")}
+    return bool(NOMS_PUBLICS.search(nom.strip())) or bool(types & TYPES_PUBLICS)
 
 def confiance(tel):
     t = tel.replace(" ", "")
@@ -96,6 +113,8 @@ def main():
             pending.append((row['id'], "enrichi_places = true"))
             continue
         place = places_search(q)
+        if lieu_public(place):
+            place = None   # bâtiment public : on préfère « pas de numéro » à un mauvais numéro
         tel = (place or {}).get("nationalPhoneNumber")
         if tel:
             conf = confiance(tel)

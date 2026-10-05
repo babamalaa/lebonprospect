@@ -65,3 +65,28 @@ def test_main_dry_run_saute_deja_servi(fixture, monkeypatch, capsys):
     assert (("tous",), {"departement": "Var", "date": "2026-09-23",
                         "villes": ["Toulon", "La Seyne-sur-Mer"]}) in fetched
     assert "Toulon + 10 km" in out
+
+
+def test_rectificatif_deja_vu_est_retire():
+    import send_digests as sd
+    leads = [{"id": 1, "type_avis": "Avis initial", "acheteur_siren": "111"},
+             {"id": 2, "type_avis": "Avis rectificatif", "acheteur_siren": "111"},   # reprise déjà envoyée
+             {"id": 3, "type_avis": "Avis rectificatif", "acheteur_siren": "222"}]   # rectificatif d'une reprise jamais envoyée : on garde
+    out = sd.sans_rectificatifs_deja_vus(leads, {"111"})
+    assert [r["id"] for r in out] == [1, 3]
+
+def test_rectificatif_sans_historique_conserve():
+    import send_digests as sd
+    leads = [{"id": 1, "type_avis": "Avis rectificatif", "acheteur_siren": "111"}]
+    assert sd.sans_rectificatifs_deja_vus(leads, set()) == leads
+
+
+def test_dans_la_zone_ecarte_un_repreneur_hors_zone(monkeypatch):
+    import send_digests as sd
+    monkeypatch.setattr(sd, "_code_dept", lambda d: {"Côte-d'Or": "21", "Saône-et-Loire": "71"}.get(d))
+    veni = {"id": 1, "acheteur_adresse": "44 ROUTE DE CORBAS 69200 VENISSIEUX", "cp": "69200"}                   # Vénissieux (69) : hors zone
+    dijon = {"id": 2, "acheteur_adresse": "3 RUE X 21000 DIJON", "cp": "21000"}                                   # Dijon (21) : dans la zone
+    mixte = {"id": 3, "acheteur_adresse": "7 RUE Y 75016 PARIS", "cp": "75016, 71000"}                           # repreneur à Paris, fonds à Mâcon : on garde
+    sans_cp = {"id": 4, "acheteur_adresse": None, "cp": None}                                                     # pas de preuve d'erreur : on garde
+    out = sd.dans_la_zone([veni, dijon, mixte, sans_cp], ["Côte-d'Or", "Saône-et-Loire"])
+    assert [r["id"] for r in out] == [2, 3, 4]

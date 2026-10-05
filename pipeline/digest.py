@@ -40,6 +40,8 @@ def date_fr(iso):
 COMMERCES_SQL = ("(coalesce(naf_fonds, acheteur_naf) ~ '^(47|55|56|10\\.71|10\\.13|96\\.0[12]|45\\.|93\\.13|96\\.09|86\\.9|32\\.5|79\\.90|43\\.)' "
                  "or verticale in ('chr','alimentaire','coiffure_beaute','garage_auto','fleuriste','tabac_presse','pressing_services','sante'))")
 NOFUSION_SQL = "(acte_descriptif is null or (acte_descriptif not ilike '%fusion%' and acte_descriptif not ilike '%scission%'))"
+# Un avis d'annulation annule une cession déjà publiée : ce n'est pas une reprise, on ne l'envoie jamais.
+NOANNUL_SQL = "(type_avis is null or type_avis not ilike '%annulation%')"
 
 def fetch_leads(verticale, region=None, departement=None, date=None, villes=None):
     # verticale "tous" = toutes activités (abonné zone sur mesure : enseigniste, assureur, caisse...)
@@ -59,6 +61,7 @@ def fetch_leads(verticale, region=None, departement=None, date=None, villes=None
         where.append(f"region = '{region.replace(chr(39), chr(39)*2)}'")
     if departement:
         where.append(f"departement = '{departement.replace(chr(39), chr(39)*2)}'")
+    where.append(NOANNUL_SQL)
     where.append(f"date_parution = '{date}'" if date else
                  "date_parution = (select max(date_parution) from cessions)")
     q = f"""select * from cessions where {' and '.join(where)}
@@ -73,7 +76,7 @@ def _vert_where(verticale):
 def fetch_range(verticale, depts, date_from=None, date_to=None, limit=60):
     """Reprises d'une liste de départements sur une période, les plus récentes d'abord."""
     dl = ",".join("'" + d.replace("'", "''") + "'" for d in depts)
-    where = _vert_where(verticale) + [f"departement in ({dl})"]
+    where = _vert_where(verticale) + [f"departement in ({dl})", NOANNUL_SQL]
     if date_from: where.append(f"date_parution >= '{date_from}'")
     if date_to: where.append(f"date_parution <= '{date_to}'")
     return sql_exec(f"select * from cessions where {' and '.join(where)} order by date_parution desc, (telephone is not null) desc, departement, ville limit {int(limit)};")
@@ -119,11 +122,11 @@ def lead_block(r):
 </td></tr>
 </table>"""
 
-def render_digest(verticale, leads, region=None, departement=None, date=None, zone_label=None, headline=None, subline=None, intro_html="", outro_html=""):
+def render_digest(verticale, leads, region=None, departement=None, date=None, zone_label=None, headline=None, subline=None, intro_html="", outro_html="", n_override=None):
     zone = zone_label or region or departement or "France entière"
     label = VERT_LABELS.get(verticale, verticale)
     date_str = date_fr(date or datetime.date.today().isoformat())
-    n = len(leads)
+    n = n_override if n_override is not None else len(leads)
     # group by departement for scannability
     by_dept = {}
     for r in leads:
@@ -254,12 +257,21 @@ def build_email(kind, leads, zone, depts, date_to, date_from=None, nom=None):
         for r in leads: par_dept[r.get("departement") or "Autre"] = par_dept.get(r.get("departement") or "Autre", 0) + 1
         detail = ", ".join(f"{html.escape(d)} {c}" for d, c in sorted(par_dept.items(), key=lambda x: -x[1]))
         subject = f"Votre semaine : {n} commerce{plural} repris · {zone}"
+        def _ligne(r):
+            nom = html.escape(((r.get("acheteur_nom") or r.get("commercant") or "").split("(")[0].split(",")[0]).strip().title())[:46]
+            ville = html.escape((r.get("ville") or "").split(",")[0])
+            t = "tél." if r.get("telephone") else "&nbsp;"
+            return (f'<tr><td style="padding:5px 0;border-bottom:1px solid #eee7d6;font-size:13px;"><b>{nom}</b></td>'
+                    f'<td style="padding:5px 8px;border-bottom:1px solid #eee7d6;font-size:13px;">{ville}</td>'
+                    f'<td style="padding:5px 0;border-bottom:1px solid #eee7d6;font-size:12px;color:{MUTED};" align="right">{_jours(r["date_parution"])} {t}</td></tr>')
+        table = f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:12px;">{"".join(_ligne(r) for r in leads)}</table>'
         intro = (f"Sur la semaine, <b>{n} commerce{plural}</b> repris chez vous ({detail}). "
-                 f"<b>{tel}</b> avec un téléphone, <b>{neufs}</b> dont le repreneur a créé sa société il y a moins de six mois, donc sans fournisseur attitré.")
-        return subject, render_digest("commerces", leads, date=str(date_to), zone_label=zone,
+                 f"<b>{tel}</b> avec un téléphone, <b>{neufs}</b> dont le repreneur a créé sa société il y a moins de six mois, donc sans fournisseur attitré."
+                 f"<br><br>Ce récapitulatif est une simple liste : les fiches complètes (dirigeant, adresse, téléphone) sont dans vos emails quotidiens.{table}")
+        return subject, render_digest("commerces", [], date=str(date_to), zone_label=zone,
             headline=f"Votre semaine : {n} commerce{plural} repris",
             subline=f"{zone_h} · du {_jours(date_from)} au {_jours(date_to)}",
-            intro_html=intro, outro_html="Ce récapitulatif réunit les reprises déjà reçues cette semaine : rien de nouveau à traiter, mais tout est là au même endroit." + sign)
+            intro_html=intro, outro_html=outro_q + sign, n_override=n)
     # quotidien (identique au digest habituel, plus la zone et un pied de réponse)
     subject = f"{n} reprise{plural} de commerces · {zone}"
     return subject, render_digest("commerces", leads, date=str(date_to), zone_label=zone, outro_html=outro_q)

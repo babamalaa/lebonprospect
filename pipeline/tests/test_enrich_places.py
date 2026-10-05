@@ -23,3 +23,24 @@ def test_best_query_avec_adresse():
 def test_best_query_vide():
     # sans nom, la requête est trop courte : main() la saute (len < 8)
     assert len(ep.best_query({"ville": "Lyon"}).strip()) < 8
+
+
+def test_lieu_public_mairie_refusee():
+    from enrich_places import lieu_public
+    assert lieu_public({"displayName": {"text": "Hôtel de Ville de Charleville-Mézières"}})
+    assert lieu_public({"displayName": {"text": "Mairie de Rouans"}})
+    assert lieu_public({"displayName": {"text": "La Poste"}})
+    assert lieu_public({"displayName": {"text": "Centre des Finances publiques"}})
+
+def test_lieu_public_par_type_google():
+    from enrich_places import lieu_public
+    assert lieu_public({"displayName": {"text": "Accueil"}, "types": ["city_hall"]})
+    assert lieu_public({"displayName": {"text": "X"}, "primaryType": "post_office"})
+
+def test_lieu_public_commerces_conserves():
+    from enrich_places import lieu_public
+    # le mot « poste » ou « mairie » au milieu d'un nom de commerce ne doit pas bloquer
+    assert not lieu_public({"displayName": {"text": "Café de la Poste"}, "types": ["cafe"]})
+    assert not lieu_public({"displayName": {"text": "Brasserie de la mairie"}, "types": ["restaurant"]})
+    assert not lieu_public({"displayName": {"text": "Hôtel bistrot de la Poste"}, "types": ["hotel"]})
+    assert not lieu_public(None)
