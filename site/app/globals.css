@@ -1002,3 +1002,7 @@ footer .wrap { display: flex; justify-content: space-between; }
 .suivi-kind.k-hebdo { background: #ece8f7; color: #4b3f8a; }
 .suivi-kind.k-bienvenue { background: #31777A; color: #fff; }
 @media (max-width: 760px) { .suivi-kpis { grid-template-columns: 1fr 1fr; } .suivi-grid { grid-template-columns: 1fr; } }
+
+.suivi-addr { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; padding: 3px 0; color: #3f3b33; }
+.suivi-addr span { overflow: hidden; text-overflow: ellipsis; }
+.suivi-addr b { color: #31777A; white-space: nowrap; }

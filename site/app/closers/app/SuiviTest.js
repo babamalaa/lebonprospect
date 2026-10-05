@@ -30,33 +30,40 @@ export default function SuiviTest({ authedFetch }) {
     const j = await r.json(); setHtml(j.html || "");
   };
 
-  const parSub = useMemo(() => {
-    if (!data) return {};
-    const out = {};
+  // Une personne peut avoir plusieurs adresses (pro + perso) : on regroupe par nom, les reprises sont comptées une seule fois.
+  const personnes = useMemo(() => {
+    if (!data) return [];
+    const groupes = new Map();
     for (const s of data.subs) {
-      const L = data.logs.filter((l) => l.subscriber_id === s.id);
-      const snaps = L.flatMap((l) => (Array.isArray(l.lead_snapshot) ? l.lead_snapshot : []));
-      const uniq = new Map(); snaps.forEach((x) => { if (x.id != null) uniq.set(x.id, x); });
+      const k = (s.nom || s.email).trim().toLowerCase();
+      if (!groupes.has(k)) groupes.set(k, { cle: k, nom: s.nom || s.email, subs: [] });
+      groupes.get(k).subs.push(s);
+    }
+    return [...groupes.values()].map((g) => {
+      const ids = new Set(g.subs.map((s) => s.id));
+      const L = data.logs.filter((l) => ids.has(l.subscriber_id));
+      const uniq = new Map();
+      L.flatMap((l) => (Array.isArray(l.lead_snapshot) ? l.lead_snapshot : [])).forEach((x) => { if (x.id != null) uniq.set(x.id, x); });
       const leads = [...uniq.values()];
-      const quotidiens = L.filter((l) => l.type === "quotidien" || l.type === "filet");
-      out[s.id] = {
-        logs: L, nbEnvois: L.length,
-        leadsUniques: leads.length,
-        tel: leads.filter((x) => x.tel).length,
-        neufs: leads.filter((x) => x.neuf).length,
-        jours: new Set(quotidiens.map((l) => l.edition)).size,
+      const adresses = g.subs.map((s) => ({ email: s.email, envois: L.filter((l) => l.subscriber_id === s.id).length, dernier: L.find((l) => l.subscriber_id === s.id)?.created_at }));
+      const debut = g.subs.map((s) => s.test_debut).filter(Boolean).sort()[0];
+      const fin = g.subs.map((s) => s.test_fin).filter(Boolean).sort().slice(-1)[0];
+      return {
+        ...g, logs: L, adresses, debut, fin, zone: g.subs[0].zone_label,
+        nbEnvois: L.length, leadsUniques: leads.length,
+        tel: leads.filter((x) => x.tel).length, neufs: leads.filter((x) => x.neuf).length,
         filets: L.filter((l) => l.type === "filet").length,
         parDept: leads.reduce((a, x) => ({ ...a, [x.dept]: (a[x.dept] || 0) + 1 }), {}),
       };
-    }
-    return out;
+    });
   }, [data]);
 
   if (err) return <div className="app-card"><b>Suivi de l&apos;essai</b><p style={{ color: "#b23a3a" }}>{err}</p></div>;
   if (!data) return <div className="app-card">Chargement du suivi…</div>;
 
-  const tot = Object.values(parSub).reduce((a, x) => ({ envois: a.envois + x.nbEnvois, leads: a.leads + x.leadsUniques, tel: a.tel + x.tel, neufs: a.neufs + x.neufs }), { envois: 0, leads: 0, tel: 0, neufs: 0 });
-  const toutLogs = data.logs.filter((l) => filtre === "tous" || l.subscriber_id === Number(filtre) || l.type === filtre).slice(0, 200);
+  const tot = personnes.reduce((a, x) => ({ envois: a.envois + x.nbEnvois, leads: a.leads + x.leadsUniques, tel: a.tel + x.tel, neufs: a.neufs + x.neufs }), { envois: 0, leads: 0, tel: 0, neufs: 0 });
+  const parNom = Object.fromEntries(personnes.flatMap((p) => p.subs.map((s) => [s.id, p.cle])));
+  const toutLogs = data.logs.filter((l) => filtre === "tous" || parNom[l.subscriber_id] === filtre || l.type === filtre).slice(0, 200);
   const subById = Object.fromEntries(data.subs.map((s) => [s.id, s]));
   const maxJ = Math.max(1, ...data.jours.map((j) => j.n));
 
@@ -64,7 +71,7 @@ export default function SuiviTest({ authedFetch }) {
     <div className="suivi">
       <h1 className="app-h1">Suivi de l&apos;essai · Verisure</h1>
       <p style={{ color: "#6f6a5c", fontSize: 14, margin: "4px 0 16px" }}>
-        Essai de 3 mois. Chaque email envoyé aux deux directeurs régionaux apparaît ici, avec exactement ce qu&apos;ils ont reçu. Mise à jour automatique toutes les minutes.
+        Essai de 3 mois. Chaque email envoyé aux deux directeurs régionaux (adresse professionnelle et adresse personnelle) apparaît ici, avec exactement ce qu&apos;ils ont reçu. Mise à jour automatique toutes les minutes.
       </p>
 
       <div className="suivi-kpis">
@@ -75,23 +82,28 @@ export default function SuiviTest({ authedFetch }) {
       </div>
 
       <div className="suivi-grid">
-        {data.subs.map((s) => {
-          const p = parSub[s.id];
-          const jPasses = s.test_debut ? Math.max(0, Math.floor((Date.now() - new Date(s.test_debut).getTime()) / 86400000)) : 0;
-          const jTotal = s.test_debut && s.test_fin ? Math.round((new Date(s.test_fin) - new Date(s.test_debut)) / 86400000) : 92;
+        {personnes.map((p) => {
+          const jPasses = p.debut ? Math.max(0, Math.floor((Date.now() - new Date(p.debut).getTime()) / 86400000)) : 0;
+          const jTotal = p.debut && p.fin ? Math.round((new Date(p.fin) - new Date(p.debut)) / 86400000) : 92;
+          const dernier = p.logs[0]?.created_at;
           return (
-            <div className="app-card" key={s.id}>
-              <b style={{ fontSize: 16 }}>{s.nom}</b>
-              <div style={{ fontSize: 12.5, color: "#6f6a5c", margin: "2px 0 10px" }}>{s.email}<br />{s.zone_label}</div>
+            <div className="app-card" key={p.cle}>
+              <b style={{ fontSize: 16 }}>{p.nom}</b>
+              <div style={{ fontSize: 12.5, color: "#6f6a5c", margin: "2px 0 8px" }}>{p.zone}</div>
+              <div style={{ margin: "0 0 10px" }}>
+                {p.adresses.map((a) => (
+                  <div key={a.email} className="suivi-addr"><span>{a.email}</span><b>{a.envois} envoi{a.envois > 1 ? "s" : ""}</b></div>
+                ))}
+              </div>
               <div style={{ fontSize: 13 }}>
                 <div className="suivi-row"><span>Jour d&apos;essai</span><b>{Math.min(jPasses + 1, jTotal)} / {jTotal}</b></div>
                 <div className="suivi-bar"><div style={{ width: `${Math.min(100, (100 * jPasses) / jTotal)}%` }} /></div>
-                <div className="suivi-row"><span>Emails envoyés</span><b>{p.nbEnvois}</b></div>
-                <div className="suivi-row"><span>Reprises transmises</span><b>{p.leadsUniques}</b></div>
+                <div className="suivi-row"><span>Emails envoyés (toutes adresses)</span><b>{p.nbEnvois}</b></div>
+                <div className="suivi-row"><span>Reprises transmises (sans doublon)</span><b>{p.leadsUniques}</b></div>
                 <div className="suivi-row"><span>Avec téléphone</span><b>{p.tel}{p.leadsUniques ? ` (${Math.round((100 * p.tel) / p.leadsUniques)} %)` : ""}</b></div>
                 <div className="suivi-row"><span>Budgets ouverts</span><b>{p.neufs}</b></div>
                 <div className="suivi-row"><span>Jours « creux » (filet envoyé)</span><b>{p.filets}</b></div>
-                <div className="suivi-row"><span>Dernier envoi</span><b>{fmtHeure(p.logs[0]?.created_at)}</b></div>
+                <div className="suivi-row"><span>Dernier envoi</span><b>{fmtHeure(dernier)}</b></div>
               </div>
               {Object.keys(p.parDept).length > 0 && (
                 <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -122,7 +134,7 @@ export default function SuiviTest({ authedFetch }) {
           <b>Journal des envois</b>
           <select value={filtre} onChange={(e) => setFiltre(e.target.value)} style={{ padding: "6px 10px", borderRadius: 8, border: "1px solid #e6e0d0" }}>
             <option value="tous">Tous</option>
-            {data.subs.map((s) => <option key={s.id} value={s.id}>{s.nom}</option>)}
+            {personnes.map((p) => <option key={p.cle} value={p.cle}>{p.nom}</option>)}
             {Object.entries(KIND).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
         </div>
@@ -131,7 +143,7 @@ export default function SuiviTest({ authedFetch }) {
           <div key={l.id} className="suivi-log">
             <div className="suivi-log-head" onClick={() => voir(l.id)}>
               <span className={`suivi-kind k-${l.type}`}>{KIND[l.type] || l.type}</span>
-              <span style={{ flex: 1, fontSize: 13.5 }}><b>{subById[l.subscriber_id]?.nom}</b> · {l.sujet}</span>
+              <span style={{ flex: 1, fontSize: 13.5 }}><b>{subById[l.subscriber_id]?.nom}</b> <span style={{ color: "#6f6a5c" }}>({subById[l.subscriber_id]?.email})</span> · {l.sujet}</span>
               <span style={{ fontSize: 12, color: "#6f6a5c", whiteSpace: "nowrap" }}>{l.nb_leads} reprise{l.nb_leads > 1 ? "s" : ""} · {fmtHeure(l.created_at)}</span>
             </div>
             {open === l.id && (
