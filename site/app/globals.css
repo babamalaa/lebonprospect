@@ -1006,3 +1006,9 @@ footer .wrap { display: flex; justify-content: space-between; }
 .suivi-addr { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; padding: 3px 0; color: #3f3b33; }
 .suivi-addr span { overflow: hidden; text-overflow: ellipsis; }
 .suivi-addr b { color: #31777A; white-space: nowrap; }
+
+.suivi-maj { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 12.5px; color: #6f6a5c; margin: 2px 0 8px; }
+.suivi-maj button { border: 1px solid #d9d2bf; background: #fff; border-radius: 8px; padding: 5px 12px; font-size: 12.5px; cursor: pointer; color: #31777A; font-weight: 600; }
+.suivi-maj button:disabled { opacity: .5; cursor: default; }
+.suivi-alerte { background: #fbeaea; border: 1px solid #efc4c4; color: #8a2d2d; border-radius: 10px; padding: 9px 12px; font-size: 13px; margin: 6px 0 10px; }
+.suivi-alerte a { color: #8a2d2d; font-weight: 700; }

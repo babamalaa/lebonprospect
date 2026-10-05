@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const KIND = { bienvenue: "Bienvenue", quotidien: "Quotidien", filet: "Filet (jour creux)", hebdo: "Récap hebdo" };
 const fmtDate = (iso) => (iso ? new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" }) : "—");
@@ -13,15 +13,41 @@ export default function SuiviTest({ authedFetch }) {
   const [html, setHtml] = useState("");
   const [filtre, setFiltre] = useState("tous");
 
-  const load = async () => {
+  const [maj, setMaj] = useState(null);          // heure de la dernière mise à jour réussie
+  const [chargement, setChargement] = useState(false);
+  const [expire, setExpire] = useState(false);       // session expirée : il faut se reconnecter
+
+  // Le jeton de connexion est renouvelé toutes les heures : on lit TOUJOURS la version courante de authedFetch,
+  // jamais celle capturée à l'ouverture de la page (sinon, passé une heure, chaque rafraîchissement échouait en 401).
+  const fetchRef = useRef(authedFetch);
+  useEffect(() => { fetchRef.current = authedFetch; }, [authedFetch]);
+
+  const load = useCallback(async () => {
+    setChargement(true);
     try {
-      const r = await authedFetch("/api/suivi-test");
+      const r = await fetchRef.current("/api/suivi-test", { cache: "no-store" });
+      if (r.status === 401) { setExpire(true); setErr(""); return; }
       const j = await r.json();
       if (!r.ok) throw new Error(j.error || "Erreur");
-      setData(j); setErr("");
-    } catch (e) { setErr(e.message); }
-  };
-  useEffect(() => { load(); const t = setInterval(load, 60000); return () => clearInterval(t); }, []);
+      setData(j); setErr(""); setExpire(false); setMaj(new Date());
+    } catch (e) {
+      // une erreur passagère (réseau, veille du téléphone) ne doit pas effacer les chiffres déjà affichés
+      setErr((prev) => prev || e.message);
+    } finally { setChargement(false); }
+  }, []);
+
+  useEffect(() => {
+    load();
+    const t = setInterval(load, 60000);
+    // un onglet en arrière-plan ou un téléphone en veille suspend les minuteurs : on rafraîchit dès qu'on revient sur la page
+    const onVisible = () => { if (document.visibilityState === "visible") load(); };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", load);
+    return () => { clearInterval(t); document.removeEventListener("visibilitychange", onVisible); window.removeEventListener("focus", load); };
+  }, [load]);
+
+  // la session vient d'être renouvelée par Supabase : on recharge tout de suite avec le nouveau jeton
+  useEffect(() => { load(); }, [authedFetch, load]);
 
   const voir = async (id) => {
     if (open === id) { setOpen(null); return; }
@@ -58,7 +84,11 @@ export default function SuiviTest({ authedFetch }) {
     });
   }, [data]);
 
-  if (err) return <div className="app-card"><b>Suivi de l&apos;essai</b><p style={{ color: "#b23a3a" }}>{err}</p></div>;
+  if (expire && !data) return (
+    <div className="app-card"><b>Votre session a expiré.</b>
+      <p style={{ fontSize: 13.5, color: "#6f6a5c" }}>Reconnectez-vous pour voir le suivi de l&apos;essai.</p>
+      <button className="btn" onClick={() => { window.location.href = "/closers/login"; }}>Se reconnecter</button></div>);
+  if (err && !data) return <div className="app-card"><b>Suivi de l&apos;essai</b><p style={{ color: "#b23a3a" }}>{err}</p><button className="btn" onClick={load}>Réessayer</button></div>;
   if (!data) return <div className="app-card">Chargement du suivi…</div>;
 
   const tot = personnes.reduce((a, x) => ({ envois: a.envois + x.nbEnvois, leads: a.leads + x.leadsUniques, tel: a.tel + x.tel, neufs: a.neufs + x.neufs }), { envois: 0, leads: 0, tel: 0, neufs: 0 });
@@ -70,6 +100,15 @@ export default function SuiviTest({ authedFetch }) {
   return (
     <div className="suivi">
       <h1 className="app-h1">Suivi de l&apos;essai · Verisure</h1>
+      <div className="suivi-maj">
+        <span>
+          {maj ? `Mis à jour à ${maj.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}` : "Chargement…"}
+          {chargement ? " · actualisation…" : ""}
+        </span>
+        <button onClick={load} disabled={chargement}>Actualiser</button>
+      </div>
+      {expire && <div className="suivi-alerte">Votre session a expiré : les chiffres ci-dessous ne sont plus à jour. <a href="/closers/login">Se reconnecter</a></div>}
+      {err && data && <div className="suivi-alerte">Dernière actualisation échouée ({err}). Les chiffres affichés datent de {maj ? maj.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "?"}.</div>}
       <p style={{ color: "#6f6a5c", fontSize: 14, margin: "4px 0 16px" }}>
         Essai de 3 mois. Chaque email envoyé aux deux directeurs régionaux (adresse professionnelle et adresse personnelle) apparaît ici, avec exactement ce qu&apos;ils ont reçu. Mise à jour automatique toutes les minutes.
       </p>
@@ -138,7 +177,7 @@ export default function SuiviTest({ authedFetch }) {
             {Object.entries(KIND).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
         </div>
-        {toutLogs.length === 0 && <p style={{ color: "#6f6a5c", fontSize: 13.5, marginTop: 10 }}>Aucun email encore envoyé. Le premier part demain matin à 8h.</p>}
+        {toutLogs.length === 0 && <p style={{ color: "#6f6a5c", fontSize: 13.5, marginTop: 10 }}>Aucun email à afficher pour ce filtre.</p>}
         {toutLogs.map((l) => (
           <div key={l.id} className="suivi-log">
             <div className="suivi-log-head" onClick={() => voir(l.id)}>
