@@ -90,3 +90,13 @@ def test_dans_la_zone_ecarte_un_repreneur_hors_zone(monkeypatch):
     sans_cp = {"id": 4, "acheteur_adresse": None, "cp": None}                                                     # pas de preuve d'erreur : on garde
     out = sd.dans_la_zone([veni, dijon, mixte, sans_cp], ["Côte-d'Or", "Saône-et-Loire"])
     assert [r["id"] for r in out] == [2, 3, 4]
+
+
+def test_numeros_non_verifies_sont_masques():
+    import send_digests as sd
+    leads = [{"id": 1, "telephone": "04 00 00 00 01", "tel_validation": "nom du repreneur"},      # validé : conservé
+             {"id": 2, "telephone": "04 00 00 00 02", "tel_validation": None},                     # jamais vérifié : masqué
+             {"id": 3, "telephone": "04 00 00 00 03", "tel_validation": "rejete : autre commune"}, # rejeté : masqué
+             {"id": 4, "telephone": None, "tel_validation": None}]
+    out = sd.numeros_verifies(leads)
+    assert [r["telephone"] for r in out] == ["04 00 00 00 01", None, None, None]

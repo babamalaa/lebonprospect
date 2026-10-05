@@ -53,6 +53,17 @@ def _log_test(s, kind, subject, html_body, leads, edition, resend_id, today):
     sql_exec(f"insert into digests_log (subscriber_id, date_digest, nb_leads, resend_id, statut, type, sujet, edition, lead_snapshot, html) "
              f"values ({s['id']}, '{today}', {len(leads)}, '{resend_id}', 'envoye', '{kind}', $lbp${subject}$lbp$, '{edition}', $lbp${snap}$lbp$::jsonb, $lbp${h}$lbp$);")
 
+def numeros_verifies(leads):
+    """Garde-fou : un abonné de l'essai ne reçoit que des numéros validés par la règle stricte (tel_validation renseigné et non rejeté).
+    Un numéro jamais vérifié est masqué (« bientôt disponible ») plutôt que risqué."""
+    out = []
+    for r in leads:
+        v = r.get("tel_validation")
+        if r.get("telephone") and (not v or str(v).startswith("rejete")):
+            r = {**r, "telephone": None}
+        out.append(r)
+    return out
+
 def deja_envoyes(sub_ids):
     """SIREN des repreneurs déjà reçus (toutes adresses de la même personne) : sert à ne pas renvoyer un avis rectificatif
     d'une reprise que la personne a déjà dans ses emails."""
@@ -99,16 +110,16 @@ def handle_test_subscriber(s, last_ed, today, dry):
     ed = datetime.date.fromisoformat(str(last_ed))
     if "bienvenue" not in types_faits and "bienvenue_ignoree" not in types_faits:
         d1 = (ed - datetime.timedelta(days=14)).isoformat()
-        envois.append(("bienvenue", dans_la_zone(fetch_range(vert, depts, d1, str(last_ed), limit=80), depts)[:60], d1))
+        envois.append(("bienvenue", numeros_verifies(dans_la_zone(fetch_range(vert, depts, d1, str(last_ed), limit=80), depts)[:60]), d1))
     elif str(last_ed) not in editions:
         pers = sql_exec(f"select id from subscribers where suivi_test and nom = $n${s.get('nom') or ''}$n$;")
         vus = deja_envoyes([p["id"] for p in pers] or [s["id"]])
-        leads = sans_rectificatifs_deja_vus(dans_la_zone(fetch_range(vert, depts, str(last_ed), str(last_ed), limit=80), depts), vus)
+        leads = numeros_verifies(sans_rectificatifs_deja_vus(dans_la_zone(fetch_range(vert, depts, str(last_ed), str(last_ed), limit=80), depts), vus))
         if leads: envois.append(("quotidien", leads, None))
-        else: envois.append(("filet", dans_la_zone(fetch_range(vert, depts, None, str(last_ed), limit=20), depts)[:5], None))
+        else: envois.append(("filet", numeros_verifies(dans_la_zone(fetch_range(vert, depts, None, str(last_ed), limit=20), depts)[:5]), None))
         if jour.weekday() == 0 and not any(d["type"] == "hebdo" and str(d["edition"]) == str(last_ed) for d in deja):
             d1 = (ed - datetime.timedelta(days=6)).isoformat()
-            envois.append(("hebdo", dans_la_zone(fetch_range(vert, depts, d1, str(last_ed), limit=80), depts)[:60], d1))
+            envois.append(("hebdo", numeros_verifies(dans_la_zone(fetch_range(vert, depts, d1, str(last_ed), limit=80), depts)[:60]), d1))
     res = []
     for kind, leads, d1 in envois:
         if not leads:
