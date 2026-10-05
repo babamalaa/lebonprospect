@@ -100,3 +100,44 @@ def test_autre_commune_refusee():
     row = _row(acheteur_nom="TOP LAVAGE", acheteur_adresse="1 RUE X 02300 VIELS-MAISONS", verticale="garage_auto")
     ok, why = valider_lieu(_place("Top Lavage", "1 Rue Y, 77000 Melun", types=("car_wash",)), row)
     assert not ok and why == "autre commune"
+
+
+def test_numero_voie_lettre_et_fourchette():
+    from enrich_places import meme_adresse
+    assert meme_adresse("19 A RUE DU BOURG 71370 L'ABERGEMENT-SAINTE-COLOMBE", "19A Rue du Bourg, 71370 L'Abergement-Sainte-Colombe")
+    assert meme_adresse("81-83 RUE DE LA LIBERTE 71000 MACON", "83 Rue de la Liberté 81, 71000 Mâcon")
+    assert meme_adresse("2 B RUE DE LA COURONNE 71200 LE CREUSOT", "2 bis Rue de la Couronne, 71200 Le Creusot")
+    assert not meme_adresse("161 PLACE BERNIGAL GUILLERMIN 69620 VAL D'OINGT", "21 Pl. Bernigal Guillermin, 69620 Val d'Oingt")
+
+def test_nombre_de_marque_dans_le_nom():
+    from enrich_places import noms_similaires
+    assert noms_similaires("Pièces Auto 2001", "GARAGE AUTO 2001")
+    assert not noms_similaires("Restaurant 2", "Bar 2")                  # un chiffre seul n'est pas une marque
+
+def test_lieu_dit_sans_numero():
+    from enrich_places import valider_lieu
+    row = _row(acheteur_nom="HALTE 6", acheteur_adresse="LA MOUGE ROUTE NATIONALE 6 71260 LA SALLE", ville="La Salle", verticale="chr")
+    ok, why = valider_lieu(_place("Le Relais Mâconnais", "421 Mouge, 71260 La Salle", types=("french_restaurant", "bar")), row)
+    assert ok and "lieu-dit" in why
+
+def test_nom_du_vendeur_seul_ne_suffit_pas():
+    from enrich_places import valider_lieu
+    # Ji&Jo : le vendeur LUMINO ne doit PAS faire accepter la pizzeria du même bourg (autre numéro de voie)
+    row = _row(acheteur_nom="JI&JO RESTAURANTS", vendeur_nom="LUMINO", commercant="Ji&Jo Restaurants, LUMINO",
+               acheteur_adresse="161 PLACE BERNIGAL GUILLERMIN 69620 VAL D'OINGT", ville="Val-d'Oingt")
+    ok, _ = valider_lieu(_place("Lumino", "21 Pl. Bernigal Guillermin, 69620 Val d'Oingt"), row)
+    assert not ok
+
+def test_nom_du_fonds_vendu_a_la_meme_adresse():
+    from enrich_places import valider_lieu
+    row = _row(acheteur_nom="POINDRONT", commercant="POINDRONT, ART & COUPE", vendeur_nom="ART & COUPE",
+               acheteur_adresse="GALERIE INTERMARCHE 24 RUE DE REIMS 08300 SAULT LES RETHEL", ville="Sault-lès-Rethel", verticale="coiffure_beaute")
+    ok, why = valider_lieu(_place("Art et Coupe Galerie", "24 Rue de Reims, 08300 Sault-lès-Rethel", types=("hair_salon",)), row)
+    assert ok and "fonds" in why
+
+
+def test_lieu_dit_refuse_un_centre_commercial():
+    from enrich_places import valider_lieu
+    row = _row(acheteur_nom="HANUMAN MACON", acheteur_adresse="ZAC DES BOUCHARDES RUE DE BOURGOGNE 71680 CRECHES-SUR-SAONE", ville="Crêches-sur-Saône", verticale="chr")
+    ok, _ = valider_lieu(_place("Carrefour Crêches Sur Saône", "Centre Commercial Carrefour Les Bouchardes, 71680 Crêches-sur-Saône", types=("shopping_mall", "restaurant")), row)
+    assert not ok

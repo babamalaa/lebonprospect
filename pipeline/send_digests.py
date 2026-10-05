@@ -168,6 +168,7 @@ def main():
                     all_leads += fetch_leads(v, departement=d, date=str(last_ed))
             else:  # national
                 all_leads += fetch_leads(v, date=str(last_ed))
+        all_leads = numeros_verifies(all_leads)      # un numéro jamais validé par la règle stricte n'est JAMAIS envoyé, quel que soit l'abonné
         if not all_leads:
             empty += 1
             continue

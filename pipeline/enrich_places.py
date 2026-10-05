@@ -92,7 +92,9 @@ def _norm(t):
     return re.sub(r"[^a-z0-9 ]", " ", t)
 
 def _tokens(t, exclure=frozenset()):
-    return {w for w in _norm(t).split() if len(w) >= 3 and w not in STOP_NOM and w not in exclure and not w.isdigit()}
+    mots = {w for w in _norm(t).split() if len(w) >= 3 and w not in STOP_NOM and w not in exclure and not w.isdigit()}
+    # un nombre de 3 chiffres ou plus (« 2001 », « 421 ») est un vrai signe distinctif de marque ; un petit numéro (« 2 ») n'en est pas un
+    return mots | {w for w in _norm(t).split() if w.isdigit() and len(w) >= 3 and w not in exclure}
 
 def noms_similaires(a, b, exclure=frozenset()):
     """Deux noms se ressemblent s'ils partagent un mot distinctif. `exclure` : mots de la commune, qui ne prouvent rien."""
@@ -126,16 +128,19 @@ def _cp(texte):
     return m[-1] if m else None
 
 def _num_voie(adresse):
-    """(numéro, mots distinctifs de la voie) d'une adresse BODACC ou Google ; None si introuvable."""
-    a = adresse or ""
-    m = re.search(r"(\d+)\s*(?:bis|ter|b|t)?[ ,]+([^\d,]+?)\s*,?\s*\d{5}", a, re.I)
+    """(ensemble de numéros, mots distinctifs de la voie). Gère « 19 A » / « 19A » / « 19 bis », « 81-83 », « 2 B »."""
+    a = (adresse or "").replace("\u2013", "-")
+    m = re.search(r"(\d+)(?:\s*(?:-|a|à|et)\s*(\d+))?\s*(?:bis|ter|quater|[a-d])?\b[ ,]*([^\d,]+?)\s*(?:\d{1,3}\s*)?,?\s*\d{5}", a, re.I)
     if not m: return None
-    voie = {w for w in _norm(m.group(2)).split() if len(w) > 3 and w not in GEN_VOIE}
-    return (m.group(1), voie) if voie else None
+    nums = {m.group(1)} | ({m.group(2)} if m.group(2) else set())
+    if m.group(2) and 0 < int(m.group(2)) - int(m.group(1)) <= 40:
+        nums |= {str(n) for n in range(int(m.group(1)), int(m.group(2)) + 1)}
+    voie = {w for w in _norm(m.group(3)).split() if len(w) > 3 and w not in GEN_VOIE}
+    return (nums, voie) if voie else None
 
 def meme_adresse(adr_repreneur, adr_google):
     a, b = _num_voie(adr_repreneur), _num_voie(adr_google)
-    return bool(a and b and a[0] == b[0] and (a[1] & b[1]))
+    return bool(a and b and (a[0] & b[0]) and (a[1] & b[1]))
 
 # Types Google attendus selon le métier du repreneur. Sert à refuser « le voisin de palier » (Intermarché pour une coiffeuse en galerie,
 # « Eat Night » pour un fruitier, un centre d'affaires pour un artisan) quand seule l'adresse concorde.
@@ -166,6 +171,14 @@ def type_compatible(place, verticale):
     types = set(place.get("types") or []) | {place.get("primaryType")}
     return any(t in TYPES_CHR or (t or "").endswith("_restaurant") for t in types if t)
 
+def noms_vendeur(row):
+    """Nom du fonds vendu : parfois c'est le vrai nom du commerce (« Art et Coupe » repris par Poindront), mais jamais une preuve à lui seul."""
+    out = []
+    for src in (row.get("vendeur_nom"), ((row.get("commercant") or "").split(",") + [""])[1] if "," in (row.get("commercant") or "") else ""):
+        n = re.sub(r"\([^)]*\)", "", src or "").strip()
+        if n: out.append(n)
+    return out
+
 def valider_lieu(place, row):
     """(True, raison) si Google CONFIRME que ce lieu est l'établissement du repreneur ; (False, raison) sinon."""
     if not place or not place.get("nationalPhoneNumber"):
@@ -185,9 +198,19 @@ def valider_lieu(place, row):
     ville_mots |= set(_norm(re.sub(r"\d{5}", " ", (row.get("acheteur_adresse") or "").split("  ")[-1])).split()[-3:])
     if any(noms_similaires(nom_g, n, ville_mots) for n in noms_repreneur(row)):
         return True, "nom du repreneur"
+    # Nom du fonds vendu retrouvé À LA MÊME ADRESSE (même numéro de voie) et pour le même métier : le commerce a changé de mains sans changer de nom
+    if meme_adresse(row.get("acheteur_adresse"), adr_g) and type_coherent(place, row.get("verticale")) and row.get("verticale") not in ("autres", "inconnu", None) \
+            and any(noms_similaires(nom_g, n, ville_mots) for n in noms_vendeur(row)):
+        return True, "nom du fonds vendu, même adresse"
     # À l'adresse seule : exige un type de lieu cohérent avec le métier ET un numéro de voie identique (jamais le voisin de palier).
     if meme_adresse(row.get("acheteur_adresse"), adr_g) and type_coherent(place, row.get("verticale")) and row.get("verticale") not in ("autres", "inconnu", None):
         return True, "même adresse et même métier"
+    # Adresse sans numéro de voie (lieu-dit : « La Mouge, RN 6 ») : même commune + même lieu-dit + même type de lieu -> on accepte
+    if not _num_voie(row.get("acheteur_adresse")) and type_coherent(place, row.get("verticale")) and row.get("verticale") not in ("autres", "inconnu", None):
+        lieu_dit = {w for w in _norm((row.get("acheteur_adresse") or "")).split() if len(w) > 3 and w not in GEN_VOIE and not w.isdigit()} - {w for w in _norm(row.get("ville") or "").split()}
+        if lieu_dit & set(_norm(adr_g).split()) and not (set(place.get("types") or []) & {"shopping_mall", "department_store", "supermarket", "hypermarket", "business_center"}) \
+                and not re.search(r"centre commercial|galerie|carrefour|leclerc|auchan|intermarch|casino|zone|zac|parc d", nom_g, re.I):
+            return True, "même lieu-dit et même métier"
     return False, "ni le nom ni l'adresse"
 
 def trouver_lieu(row):

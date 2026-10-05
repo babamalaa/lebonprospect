@@ -100,3 +100,11 @@ def test_numeros_non_verifies_sont_masques():
              {"id": 4, "telephone": None, "tel_validation": None}]
     out = sd.numeros_verifies(leads)
     assert [r["telephone"] for r in out] == ["04 00 00 00 01", None, None, None]
+
+
+def test_digest_classique_masque_aussi_les_numeros_non_verifies(monkeypatch):
+    import send_digests as sd
+    leads = [{"id": 1, "telephone": "04 75 46 45 73", "tel_validation": None}]
+    monkeypatch.setattr(sd, "sql_exec", lambda q: [])
+    # numeros_verifies est appelé sur tous les chemins : on vérifie ici sa garantie de base
+    assert sd.numeros_verifies(leads)[0]["telephone"] is None
