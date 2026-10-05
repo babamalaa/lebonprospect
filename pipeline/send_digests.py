@@ -182,7 +182,7 @@ def main():
             print(f"DRY: {s['email']:35s} ← {n} leads ({VERT_LABELS.get(v_main, v_main)} × {zone})")
             continue
         try:
-            r = send_resend(s["email"], subject, html_body)
+            r = send_resend(s["email"], subject, html_body, reply_to=REPLY_TO)
             sql_exec(f"insert into digests_log (subscriber_id, date_digest, nb_leads, resend_id) "
                      f"values ({s['id']}, '{today}', {n}, '{r.get('id', '')}');")
             sql_exec(f"update subscribers set dernier_digest = '{today}' where id = {s['id']};")

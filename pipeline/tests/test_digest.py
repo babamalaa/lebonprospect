@@ -65,3 +65,12 @@ def test_render_digest_zone_label():
 def test_render_digest_sans_date_prend_aujourdhui():
     h = digest.render_digest("chr", [])
     assert "24 septembre 2026" in h and "France entière" in h
+
+
+def test_mention_numero_faux_dans_tous_les_emails():
+    import digest
+    lead = {"id": 1, "acheteur_nom": "X", "ville": "Dijon", "departement": "Côte-d'Or", "telephone": None, "date_parution": "2026-10-05"}
+    for kind in ("bienvenue", "quotidien", "filet", "hebdo"):
+        sujet, html = digest.build_email(kind, [lead], "Côte-d'Or (21)", ["Côte-d'Or"], "2026-10-05", "2026-09-29", nom="A B")
+        assert "Un numéro vous semble faux" in html, kind
+        assert "sous 24" in html, kind

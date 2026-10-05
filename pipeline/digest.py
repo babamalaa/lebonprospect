@@ -146,6 +146,10 @@ def render_digest(verticale, leads, region=None, departement=None, date=None, zo
     sub_html = subline or f"{label.capitalize()} · {html.escape(zone)} · publiés hier au Journal officiel"
     intro_row = (f'<tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:{INK};line-height:1.6;padding-top:14px;">{intro_html}</td></tr>' if intro_html else "")
     conseil_open, conseil_close = ("", "") if not headline else ("<!--", "-->")   # conseil du matin masqué pour les emails à titre personnalisé (bienvenue, filet, hebdo)
+    flag_row = (f'<tr><td style="padding-top:16px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px dashed {MUTED};border-radius:10px;">'
+                f'<tr><td style="padding:11px 16px;font-family:Arial,Helvetica,sans-serif;font-size:12.5px;color:{INK};line-height:1.5;">'
+                f'<strong>Un numéro vous semble faux ?</strong> Répondez simplement à cet email : on le vérifie et on le corrige sous 24&nbsp;h.'
+                f'</td></tr></table></td></tr>')
     outro_row = (f'<tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:13.5px;color:{INK};line-height:1.6;padding-top:20px;">{outro_html}</td></tr>' if outro_html else "")
     return f"""<!doctype html>
 <html lang="fr"><head><meta charset="utf-8">
@@ -191,6 +195,7 @@ def render_digest(verticale, leads, region=None, departement=None, date=None, zo
 </td></tr>{conseil_close}
 
 {outro_row}
+{flag_row}
 <tr><td align="center" style="padding:26px 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:{MUTED};line-height:1.6;">
   LeBonProspect · chaque reprise est un acte officiel, vérifiable, jamais inventé<br>
   <a href="https://lebonprospect.fr" style="color:{TEAL};">lebonprospect.fr</a> ·
