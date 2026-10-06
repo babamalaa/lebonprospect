@@ -25,10 +25,12 @@ def envoyer_digests():
 def main():
     r = sql_exec("select coalesce(max(date_parution), current_date - 3) as last from cessions;")
     last = datetime.date.fromisoformat(str(r[0]["last"]))
-    yesterday = datetime.date.today() - datetime.timedelta(1)
+    # On ingère jusqu'à AUJOURD'HUI : le Journal officiel publie dans la nuit, l'édition du jour est disponible dès le matin
+    # (constaté le 6 oct. : 289 avis datés du 06/10 à 7h30). Avant, on s'arrêtait à « hier » et chaque édition arrivait avec un jour de retard.
+    today = datetime.date.today()
     days = []
-    d = last + datetime.timedelta(1)
-    while d <= yesterday and len(days) < 10:
+    d = last      # on RE-ingère le dernier jour connu : l'insertion est idempotente (bodacc_id), et il a pu être récupéré incomplet la veille
+    while d <= today and len(days) < 10:
         days.append(d.isoformat())
         d += datetime.timedelta(1)
     if not days:
