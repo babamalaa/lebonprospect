@@ -5,7 +5,7 @@ Lit SUPABASE_PROJECT_REF + SUPABASE_TOKEN depuis l'environnement ou ~/.repreneur
 Utilise l'endpoint management /database/query (même méthode éprouvée que Balise).
 Idempotent: ON CONFLICT (bodacc_id) DO NOTHING.
 """
-import json, os, sys, glob, urllib.request, argparse, time
+import json, os, sys, glob, urllib.request, urllib.error, argparse, time
 
 def env(key):
     if os.environ.get(key):
@@ -17,16 +17,30 @@ def env(key):
                 return line.strip().split("=", 1)[1]
     sys.exit(f"Missing {key} (env or ~/.repreneur-env)")
 
-def sql_exec(query):
+def sql_exec(query, tentatives=5):
+    """Requête SQL via l'API Supabase. Une erreur passagère (500/502/503/504, 429, coupure réseau) est rejouée avec une attente croissante :
+    le 6 oct. 2026, un seul 500 sur la toute première requête a fait échouer tout le traitement du matin, donc aucun digest n'est parti."""
+    import time
     ref, token = env("SUPABASE_PROJECT_REF"), env("SUPABASE_TOKEN")
-    req = urllib.request.Request(
-        f"https://api.supabase.com/v1/projects/{ref}/database/query",
-        data=json.dumps({"query": query}).encode(),
-        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json",
-                 "User-Agent": "lebonprospect-pipeline/1.0"},
-        method="POST")
-    with urllib.request.urlopen(req, timeout=120) as r:
-        return json.loads(r.read().decode())
+    derniere = None
+    for i in range(tentatives):
+        req = urllib.request.Request(
+            f"https://api.supabase.com/v1/projects/{ref}/database/query",
+            data=json.dumps({"query": query}).encode(),
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json",
+                     "User-Agent": "lebonprospect-pipeline/1.0"},
+            method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r:
+                return json.loads(r.read().decode())
+        except urllib.error.HTTPError as e:
+            if e.code not in (429, 500, 502, 503, 504):
+                raise                      # 400 (requête invalide), 401, 403... : inutile de réessayer
+            derniere = e
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
+            derniere = e
+        time.sleep(2 * (i + 1))            # 2, 4, 6, 8 s
+    raise derniere if derniere else RuntimeError('sql_exec : aucune tentative')
 
 def esc(v):
     if v is None:

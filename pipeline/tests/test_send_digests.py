@@ -108,3 +108,36 @@ def test_digest_classique_masque_aussi_les_numeros_non_verifies(monkeypatch):
     monkeypatch.setattr(sd, "sql_exec", lambda q: [])
     # numeros_verifies est appelé sur tous les chemins : on vérifie ici sa garantie de base
     assert sd.numeros_verifies(leads)[0]["telephone"] is None
+
+
+def test_sql_exec_reessaye_une_erreur_500(monkeypatch):
+    import io, urllib.error, load_db
+    monkeypatch.setattr(load_db, "env", lambda k: "x")
+    monkeypatch.setattr("time.sleep", lambda s: None)
+    appels = {"n": 0}
+    class Rep:
+        def __enter__(self): return self
+        def __exit__(self, *a): pass
+        def read(self): return b'[{"ok": 1}]'
+    def faux_urlopen(req, timeout=0):
+        appels["n"] += 1
+        if appels["n"] < 3:
+            raise urllib.error.HTTPError("u", 500, "Internal Server Error", {}, io.BytesIO(b""))
+        return Rep()
+    monkeypatch.setattr(load_db.urllib.request, "urlopen", faux_urlopen)
+    assert load_db.sql_exec("select 1") == [{"ok": 1}]
+    assert appels["n"] == 3                       # deux échecs, puis réussite
+
+def test_sql_exec_ne_reessaye_pas_une_requete_invalide(monkeypatch):
+    import io, urllib.error, load_db
+    monkeypatch.setattr(load_db, "env", lambda k: "x")
+    monkeypatch.setattr("time.sleep", lambda s: None)
+    appels = {"n": 0}
+    def faux_urlopen(req, timeout=0):
+        appels["n"] += 1
+        raise urllib.error.HTTPError("u", 400, "Bad Request", {}, io.BytesIO(b""))
+    monkeypatch.setattr(load_db.urllib.request, "urlopen", faux_urlopen)
+    import pytest
+    with pytest.raises(urllib.error.HTTPError):
+        load_db.sql_exec("select bad")
+    assert appels["n"] == 1                       # une requête fausse n'est pas rejouée
