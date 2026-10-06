@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req) {
   const profile = await getAuthedProfile(req);
   if (!profile) return Response.json({ error: "Non authentifié." }, { status: 401 });
-  if (profile.role !== "admin" && !profile.essai_autorise) return Response.json({ error: "Réservé." }, { status: 403 });
+  if (profile.role !== "admin") return Response.json({ error: "Réservé." }, { status: 403 });
   const admin = supabaseAdmin();
   const { data, error } = await admin.from("subscribers")
     .select("email, nom, societe, plan, essai_fin, premier_paiement_at, resilie_at, stripe_status, statut, created_at, zone_saisie, regions, departements")

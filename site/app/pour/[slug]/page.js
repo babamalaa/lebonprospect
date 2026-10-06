@@ -110,15 +110,12 @@ async function fetchGeneratedCible(slug) {
   const { data } = await admin.from("generated_pages").select("*").eq("slug", slug).single();
   if (!data) return null;
   const region = REGION_MAP[data.region] || data.region;
-  // L'offre essai 7 jours n'apparaît QUE si le closer qui SUIT ce prospect y est autorisé (compte de Law).
-  // Avant, on regardait qui avait généré la page : l'outreach automatique (compte de Law) créait la page avant le closer,
-  // et un prospect de Maxence ou d'Aurélie voyait donc « Démarrer mon essai » alors que ces closers vendent l'abonnement direct.
+  // RÈGLE : seules les pages rattachées au compte ADMIN de Law (essai_autorise, rôle admin) affichent l'essai 7 jours.
+  // Une page générée par un closer n'affiche JAMAIS l'essai : les closers vendent l'abonnement direct.
   let essai = false;
-  const { data: prospect } = await admin.from("prospects_pool").select("closer_id").ilike("societe", data.societe).limit(1).maybeSingle();
-  const proprietaire = prospect?.closer_id || data.closer_id;   // prospect non assigné : on garde le compte qui a généré la page
-  if (proprietaire) {
-    const { data: closer } = await admin.from("closer_profiles").select("essai_autorise").eq("id", proprietaire).single();
-    essai = !!closer?.essai_autorise;
+  if (data.closer_id) {
+    const { data: closer } = await admin.from("closer_profiles").select("essai_autorise, role").eq("id", data.closer_id).single();
+    essai = !!closer?.essai_autorise && closer?.role === "admin";
   }
   return {
     slug: data.slug,

@@ -33,7 +33,7 @@ export async function POST(req) {
     return Response.json({ error: "Ce prospect ne vous appartient pas." }, { status: 403 });
   }
 
-  if (essai && !profile.essai_autorise) return Response.json({ error: "Essai non autorisé sur ce compte." }, { status: 403 });
+  if (essai && !(profile.role === "admin" && profile.essai_autorise)) return Response.json({ error: "Essai non autorisé sur ce compte." }, { status: 403 });
   const montant = PLAN_PRICE[plan] ?? 0;
   const { error: uErr } = await admin
     .from("prospects_pool")

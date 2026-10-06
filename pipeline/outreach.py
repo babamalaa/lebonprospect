@@ -44,7 +44,7 @@ def pick_lead(dept, region, exclude_ids):
         if r: return r[0], "region"
     return None, None
 
-LAW_CLOSER_ID = "96686993-3801-4d3d-88ca-438d1adbd8ca"   # compte "Lawrenza Closing" (essai_autorise) : la page affiche l'offre essai 7 jours
+LAW_CLOSER_ID = "35474445-427f-4c0c-864a-9c5718b96c7a"   # compte ADMIN de Law : seul compte dont les pages affichent l'essai 7 jours
 
 def slugify(x):
     out = (x or "").lower()

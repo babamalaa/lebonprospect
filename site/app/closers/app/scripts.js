@@ -165,20 +165,20 @@ Il ne demande pas d'argent aujourd'hui, il ne demande pas de décision. La carte
         noEssai: true,
         text: `« Voilà ce que je vous propose : vous testez un mois. Sur la page que je vous ai envoyée, vous cliquez sur « Mon département » ou « Ma région », vous mettez votre zone, et demain matin à 8h vous recevez les vraies reprises de votre secteur avec les vrais numéros. Vous en appelez deux ou trois. C'est sans engagement : si au bout du mois ça ne vous a rien apporté, vous résiliez en un clic. Vous le faites pendant qu'on est en ligne ? »
 
-On ne demande pas une décision d'un an, on demande un mois d'essai réel. Rester en ligne pendant qu'il valide : c'est le moment où les questions sortent, et où l'on y répond.`,
+On ne demande pas une décision d'un an, on demande un mois, sans engagement. Rester en ligne pendant qu'il valide : c'est le moment où les questions sortent, et où l'on y répond.`,
       },
       {
         title: "Enchaîner immédiatement sur la date",
         style: "dark",
         text: `« Parfait. Vous recevez votre première liste demain à 8h. Je vous rappelle vendredi en fin de matinée pour voir ce que ça a donné. Vendredi 11h, ça vous va ? »
 
-On ne raccroche jamais sans créneau précis, noté dans la fiche (champ « prochaine action » + date). Sans date, l'essai meurt.`,
+On ne raccroche jamais sans créneau précis, noté dans la fiche (champ « prochaine action » + date). Sans date, le dossier meurt.`,
       },
       {
         title: "Les trois questions du rappel",
         style: "",
         list: [
-          "« Vous avez appelé combien de repreneurs ? » S'il n'en a appelé aucun, l'essai n'a rien prouvé : on prolonge avec un engagement précis (« appelez-en trois, je vous rappelle jeudi »), on ne close pas.",
+          "« Vous avez appelé combien de repreneurs ? » S'il n'en a appelé aucun, le premier mois n'a rien prouvé : on prolonge avec un engagement précis (« appelez-en trois, je vous rappelle jeudi »), on ne close pas.",
           "« Ça a donné quoi ? » On laisse parler, même si c'est négatif : c'est là qu'on apprend ce qui cloche dans le produit. On note sa phrase exacte.",
           "Puis on confirme la suite : l'abonnement continue au tarif normal, ou il résilie. Pas de remise improvisée : le tarif est celui du site.",
         ],
@@ -212,7 +212,7 @@ S'il est plein toute l'année : on ne vend pas, on bascule sur Le non qui rappor
 
 « Par rapport à quoi ? » (laisser répondre) « Un chantier chez vous, c'est [3 500 €]. Là on parle de 1 788 € sur l'année. Vous n'avez pas un problème de prix, vous avez un doute sur le fait que ça marche. Et c'est normal, vous ne me connaissez pas. C'est pour ça que c'est sans engagement : vous testez un mois et vous jugez sur de vrais numéros. »
 
-Le prix est presque toujours un doute déguisé. L'essai répond au doute ; baisser le prix n'y répond pas.`,
+Le prix est presque toujours un doute déguisé. Un mois sans engagement répond au doute ; baisser le prix n'y répond pas.`,
       },
       {
         title: "« Vous avez combien de clients ? Qui l'utilise déjà ? »",

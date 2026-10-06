@@ -186,7 +186,7 @@ function AppPageInner() {
   }, [session]);
   useEffect(() => { loadPoolRegions(); }, [loadPoolRegions, rows.length]);
   useEffect(() => {
-    if (!session || !profile || !(profile.role === "admin" || profile.essai_autorise)) return;
+    if (!session || !profile || profile.role !== "admin") return;
     authedFetch("/api/essais").then((r) => r.json()).then((d) => { if (d && d.stats) setEssais(d); }).catch(() => {});
   }, [session, profile, authedFetch]);
 
@@ -567,7 +567,7 @@ function AppPageInner() {
               </div>
             )}
 
-            {essais && (profile?.role === "admin" || profile?.essai_autorise) && (
+            {essais && profile?.role === "admin" && (
               <div className="app-card essai-panel">
                 <h3>Essais gratuits 7 jours</h3>
                 <p style={{ fontSize: 13, color: "#6f6a5c", marginTop: 4 }}>Alimenté automatiquement par Stripe. Un essai est « converti » au premier paiement encaissé, « résilié » s&apos;il est annulé avant.</p>
@@ -773,8 +773,8 @@ function AppPageInner() {
                                 <option value="departemental">Départemental (149€)</option>
                                 <option value="regional">Régional (299€)</option>
                                 <option value="national">National (sur devis)</option>
-                                {profile?.essai_autorise && <option value="departemental_essai">Essai 7 j · Départemental</option>}
-                                {profile?.essai_autorise && <option value="regional_essai">Essai 7 j · Régional</option>}
+                                {profile?.role === "admin" && profile?.essai_autorise && <option value="departemental_essai">Essai 7 j · Départemental</option>}
+                                {profile?.role === "admin" && profile?.essai_autorise && <option value="regional_essai">Essai 7 j · Régional</option>}
                               </select>
                             ) : (
                               <span className="dash-sub">—</span>
@@ -856,8 +856,8 @@ function AppPageInner() {
                             <option value="departemental">Départemental (149€)</option>
                             <option value="regional">Régional (299€)</option>
                             <option value="national">National (sur devis)</option>
-                            {profile?.essai_autorise && <option value="departemental_essai">Essai 7 j · Départemental</option>}
-                            {profile?.essai_autorise && <option value="regional_essai">Essai 7 j · Régional</option>}
+                            {profile?.role === "admin" && profile?.essai_autorise && <option value="departemental_essai">Essai 7 j · Départemental</option>}
+                            {profile?.role === "admin" && profile?.essai_autorise && <option value="regional_essai">Essai 7 j · Régional</option>}
                           </select>
                         </div>
                       )}
@@ -901,7 +901,7 @@ function AppPageInner() {
                 <b>Kit de démarrage complet →</b>
                 <span>Produit, rémunération, do&apos;s &amp; don&apos;ts, processus</span>
               </a>
-              {profile?.essai_autorise && (
+              {profile?.role === "admin" && profile?.essai_autorise && (
                 <div className="app-doc app-doc-essai">
                   <div className="app-doc-plaquette-txt">
                     <b>Liens de paiement « Essai gratuit 7 jours »</b>
@@ -1001,7 +1001,7 @@ function AppPageInner() {
             <p className="script-note">{activeScript.desc}</p>
 
             <div className="script-block">
-              {activeScript.blocks.filter((b) => !(b.essaiOnly && !profile?.essai_autorise) && !(b.noEssai && profile?.essai_autorise)).map((b, i) => (
+              {activeScript.blocks.filter((b) => !(b.essaiOnly && !(profile?.role === "admin" && profile?.essai_autorise)) && !(b.noEssai && profile?.role === "admin" && profile?.essai_autorise)).map((b, i) => (
                 <div key={i} className="script-sheet">
                   <div className="script-sheet-tab" style={{
                     background: b.style === "dark" ? "#14181d" : b.style === "teal" ? "#31777A" : "#d64a2e",
