@@ -110,10 +110,14 @@ async function fetchGeneratedCible(slug) {
   const { data } = await admin.from("generated_pages").select("*").eq("slug", slug).single();
   if (!data) return null;
   const region = REGION_MAP[data.region] || data.region;
-  // Si la page a été générée par un compte autorisé à proposer l'essai 7 jours, l'offre bascule en mode essai
+  // L'offre essai 7 jours n'apparaît QUE si le closer qui SUIT ce prospect y est autorisé (compte de Law).
+  // Avant, on regardait qui avait généré la page : l'outreach automatique (compte de Law) créait la page avant le closer,
+  // et un prospect de Maxence ou d'Aurélie voyait donc « Démarrer mon essai » alors que ces closers vendent l'abonnement direct.
   let essai = false;
-  if (data.closer_id) {
-    const { data: closer } = await admin.from("closer_profiles").select("essai_autorise").eq("id", data.closer_id).single();
+  const { data: prospect } = await admin.from("prospects_pool").select("closer_id").ilike("societe", data.societe).limit(1).maybeSingle();
+  const proprietaire = prospect?.closer_id || data.closer_id;   // prospect non assigné : on garde le compte qui a généré la page
+  if (proprietaire) {
+    const { data: closer } = await admin.from("closer_profiles").select("essai_autorise").eq("id", proprietaire).single();
     essai = !!closer?.essai_autorise;
   }
   return {

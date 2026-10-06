@@ -33,9 +33,15 @@ async function resolveCloser(admin, ref) {
   if (ref.startsWith("pg_")) {
     const slug = ref.slice(3);
     const { data: page } = await admin.from("generated_pages").select("societe, closer_id").eq("slug", slug).maybeSingle();
-    if (page?.closer_id) {
-      const { data } = await admin.from("closer_profiles").select("id, full_name, email").eq("id", page.closer_id).maybeSingle();
-      return { closer: data || null, societe: page.societe, slug };
+    // Le deal revient au closer qui SUIT le prospect, pas à celui qui a généré la page (l'outreach automatique génère sous le compte de Law).
+    let closerId = page?.closer_id || null;
+    if (page?.societe) {
+      const { data: prospect } = await admin.from("prospects_pool").select("closer_id").ilike("societe", page.societe).limit(1).maybeSingle();
+      if (prospect?.closer_id) closerId = prospect.closer_id;
+    }
+    if (closerId) {
+      const { data } = await admin.from("closer_profiles").select("id, full_name, email").eq("id", closerId).maybeSingle();
+      return { closer: data || null, societe: page?.societe || null, slug };
     }
     return { closer: null, societe: page?.societe || null, slug };
   }
