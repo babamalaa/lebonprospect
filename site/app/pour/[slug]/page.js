@@ -112,8 +112,9 @@ async function fetchGeneratedCible(slug) {
   const region = REGION_MAP[data.region] || data.region;
   // RÈGLE : seules les pages rattachées au compte ADMIN de Law (essai_autorise, rôle admin) affichent l'essai 7 jours.
   // Une page générée par un closer n'affiche JAMAIS l'essai : les closers vendent l'abonnement direct.
+  // Les pages créées par l'automate d'outreach (1 000 prospects froids) n'affichent jamais l'essai non plus : l'essai est un outil de closing de Law, pas une offre publique.
   let essai = false;
-  if (data.closer_id) {
+  if (data.closer_id && (data.origine || "dashboard") === "dashboard") {
     const { data: closer } = await admin.from("closer_profiles").select("essai_autorise, role").eq("id", data.closer_id).single();
     essai = !!closer?.essai_autorise && closer?.role === "admin";
   }

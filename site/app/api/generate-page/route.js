@@ -47,6 +47,7 @@ export async function POST(req) {
       region: prospect.region,
       ville: prospect.ville,
       closer_id: profile.id,
+      origine: "dashboard",
     },
     { onConflict: "slug" }
   );

@@ -44,7 +44,7 @@ def pick_lead(dept, region, exclude_ids):
         if r: return r[0], "region"
     return None, None
 
-LAW_CLOSER_ID = "35474445-427f-4c0c-864a-9c5718b96c7a"   # compte ADMIN de Law : seul compte dont les pages affichent l'essai 7 jours
+LAW_CLOSER_ID = "35474445-427f-4c0c-864a-9c5718b96c7a"   # compte ADMIN de Law. Les pages d'outreach (origine=outreach) n'affichent JAMAIS l'essai.
 
 def slugify(x):
     out = (x or "").lower()
@@ -55,8 +55,8 @@ def ensure_page(p):
     """Crée (ou réutilise) la page personnalisée /pour/<slug> du prospect, rattachée au compte de Law."""
     slug = slugify(p["societe"])
     esc = lambda x: (x or "").replace("'", "''")
-    sql_exec(f"""insert into generated_pages (slug, societe, categorie, region, ville, closer_id)
-                 values ('{esc(slug)}', '{esc(p["societe"])}', '{esc(p.get("categorie"))}', '{esc(p.get("region"))}', '{esc(p.get("ville"))}', '{LAW_CLOSER_ID}')
+    sql_exec(f"""insert into generated_pages (slug, societe, categorie, region, ville, closer_id, origine)
+                 values ('{esc(slug)}', '{esc(p["societe"])}', '{esc(p.get("categorie"))}', '{esc(p.get("region"))}', '{esc(p.get("ville"))}', '{LAW_CLOSER_ID}', 'outreach')
                  on conflict (slug) do nothing;""")
     url = f"https://www.lebonprospect.fr/pour/{slug}"
     sql_exec(f"update prospects_pool set lien_teaser='{url}' where id={p['id']} and lien_teaser is null;")
