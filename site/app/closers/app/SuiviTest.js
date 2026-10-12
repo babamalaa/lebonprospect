@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-const KIND = { bienvenue: "Bienvenue", quotidien: "Quotidien", filet: "Filet (jour creux)", hebdo: "Récap hebdo" };
+const KIND = { bienvenue: "Bienvenue", quotidien: "Quotidien", filet: "Filet (jour creux)", relache: "Pas de parution", hebdo: "Récap hebdo" };
 const fmtDate = (iso) => (iso ? new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" }) : "—");
 const fmtHeure = (iso) => (iso ? new Date(iso).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "—");
 
@@ -78,7 +78,7 @@ export default function SuiviTest({ authedFetch }) {
         ...g, logs: L, adresses, debut, fin, zone: g.subs[0].zone_label,
         nbEnvois: L.length, leadsUniques: leads.length,
         tel: leads.filter((x) => x.tel).length, neufs: leads.filter((x) => x.neuf).length,
-        filets: L.filter((l) => l.type === "filet").length,
+        filets: L.filter((l) => l.type === "filet" || l.type === "relache").length,
         parDept: leads.reduce((a, x) => ({ ...a, [x.dept]: (a[x.dept] || 0) + 1 }), {}),
       };
     });

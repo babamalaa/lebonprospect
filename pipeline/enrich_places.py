@@ -14,7 +14,7 @@ Usage:
   python3 enrich_places.py --days 90 --verticale chr
 Coût: ~0.017 $ / requête Text Search (Essentials). 1000 leads ≈ 17 $.
 """
-import json, os, sys, argparse, urllib.request, time, re, datetime, unicodedata, difflib
+import json, os, sys, argparse, urllib.request, urllib.error, time, re, datetime, unicodedata, difflib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -22,6 +22,9 @@ from load_db import sql_exec, env
 
 VENDABLES = ("chr", "alimentaire", "coiffure_beaute", "garage_auto",
              "pressing_services", "sante", "fleuriste", "tabac_presse")
+
+class GoogleErreur(Exception):
+    """Google Places a refusé ou n'a pas répondu (clé, facturation, quota, réseau). Ce n'est PAS « aucun résultat »."""
 
 def places_search_n(query, n=5):
     """Jusqu'à n lieux candidats (le premier n'est pas toujours le bon : on valide ensuite)."""
@@ -35,8 +38,14 @@ def places_search_n(query, n=5):
     try:
         with urllib.request.urlopen(req, timeout=20) as r:
             return json.loads(r.read().decode()).get("places") or []
-    except Exception:
-        return []
+    except urllib.error.HTTPError as e:
+        # 9-12 oct. 2026 : facturation Google coupée, chaque requête répondait 403 et l'erreur était avalée en « aucun résultat ».
+        # Plus jamais en silence : l'erreur remonte, la fiche n'est pas touchée, une alerte part.
+        try: detail = e.read().decode()[:300]
+        except Exception: detail = ""
+        raise GoogleErreur(f"HTTP {e.code} {detail}")
+    except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
+        raise GoogleErreur(f"réseau : {e}")
 
 def places_search(query):
     key = env("GOOGLE_PLACES_KEY")
@@ -221,15 +230,36 @@ def trouver_lieu(row):
     requetes = [f"{n} {lieu_txt}" for n in noms_repreneur(row)[:2]]
     if row.get("verticale") == "chr" and adr:
         requetes.append(f"restaurant bar café {adr}")          # dernier recours : ce qui se trouve à l'adresse, validé par le type
-    dernier = "aucune requête"
+    if not requetes:
+        return None, "aucun nom exploitable"
+    dernier = "aucun résultat Google"
     for q in requetes[:3]:
-        for place in places_search_n(q, 5):
+        for place in places_search_n(q, 5):       # GoogleErreur remonte à l'appelant : on ne conclut rien sur la fiche
             ok, why = valider_lieu(place, row)
             if ok:
                 return place, why
             dernier = why
         time.sleep(0.05)
     return None, dernier
+
+def alerte_google(n, detail):
+    """Prévient Baptiste (une fois par jour) que Google Places refuse les requêtes : sans ça, les emails partent sans aucun numéro."""
+    try:
+        deja = sql_exec("select 1 from lbp_dispatch_log where workflow = 'alerte-google' "
+                        "and created_at >= (now() at time zone 'Europe/Paris')::date limit 1;")
+        if deja:
+            return
+        from digest import send_resend
+        texte = (f"<p>Google Places a refusé {n} requête(s) lors de la recherche des numéros de téléphone.</p>"
+                 f"<p>Tant que ce n'est pas réglé, les emails partent <b>sans numéro</b>. Les fiches ne sont pas modifiées : "
+                 f"elles seront re-cherchées automatiquement dès que Google répond.</p>"
+                 f"<p>Message de Google : <code>{(detail or '')[:300].replace('<', '&lt;')}</code></p>"
+                 f"<p>Piste n°1 : la facturation du projet Google Cloud (console.cloud.google.com/billing).</p>")
+        send_resend("baptportugal@gmail.com", "[ALERTE] Google refuse la recherche des numéros", texte)
+        esc = (detail or "")[:200].replace("'", "''")
+        sql_exec(f"insert into lbp_dispatch_log (workflow, declenche, note) values ('alerte-google', true, '{esc}');")
+    except Exception as e:
+        print(f"alerte Google non envoyée : {e}", file=sys.stderr)
 
 def confiance(tel):
     t = tel.replace(" ", "")
@@ -288,8 +318,15 @@ def main():
         pending.clear()
     esc = lambda t: (t or "").replace("'", "''")
     rejetes = 0
+    erreurs_google, derniere_erreur = 0, ""
     for i, row in enumerate(rows):
-        place, raison = trouver_lieu(row)
+        try:
+            place, raison = trouver_lieu(row)
+        except GoogleErreur as e:
+            erreurs_google += 1; derniere_erreur = str(e)
+            if erreurs_google >= 3 and found == 0:
+                break                      # Google refuse tout : inutile d'insister, aucune fiche n'est modifiée
+            continue
         if place:
             tel = place["nationalPhoneNumber"]
             pname = esc((place.get("displayName") or {}).get("text", ""))
@@ -307,7 +344,11 @@ def main():
             print(f"  {i+1}/{len(rows)} traités, {found} numéros validés", flush=True)
         time.sleep(0.06)
     flush()
-    print(f"DONE: {found}/{len(rows)} numéros validés ({100*found/max(len(rows),1):.0f}%)" + (f" · {rejetes} anciens numéros écartés" if args.reverifier else ""))
+    if erreurs_google:
+        alerte_google(erreurs_google, derniere_erreur)
+    print(f"DONE: {found}/{len(rows)} numéros validés ({100*found/max(len(rows),1):.0f}%)"
+          + (f" · {rejetes} anciens numéros écartés" if args.reverifier else "")
+          + (f" · ERREUR GOOGLE ({erreurs_google} refus) : {derniere_erreur[:120]}" if erreurs_google else ""))
 
 if __name__ == "__main__":
     main()

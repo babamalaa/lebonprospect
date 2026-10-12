@@ -231,7 +231,7 @@ def _stats(leads):
     return tel, neufs
 
 def build_email(kind, leads, zone, depts, date_to, date_from=None, nom=None):
-    """Retourne (sujet, html). kind : bienvenue | quotidien | filet | hebdo. Ne touche pas à la base."""
+    """Retourne (sujet, html). kind : bienvenue | quotidien | filet | relache | hebdo. Ne touche pas à la base."""
     prenom = (nom or "").split(" ")[0] or ""
     hello = f"Bonjour {html.escape(prenom)}," if prenom else "Bonjour,"
     n = len(leads); plural = "s" if n > 1 else ""
@@ -249,13 +249,23 @@ def build_email(kind, leads, zone, depts, date_to, date_from=None, nom=None):
             subline=f"{zone_h} · du {_jours(date_from)} au {_jours(date_to)} · publiés au Journal officiel",
             intro_html=intro, outro_html=outro_q + sign)
     if kind == "filet":
-        subject = "Pas de reprise hier dans vos départements · les cinq plus récentes"
-        intro = (f"Aucun commerce repris n'a été publié hier dans vos départements. Pour que ce silence ne ressemble pas à une panne, "
-                 f"voici les {n} plus récents. Dès qu'une reprise sera publiée chez vous, vous la recevez le lendemain matin.")
+        subject = "Pas de nouvelle reprise chez vous aujourd'hui · les plus récentes"
+        intro = (f"Aucun commerce repris n'a été publié dans vos départements dans la dernière édition du Journal officiel. Pour que ce silence ne ressemble pas à une panne, "
+                 f"voici les {n} plus récents. Dès qu'une reprise sera publiée chez vous, vous la recevez le matin même.")
         return subject, render_digest("commerces", leads, date=str(date_to), zone_label=zone,
-            headline="Rien de nouveau hier chez vous",
+            headline="Rien de nouveau chez vous aujourd'hui",
             subline=f"{zone_h} · les {n} reprises les plus récentes",
             intro_html=intro)
+    if kind == "relache":
+        # Jour sans édition du Journal officiel (il ne paraît ni le samedi ni le lundi). Jamais de silence.
+        subject = "Pas de Journal officiel aujourd'hui · vos reprises les plus récentes"
+        intro = (f"{hello}<br><br>Le Journal officiel des annonces (BODACC) ne paraît pas aujourd'hui : aucune nouvelle reprise n'a donc été publiée. "
+                 f"Pour que vous gardiez le fil, voici les {n} reprise{plural} les plus récentes dans vos départements. "
+                 f"Les prochaines arrivent dès la prochaine parution, le matin même.")
+        return subject, render_digest("commerces", leads, date=datetime.date.today().isoformat(), zone_label=zone,
+            headline="Pas de parution aujourd'hui",
+            subline=f"{zone_h} · les {n} reprise{plural} les plus récentes",
+            intro_html=intro, outro_html=outro_q)
     if kind == "hebdo":
         tel, neufs = _stats(leads)
         par_dept = {}

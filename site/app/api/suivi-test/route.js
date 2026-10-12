@@ -18,7 +18,7 @@ export async function GET(req) {
   if (ids.length) {
     const { data } = await admin.from("digests_log")
       .select("id, subscriber_id, date_digest, nb_leads, resend_id, statut, type, sujet, edition, lead_snapshot, created_at")
-      .in("subscriber_id", ids).in("type", ["bienvenue", "quotidien", "filet", "hebdo"]).order("created_at", { ascending: false }).limit(500);
+      .in("subscriber_id", ids).in("type", ["bienvenue", "quotidien", "filet", "relache", "hebdo"]).order("created_at", { ascending: false }).limit(500);
     logs = data || [];
   }
   // couverture du jour : combien de reprises auraient pu être envoyées chaque jour dans leurs départements (diagnostic « jours creux »)

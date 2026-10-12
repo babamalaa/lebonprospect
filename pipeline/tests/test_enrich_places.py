@@ -141,3 +141,19 @@ def test_lieu_dit_refuse_un_centre_commercial():
     row = _row(acheteur_nom="HANUMAN MACON", acheteur_adresse="ZAC DES BOUCHARDES RUE DE BOURGOGNE 71680 CRECHES-SUR-SAONE", ville="Crêches-sur-Saône", verticale="chr")
     ok, _ = valider_lieu(_place("Carrefour Crêches Sur Saône", "Centre Commercial Carrefour Les Bouchardes, 71680 Crêches-sur-Saône", types=("shopping_mall", "restaurant")), row)
     assert not ok
+
+
+def test_erreur_google_remonte_et_ne_touche_pas_la_fiche(monkeypatch):
+    import io, urllib.error, pytest, enrich_places as ep
+    monkeypatch.setattr(ep, "env", lambda k: "x")
+    def refus(req, timeout=0):
+        raise urllib.error.HTTPError("u", 403, "Forbidden", {}, io.BytesIO(b'{"error":{"status":"PERMISSION_DENIED"}}'))
+    monkeypatch.setattr(ep.urllib.request, "urlopen", refus)
+    row = _row(acheteur_nom="PHARMACIE CENTRALE", acheteur_adresse="1 RUE BERBISEY 21000 DIJON", verticale="sante")
+    with pytest.raises(ep.GoogleErreur):
+        ep.trouver_lieu(row)                         # avant : renvoyait (None, "aucune requête") et la fiche était marquée rejetée
+
+def test_aucun_nom_exploitable():
+    import enrich_places as ep
+    ok, why = ep.trouver_lieu(_row(acheteur_nom="", commercant="", vendeur_nom=""))
+    assert ok is None and why == "aucun nom exploitable"

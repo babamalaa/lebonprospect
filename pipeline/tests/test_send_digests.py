@@ -141,3 +141,60 @@ def test_sql_exec_ne_reessaye_pas_une_requete_invalide(monkeypatch):
     with pytest.raises(urllib.error.HTTPError):
         load_db.sql_exec("select bad")
     assert appels["n"] == 1                       # une requête fausse n'est pas rejouée
+
+
+# ---------------------------------------------------------------------------------------------------------------------------
+# Envois de l'essai : cas réels des 10, 11 et 12 octobre 2026
+# ---------------------------------------------------------------------------------------------------------------------------
+def _essai(monkeypatch, today, last_ed, deja=(), jour_deja=()):
+    """Simule handle_test_subscriber en dry-run ; renvoie la liste des types qui partiraient."""
+    import send_digests as sd
+    sub = {"id": 10, "email": "a@x.fr", "nom": "Alexandre Benamar", "departements": ["Marne"], "verticales": ["commerces"], "suivi_test": True}
+    lead = {"id": 1, "acheteur_nom": "X", "acheteur_siren": "111", "vendeur_nom": "V", "departement": "Marne", "ville": "Reims",
+            "date_parution": str(last_ed), "telephone": None, "tel_validation": None, "acheteur_adresse": "1 rue A 51100 REIMS"}
+    def fake_sql(q):
+        if "from digests_log where subscriber_id" in q and "date_digest" in q: return [{"type": t} for t in jour_deja]
+        if "from digests_log where subscriber_id" in q: return [{"type": t, "edition": e} for t, e in deja]
+        if "from subscribers where suivi_test" in q: return [{"id": 10}]
+        return []
+    monkeypatch.setattr(sd, "sql_exec", fake_sql)
+    monkeypatch.setattr(sd, "fetch_range", lambda *a, **k: [dict(lead)])
+    monkeypatch.setattr(sd, "plan_for_subscriber", lambda s: (["commerces"], [], ["Marne"], [], "Marne (51)"))
+    monkeypatch.setattr(sd, "dans_la_zone", lambda leads, depts: leads)
+    monkeypatch.setattr(sd, "deja_envoyes", lambda ids: set())
+    vus = []
+    monkeypatch.setattr("builtins.print", lambda *a, **k: vus.append(" ".join(str(x) for x in a)))
+    sd.handle_test_subscriber(sub, last_ed, today, True)
+    return [l.split("[")[1].split("]")[0] for l in vus if l.startswith("DRY[")]
+
+def test_samedi_sans_edition_envoie_un_message(monkeypatch):
+    # sam. 10 oct. : dernière édition = 9, déjà servie -> avant : rien. Maintenant : « relache ».
+    assert _essai(monkeypatch, "2026-10-10", "2026-10-09", deja=[("bienvenue", "2026-10-04"), ("quotidien", "2026-10-09")]) == ["relache"]
+
+def test_lundi_sans_edition_envoie_relache_et_recap(monkeypatch):
+    # lun. 12 oct. : dernière édition = 11, déjà servie -> avant : rien du tout. Maintenant : « relache » + récap.
+    assert _essai(monkeypatch, "2026-10-12", "2026-10-11", deja=[("bienvenue", "2026-10-04"), ("quotidien", "2026-10-11")]) == ["relache", "hebdo"]
+
+def test_jour_avec_edition_envoie_le_quotidien(monkeypatch):
+    assert _essai(monkeypatch, "2026-10-11", "2026-10-11", deja=[("bienvenue", "2026-10-04"), ("quotidien", "2026-10-09")]) == ["quotidien"]
+
+def test_pas_de_second_envoi_le_meme_jour(monkeypatch):
+    # second déclenchement de 8h05 : rien ne repart
+    assert _essai(monkeypatch, "2026-10-13", "2026-10-13", deja=[("bienvenue", "2026-10-04"), ("quotidien", "2026-10-13")], jour_deja=["quotidien"]) == []
+
+def test_recap_du_lundi_pas_renvoye(monkeypatch):
+    assert _essai(monkeypatch, "2026-10-12", "2026-10-11", deja=[("bienvenue", "2026-10-04"), ("quotidien", "2026-10-11")], jour_deja=["relache", "hebdo"]) == []
+
+def test_doublon_do_it_supprime():
+    import send_digests as sd
+    a = {"id": 656955, "acheteur_nom": "DO IT", "acheteur_siren": "103239356", "vendeur_nom": "ADULIE", "date_parution": "2026-10-09"}
+    b = {**a, "id": 657031}
+    autre = {"id": 3, "acheteur_nom": "AUTRE", "acheteur_siren": "222", "vendeur_nom": "Z", "date_parution": "2026-10-09"}
+    assert [r["id"] for r in sd.sans_doublons([a, b, autre])].count(656955) + [r["id"] for r in sd.sans_doublons([a, b, autre])].count(657031) == 1
+    assert len(sd.sans_doublons([a, b, autre])) == 2
+
+def test_meme_repreneur_deux_fonds_differents_garde_les_deux():
+    import send_digests as sd
+    a = {"id": 1, "acheteur_nom": "SAS X", "acheteur_siren": "333", "vendeur_nom": "Boulangerie A", "date_parution": "2026-10-09"}
+    b = {"id": 2, "acheteur_nom": "SAS X", "acheteur_siren": "333", "vendeur_nom": "Boulangerie B", "date_parution": "2026-10-09"}
+    assert len(sd.sans_doublons([a, b])) == 2         # deux fonds achetés par la même société : deux reprises réelles

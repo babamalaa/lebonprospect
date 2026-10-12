@@ -53,6 +53,19 @@ def _log_test(s, kind, subject, html_body, leads, edition, resend_id, today):
     sql_exec(f"insert into digests_log (subscriber_id, date_digest, nb_leads, resend_id, statut, type, sujet, edition, lead_snapshot, html) "
              f"values ({s['id']}, '{today}', {len(leads)}, '{resend_id}', 'envoye', '{kind}', $lbp${subject}$lbp$, '{edition}', $lbp${snap}$lbp$::jsonb, $lbp${h}$lbp$);")
 
+def sans_doublons(leads):
+    """Une même reprise publiée en deux avis (cas « DO IT », 9 oct. 2026 : deux numéros BODACC, même SIREN, même vendeur, même adresse)
+    n'apparaît qu'une fois. Clé : SIREN du repreneur + vendeur, sinon nom + adresse. On garde l'avis le plus récent."""
+    vus, out = set(), []
+    for r in sorted(leads, key=lambda x: str(x.get("date_parution") or ""), reverse=True):
+        siren = (r.get("acheteur_siren") or "").replace(" ", "")
+        cle = (siren, (r.get("vendeur_nom") or "").strip().lower()) if siren else \
+              ((r.get("acheteur_nom") or r.get("commercant") or "").strip().lower(), (r.get("acheteur_adresse") or "").strip().lower())
+        if cle in vus:
+            continue
+        vus.add(cle); out.append(r)
+    return out
+
 def numeros_verifies(leads):
     """Garde-fou : un abonné de l'essai ne reçoit que des numéros validés par la règle stricte (tel_validation renseigné et non rejeté).
     Un numéro jamais vérifié est masqué (« bientôt disponible ») plutôt que risqué."""
@@ -70,7 +83,7 @@ def deja_envoyes(sub_ids):
     ids = ",".join(str(i) for i in sub_ids)
     rows = sql_exec(f"""select distinct c.acheteur_siren from digests_log l, jsonb_array_elements(l.lead_snapshot) x
         join cessions c on c.id = (x->>'id')::bigint
-        where l.subscriber_id in ({ids}) and l.type in ('bienvenue','quotidien','filet','hebdo') and c.acheteur_siren is not null;""")
+        where l.subscriber_id in ({ids}) and l.type in ('bienvenue','quotidien','filet','relache','hebdo') and c.acheteur_siren is not null;""")
     return {r["acheteur_siren"] for r in rows}
 
 _CODE_DEPT = {}
@@ -108,18 +121,29 @@ def handle_test_subscriber(s, last_ed, today, dry):
     jour = datetime.date.fromisoformat(today)
     envois = []   # (kind, leads, date_from)
     ed = datetime.date.fromisoformat(str(last_ed))
+    deja_aujourdhui = sql_exec(f"select type from digests_log where subscriber_id = {s['id']} and date_digest = '{today}' "
+                               f"and type in ('bienvenue','quotidien','filet','relache','hebdo');")
+    types_jour = {d["type"] for d in deja_aujourdhui}
+    def _zone(leads): return numeros_verifies(sans_doublons(dans_la_zone(leads, depts)))
     if "bienvenue" not in types_faits and "bienvenue_ignoree" not in types_faits:
         d1 = (ed - datetime.timedelta(days=14)).isoformat()
-        envois.append(("bienvenue", numeros_verifies(dans_la_zone(fetch_range(vert, depts, d1, str(last_ed), limit=80), depts)[:60]), d1))
-    elif str(last_ed) not in editions:
-        pers = sql_exec(f"select id from subscribers where suivi_test and nom = $n${s.get('nom') or ''}$n$;")
-        vus = deja_envoyes([p["id"] for p in pers] or [s["id"]])
-        leads = numeros_verifies(sans_rectificatifs_deja_vus(dans_la_zone(fetch_range(vert, depts, str(last_ed), str(last_ed), limit=80), depts), vus))
-        if leads: envois.append(("quotidien", leads, None))
-        else: envois.append(("filet", numeros_verifies(dans_la_zone(fetch_range(vert, depts, None, str(last_ed), limit=20), depts)[:5]), None))
-        if jour.weekday() == 0 and not any(d["type"] == "hebdo" and str(d["edition"]) == str(last_ed) for d in deja):
-            d1 = (ed - datetime.timedelta(days=6)).isoformat()
-            envois.append(("hebdo", numeros_verifies(dans_la_zone(fetch_range(vert, depts, d1, str(last_ed), limit=80), depts)[:60]), d1))
+        envois.append(("bienvenue", _zone(fetch_range(vert, depts, d1, str(last_ed), limit=80))[:60], d1))
+    elif not (types_jour & {"quotidien", "filet", "relache", "bienvenue"}):
+        if str(last_ed) not in editions:
+            # nouvelle édition : les reprises du jour, sinon le « filet »
+            pers = sql_exec(f"select id from subscribers where suivi_test and nom = $n${s.get('nom') or ''}$n$;")
+            vus = deja_envoyes([p["id"] for p in pers] or [s["id"]])
+            leads = numeros_verifies(sans_doublons(sans_rectificatifs_deja_vus(dans_la_zone(fetch_range(vert, depts, str(last_ed), str(last_ed), limit=80), depts), vus)))
+            if leads: envois.append(("quotidien", leads, None))
+            else: envois.append(("filet", _zone(fetch_range(vert, depts, None, str(last_ed), limit=20))[:5], None))
+        else:
+            # PAS de nouvelle édition (le Journal officiel ne paraît ni le samedi ni le lundi, 10 et 12 oct. 2026) :
+            # jamais de silence, un message court qui le dit, avec les reprises les plus récentes.
+            envois.append(("relache", _zone(fetch_range(vert, depts, None, str(last_ed), limit=20))[:5], None))
+    # Récap du lundi : envoyé chaque lundi, qu'il y ait une édition ou non (il manquait le 12 oct. 2026).
+    if jour.weekday() == 0 and "hebdo" not in types_jour and ("bienvenue" in types_faits or "bienvenue_ignoree" in types_faits):
+        d1 = (jour - datetime.timedelta(days=7)).isoformat()
+        envois.append(("hebdo", _zone(fetch_range(vert, depts, d1, str(last_ed), limit=80))[:60], d1))
     res = []
     for kind, leads, d1 in envois:
         if not leads:
@@ -147,12 +171,14 @@ def main():
     last_ed = sql_exec("select max(date_parution) as d from cessions;")[0]["d"]
     sent = skipped = empty = 0
     for s in subs:
+        if s.get("suivi_test"):
+            # l'essai a sa propre règle « un envoi de chaque type par jour » (voir handle_test_subscriber)
+            r = handle_test_subscriber(s, last_ed, today, args.dry_run)
+            if r: sent += 1
+            else: skipped += 1
+            continue
         if str(s.get("dernier_digest") or "") == today:
             skipped += 1
-            continue
-        if s.get("suivi_test"):
-            if handle_test_subscriber(s, last_ed, today, args.dry_run): sent += 1
-            else: empty += 1
             continue
         verticales, regions, depts, villes, zone = plan_for_subscriber(s)
         # collecte multi-verticales / multi-zones
@@ -168,7 +194,7 @@ def main():
                     all_leads += fetch_leads(v, departement=d, date=str(last_ed))
             else:  # national
                 all_leads += fetch_leads(v, date=str(last_ed))
-        all_leads = numeros_verifies(all_leads)      # un numéro jamais validé par la règle stricte n'est JAMAIS envoyé, quel que soit l'abonné
+        all_leads = numeros_verifies(sans_doublons(all_leads))      # un numéro jamais validé par la règle stricte n'est JAMAIS envoyé, quel que soit l'abonné
         if not all_leads:
             empty += 1
             continue
