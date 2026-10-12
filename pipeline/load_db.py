@@ -68,12 +68,13 @@ def row_values(r):
         esc(r.get("vendeur_siren")), esc(vi.get("nom_complet")), esc(vi.get("naf")),
         esc(r.get("naf_fonds")), esc(r.get("verticale") or "inconnu"),
         esc(r.get("acte_descriptif")),
+        esc(r.get("fonds_adresse")), esc(r.get("fonds_cp")), esc(r.get("fonds_ville")), esc(r.get("fonds_activite")), esc(r.get("fonds_origine")),
     ]) + ")"
 
 COLS = ("bodacc_id,date_parution,type_avis,commercant,ville,cp,departement,region,tribunal,"
         "acheteur_siren,acheteur_nom,acheteur_forme,acheteur_naf,acheteur_date_creation,"
         "acheteur_dirigeants,acheteur_adresse,vendeur_siren,vendeur_nom,vendeur_naf,"
-        "naf_fonds,verticale,acte_descriptif")
+        "naf_fonds,verticale,acte_descriptif,fonds_adresse,fonds_cp,fonds_ville,fonds_activite,fonds_origine")
 
 def main():
     ap = argparse.ArgumentParser()
@@ -95,8 +96,11 @@ def main():
                  "acheteur_date_creation=excluded.acheteur_date_creation, "
                  "acheteur_dirigeants=excluded.acheteur_dirigeants, acheteur_adresse=excluded.acheteur_adresse, "
                  "vendeur_nom=excluded.vendeur_nom, vendeur_naf=excluded.vendeur_naf, "
-                 "naf_fonds=excluded.naf_fonds, verticale=excluded.verticale "
-                 "where cessions.verticale = 'inconnu' and excluded.verticale <> 'inconnu';")
+                 "naf_fonds=excluded.naf_fonds, verticale=excluded.verticale, "
+                 "fonds_adresse=coalesce(excluded.fonds_adresse, cessions.fonds_adresse), fonds_cp=coalesce(excluded.fonds_cp, cessions.fonds_cp), "
+                 "fonds_ville=coalesce(excluded.fonds_ville, cessions.fonds_ville), fonds_activite=coalesce(excluded.fonds_activite, cessions.fonds_activite), "
+                 "fonds_origine=coalesce(excluded.fonds_origine, cessions.fonds_origine) "
+                 "where (cessions.verticale = 'inconnu' and excluded.verticale <> 'inconnu') or (cessions.fonds_cp is null and excluded.fonds_cp is not null);")
             sql_exec(q)
             total += len(chunk)
             time.sleep(0.1)

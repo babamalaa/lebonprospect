@@ -93,7 +93,12 @@ def lead_block(r):
         d = _re.sub(r"\s*\([^)]*\)", "", d)   # retire "(Nom d'usage)" redondant
         return d.strip().title()
     dirigeants_txt = html.escape(", ".join(clean_name(d) for d in dirigeants[:2])) if dirigeants else ""
-    adresse = html.escape(r.get("acheteur_adresse") or "")
+    # Adresse du commerce (fonds cédé) en priorité : c'est là que le commercial se rend. Le siège du repreneur peut être ailleurs.
+    adresse = html.escape(r.get("fonds_adresse") or r.get("acheteur_adresse") or "")
+    siege = r.get("acheteur_adresse") or ""
+    import re as _re2
+    _cpf, _cps = _re2.findall(r"(\d{5})", r.get("fonds_adresse") or ""), _re2.findall(r"(\d{5})", siege)
+    siege_ailleurs = html.escape(siege) if (r.get("fonds_adresse") and _cpf and _cps and _cpf[-1] != _cps[-1]) else ""
     tel = r.get("telephone")
     creation = r.get("acheteur_date_creation")
     fresh = ""
@@ -108,6 +113,8 @@ def lead_block(r):
         rows.append(f'<tr><td style="padding:1px 0;font-size:13px;color:{INK};"><strong>Dirigeant(s)&nbsp;:</strong> {dirigeants_txt}</td></tr>')
     if adresse:
         rows.append(f'<tr><td style="padding:1px 0;font-size:13px;color:{INK};"><strong>Adresse&nbsp;:</strong> {adresse.title()}</td></tr>')
+    if siege_ailleurs:
+        rows.append(f'<tr><td style="padding:1px 0;font-size:12px;color:{MUTED};">Siège du repreneur&nbsp;: {siege_ailleurs.title()}</td></tr>')
     rows.append(f'<tr><td style="padding:1px 0;font-size:13px;"><strong style="color:{INK};">Téléphone&nbsp;:</strong> {tel_html}</td></tr>')
     if fresh:
         rows.append(f'<tr><td style="padding:3px 0 0;font-size:12px;color:{RED};font-weight:bold;">{fresh}</td></tr>')

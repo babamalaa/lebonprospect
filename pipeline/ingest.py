@@ -94,7 +94,7 @@ def fetch_day(day: str):
         w = f'familleavis_lib="Ventes et cessions" AND dateparution=date\'{day}\''
         p = urllib.parse.urlencode({"where": w, "limit": 100, "offset": offset,
             "select": "id,dateparution,typeavis_lib,commercant,ville,cp,registre,tribunal,"
-                      "listepersonnes,acte,departement_nom_officiel,region_nom_officiel"})
+                      "listepersonnes,listeetablissements,acte,departement_nom_officiel,region_nom_officiel"})
         d = http_json(ODS + "?" + p)
         rows = d.get("results", [])
         out += rows
@@ -103,6 +103,31 @@ def fetch_day(day: str):
             break
         time.sleep(0.12)
     return out
+
+def fonds_info(raw):
+    """Adresse RÉELLE du fonds cédé (champ listeetablissements du BODACC). C'est l'adresse du commerce, à ne pas confondre avec
+    le siège du repreneur (acheteur_adresse), qui peut être dans un autre département : 34 cas sur 322 en 90 jours sur
+    5 départements (ex. DO IT : siège à Saint-Nicolas (62), laverie à Reims (51))."""
+    if not raw:
+        return {}
+    try:
+        data = json.loads(raw) if isinstance(raw, str) else raw
+    except (json.JSONDecodeError, TypeError):
+        return {}
+    et = (data or {}).get("etablissement")
+    if isinstance(et, list):
+        et = et[0] if et else None
+    if not isinstance(et, dict):
+        return {}
+    a = et.get("adresse") or {}
+    if isinstance(a, list):
+        a = a[0] if a else {}
+    voie = " ".join(str(v) for v in [a.get("numeroVoie"), a.get("indiceRepetition"), a.get("typeVoie"), a.get("nomVoie")] if v)
+    cp, ville = a.get("codePostal"), a.get("ville")
+    complement = a.get("complGeographique") or a.get("localite")
+    adresse = " ".join(x for x in [complement and str(complement), voie, cp and str(cp), ville and str(ville)] if x)
+    return {"fonds_adresse": adresse or None, "fonds_cp": str(cp) if cp else None, "fonds_ville": ville,
+            "fonds_activite": (_flat(et.get("activite")) or "")[:300] or None, "fonds_origine": (_flat(et.get("origineFonds")) or "")[:200] or None}
 
 def enrich_siren(siren: str, cache: dict):
     if not siren or siren in cache:
@@ -158,6 +183,7 @@ def process_day(day: str, enrich: bool = True, cache: dict = None):
             "acheteur_siren": acheteur_siren,
             "vendeur_siren": vendeur_siren,
             "acte_descriptif": (acte.get("descriptif") or "")[:600] or None,
+            **fonds_info(r.get("listeetablissements")),
         }
         if enrich:
             v_info = enrich_siren(vendeur_siren, cache)  # NAF du fonds cédé = activité du VENDEUR

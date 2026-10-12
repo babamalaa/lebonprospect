@@ -96,14 +96,32 @@ def _code_dept(dept):
     return _CODE_DEPT.get(dept)
 
 def dans_la_zone(leads, depts):
-    """Le BODACC range une fiche selon le TRIBUNAL, pas selon le repreneur : un repreneur du Rhône peut apparaître en Côte-d'Or
-    parce que l'ancien propriétaire y était. On ne garde que les fiches dont le repreneur OU le fonds est réellement dans la zone."""
+    """On ne garde que les commerces RÉELLEMENT situés dans la zone de l'abonné.
+    Le champ « cp » du BODACC mélange le siège du repreneur et l'ancien propriétaire : le 9 oct. 2026, « DO IT » a été
+    envoyé comme une reprise de la Marne alors que seul l'ancien propriétaire y était… et que la laverie, elle, est bien à Reims.
+    Ordre des preuves :
+      1. adresse du fonds cédé (BODACC, listeetablissements) : c'est l'adresse du commerce, elle tranche ;
+      2. sinon, siège du repreneur dans la zone ;
+      3. sinon, Google confirme l'établissement (numéro validé) à une adresse de la zone ;
+      4. aucun code postal nulle part : on garde (pas de preuve d'erreur)."""
     import re
     codes = {_code_dept(d) for d in depts if _code_dept(d)}
+    def dep(cp): return cp[:3] if cp[:2] in ("97", "98") else cp[:2]
     out = []
     for r in leads:
-        cps = re.findall(r"(\d{5})", (r.get("acheteur_adresse") or "")) + re.findall(r"(\d{5})", (r.get("cp") or ""))
-        if not cps or any(c[:2] in codes for c in cps): out.append(r)   # sans code postal : on garde (pas de preuve d'erreur)
+        fonds = re.findall(r"(\d{5})", str(r.get("fonds_cp") or "")) or re.findall(r"(\d{5})", r.get("fonds_adresse") or "")
+        if fonds:
+            if dep(fonds[-1])[:2] in codes: out.append(r)
+            continue
+        ach = re.findall(r"(\d{5})", r.get("acheteur_adresse") or "")
+        if ach and ach[-1][:2] in codes:
+            out.append(r); continue
+        valide = r.get("tel_validation") and not str(r.get("tel_validation")).startswith("rejete")
+        goog = re.findall(r"(\d{5})", r.get("place_adresse") or "") if valide else []
+        if goog and goog[-1][:2] in codes:
+            out.append(r); continue
+        if not ach and not re.findall(r"(\d{5})", r.get("cp") or ""):
+            out.append(r)
     return out
 
 def sans_rectificatifs_deja_vus(leads, sirens_vus):

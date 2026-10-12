@@ -157,3 +157,19 @@ def test_aucun_nom_exploitable():
     import enrich_places as ep
     ok, why = ep.trouver_lieu(_row(acheteur_nom="", commercant="", vendeur_nom=""))
     assert ok is None and why == "aucun nom exploitable"
+
+
+def test_fonds_info_lit_l_adresse_du_commerce():
+    import ingest
+    raw = {"etablissement": {"origineFonds": "Etablissement secondaire acquis par achat", "activite": "Nettoyage à sec, pressing",
+           "adresse": {"numeroVoie": "13", "typeVoie": "Esplanade", "nomVoie": "Flechambault", "codePostal": "51100", "ville": "Reims"}}}
+    f = ingest.fonds_info(raw)
+    assert f["fonds_cp"] == "51100" and f["fonds_adresse"] == "13 Esplanade Flechambault 51100 Reims" and "pressing" in f["fonds_activite"]
+
+def test_google_valide_a_l_adresse_du_commerce_pas_au_siege():
+    from enrich_places import valider_lieu
+    row = _row(acheteur_nom="DO IT", vendeur_nom="ADULIE", acheteur_adresse="114 PLACE DU MARCHE 62223 SAINT-NICOLAS",
+               fonds_adresse="13 Esplanade Flechambault 51100 Reims", verticale="pressing_services", ville="Reims")
+    # la laverie du siège (62) ne doit plus être acceptée : le commerce est à Reims
+    ok, why = valider_lieu(_place("Laverie Clean idéal", "114 Place du Marché, 62223 Saint-Nicolas", types=("laundry",)), row)
+    assert not ok and why == "autre commune"

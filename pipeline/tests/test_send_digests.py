@@ -86,7 +86,7 @@ def test_dans_la_zone_ecarte_un_repreneur_hors_zone(monkeypatch):
     monkeypatch.setattr(sd, "_code_dept", lambda d: {"Côte-d'Or": "21", "Saône-et-Loire": "71"}.get(d))
     veni = {"id": 1, "acheteur_adresse": "44 ROUTE DE CORBAS 69200 VENISSIEUX", "cp": "69200"}                   # Vénissieux (69) : hors zone
     dijon = {"id": 2, "acheteur_adresse": "3 RUE X 21000 DIJON", "cp": "21000"}                                   # Dijon (21) : dans la zone
-    mixte = {"id": 3, "acheteur_adresse": "7 RUE Y 75016 PARIS", "cp": "75016, 71000"}                           # repreneur à Paris, fonds à Mâcon : on garde
+    mixte = {"id": 3, "acheteur_adresse": "7 RUE Y 75016 PARIS", "cp": "75016, 71000", "fonds_cp": "71000"}       # repreneur à Paris, fonds à Mâcon (adresse du fonds connue) : on garde
     sans_cp = {"id": 4, "acheteur_adresse": None, "cp": None}                                                     # pas de preuve d'erreur : on garde
     out = sd.dans_la_zone([veni, dijon, mixte, sans_cp], ["Côte-d'Or", "Saône-et-Loire"])
     assert [r["id"] for r in out] == [2, 3, 4]
@@ -198,3 +198,35 @@ def test_meme_repreneur_deux_fonds_differents_garde_les_deux():
     a = {"id": 1, "acheteur_nom": "SAS X", "acheteur_siren": "333", "vendeur_nom": "Boulangerie A", "date_parution": "2026-10-09"}
     b = {"id": 2, "acheteur_nom": "SAS X", "acheteur_siren": "333", "vendeur_nom": "Boulangerie B", "date_parution": "2026-10-09"}
     assert len(sd.sans_doublons([a, b])) == 2         # deux fonds achetés par la même société : deux reprises réelles
+
+
+# --- zone : l'adresse du FONDS (listeetablissements) tranche (12 oct. 2026) ---
+def _zone(monkeypatch, leads, depts):
+    import send_digests as sd
+    monkeypatch.setattr(sd, "_code_dept", lambda d: {"Marne": "51", "Côte-d'Or": "21", "Saône-et-Loire": "71"}.get(d))
+    return [r["id"] for r in sd.dans_la_zone(leads, depts)]
+
+def test_zone_do_it_laverie_a_reims_gardee(monkeypatch):
+    # siège à Saint-Nicolas (62), laverie à Reims (51) : c'est un commerce de la Marne
+    do_it = {"id": 1, "acheteur_adresse": "114 PLACE DU MARCHE 62223 SAINT-NICOLAS", "cp": "62223, 51100",
+             "fonds_adresse": "13 Esplanade Flechambault 51100 Reims", "fonds_cp": "51100"}
+    assert _zone(monkeypatch, [do_it], ["Marne"]) == [1]
+
+def test_zone_siege_dans_la_zone_mais_fonds_ailleurs_ecarte(monkeypatch):
+    # repreneur à Dijon qui rachète un commerce à Lyon : pas pour Raphaël
+    r = {"id": 2, "acheteur_adresse": "3 RUE X 21000 DIJON", "cp": "21000, 69003", "fonds_adresse": "5 rue Y 69003 Lyon", "fonds_cp": "69003"}
+    assert _zone(monkeypatch, [r], ["Côte-d'Or"]) == []
+
+def test_zone_repreneur_parisien_fonds_a_macon_garde(monkeypatch):
+    r = {"id": 3, "acheteur_adresse": "7 RUE Y 75016 PARIS", "cp": "75016, 71000", "fonds_adresse": "2 place Z 71000 Mâcon", "fonds_cp": "71000"}
+    assert _zone(monkeypatch, [r], ["Saône-et-Loire"]) == [3]
+
+def test_zone_sans_adresse_de_fonds_google_confirme(monkeypatch):
+    # option B : pas d'adresse de fonds, siège hors zone, mais Google a validé l'établissement dans la zone
+    r = {"id": 4, "acheteur_adresse": "7 RUE Y 75016 PARIS", "cp": "75016, 71000",
+         "place_adresse": "2 Pl. Z, 71000 Mâcon", "tel_validation": "nom du repreneur"}
+    assert _zone(monkeypatch, [r], ["Saône-et-Loire"]) == [4]
+
+def test_zone_sans_adresse_de_fonds_siege_et_google_hors_zone_ecarte(monkeypatch):
+    r = {"id": 5, "acheteur_adresse": "31 RUE MARBEUF 75008 PARIS", "cp": "75008, 51100"}
+    assert _zone(monkeypatch, [r], ["Marne"]) == []

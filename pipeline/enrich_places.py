@@ -188,6 +188,10 @@ def noms_vendeur(row):
         if n: out.append(n)
     return out
 
+def adresse_commerce(row):
+    """Adresse où se trouve le commerce : celle du fonds cédé (BODACC, listeetablissements) si connue, sinon le siège du repreneur."""
+    return row.get("fonds_adresse") or row.get("acheteur_adresse")
+
 def valider_lieu(place, row):
     """(True, raison) si Google CONFIRME que ce lieu est l'établissement du repreneur ; (False, raison) sinon."""
     if not place or not place.get("nationalPhoneNumber"):
@@ -197,26 +201,26 @@ def valider_lieu(place, row):
     if lieu_public(place):
         return False, "bâtiment public"
     adr_g = place.get("formattedAddress") or ""
-    cp_attendu = _cp(row.get("acheteur_adresse")) or (re.findall(r"(\d{5})", row.get("cp") or "") or [None])[0]
+    cp_attendu = _cp(adresse_commerce(row)) or (re.findall(r"(\d{5})", row.get("cp") or "") or [None])[0]
     if not cp_attendu or _cp(adr_g) != cp_attendu:
         return False, "autre commune"
     if not type_compatible(place, row.get("verticale")):
         return False, "type de lieu incompatible"
     nom_g = (place.get("displayName") or {}).get("text", "")
     ville_mots = set(_norm(" ".join(filter(None, [(row.get("ville") or "").split(",")[0], adr_g.split(",")[-1] if adr_g else ""]))).split())
-    ville_mots |= set(_norm(re.sub(r"\d{5}", " ", (row.get("acheteur_adresse") or "").split("  ")[-1])).split()[-3:])
+    ville_mots |= set(_norm(re.sub(r"\d{5}", " ", (adresse_commerce(row) or "").split("  ")[-1])).split()[-3:])
     if any(noms_similaires(nom_g, n, ville_mots) for n in noms_repreneur(row)):
         return True, "nom du repreneur"
     # Nom du fonds vendu retrouvé À LA MÊME ADRESSE (même numéro de voie) et pour le même métier : le commerce a changé de mains sans changer de nom
-    if meme_adresse(row.get("acheteur_adresse"), adr_g) and type_coherent(place, row.get("verticale")) and row.get("verticale") not in ("autres", "inconnu", None) \
+    if meme_adresse(adresse_commerce(row), adr_g) and type_coherent(place, row.get("verticale")) and row.get("verticale") not in ("autres", "inconnu", None) \
             and any(noms_similaires(nom_g, n, ville_mots) for n in noms_vendeur(row)):
         return True, "nom du fonds vendu, même adresse"
     # À l'adresse seule : exige un type de lieu cohérent avec le métier ET un numéro de voie identique (jamais le voisin de palier).
-    if meme_adresse(row.get("acheteur_adresse"), adr_g) and type_coherent(place, row.get("verticale")) and row.get("verticale") not in ("autres", "inconnu", None):
+    if meme_adresse(adresse_commerce(row), adr_g) and type_coherent(place, row.get("verticale")) and row.get("verticale") not in ("autres", "inconnu", None):
         return True, "même adresse et même métier"
     # Adresse sans numéro de voie (lieu-dit : « La Mouge, RN 6 ») : même commune + même lieu-dit + même type de lieu -> on accepte
-    if not _num_voie(row.get("acheteur_adresse")) and type_coherent(place, row.get("verticale")) and row.get("verticale") not in ("autres", "inconnu", None):
-        lieu_dit = {w for w in _norm((row.get("acheteur_adresse") or "")).split() if len(w) > 3 and w not in GEN_VOIE and not w.isdigit()} - {w for w in _norm(row.get("ville") or "").split()}
+    if not _num_voie(adresse_commerce(row)) and type_coherent(place, row.get("verticale")) and row.get("verticale") not in ("autres", "inconnu", None):
+        lieu_dit = {w for w in _norm((adresse_commerce(row) or "")).split() if len(w) > 3 and w not in GEN_VOIE and not w.isdigit()} - {w for w in _norm(row.get("ville") or "").split()}
         if lieu_dit & set(_norm(adr_g).split()) and not (set(place.get("types") or []) & {"shopping_mall", "department_store", "supermarket", "hypermarket", "business_center"}) \
                 and not re.search(r"centre commercial|galerie|carrefour|leclerc|auchan|intermarch|casino|zone|zac|parc d", nom_g, re.I):
             return True, "même lieu-dit et même métier"
@@ -224,7 +228,7 @@ def valider_lieu(place, row):
 
 def trouver_lieu(row):
     """Cherche l'établissement du repreneur ; retourne (lieu, raison) ou (None, motif). Jusqu'à 3 requêtes, arrêt au premier lieu validé."""
-    adr = (row.get("acheteur_adresse") or "").strip()
+    adr = (adresse_commerce(row) or "").strip()
     ville = (row.get("ville") or "").split(",")[0].strip()
     lieu_txt = adr or ville
     requetes = [f"{n} {lieu_txt}" for n in noms_repreneur(row)[:2]]
@@ -302,7 +306,7 @@ def main():
         conds.append(f"date_parution = '{args.date}'")
     elif args.days:
         conds.append(f"date_parution >= current_date - {args.days}")
-    rows = sql_exec(f"select id, bodacc_id, commercant, ville, cp, vendeur_nom, acheteur_nom, acheteur_adresse, verticale, telephone "
+    rows = sql_exec(f"select id, bodacc_id, commercant, ville, cp, vendeur_nom, acheteur_nom, acheteur_adresse, fonds_adresse, verticale, telephone "
                     f"from cessions where {' and '.join(conds)} order by date_parution desc limit {args.limit};")
     print(f"{len(rows)} cessions à enrichir")
     found = 0
