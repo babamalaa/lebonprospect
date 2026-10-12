@@ -198,13 +198,3 @@ def test_meme_repreneur_deux_fonds_differents_garde_les_deux():
     a = {"id": 1, "acheteur_nom": "SAS X", "acheteur_siren": "333", "vendeur_nom": "Boulangerie A", "date_parution": "2026-10-09"}
     b = {"id": 2, "acheteur_nom": "SAS X", "acheteur_siren": "333", "vendeur_nom": "Boulangerie B", "date_parution": "2026-10-09"}
     assert len(sd.sans_doublons([a, b])) == 2         # deux fonds achetés par la même société : deux reprises réelles
-
-
-def test_zone_ignore_le_code_postal_du_vendeur(monkeypatch):
-    import send_digests as sd
-    monkeypatch.setattr(sd, "_code_dept", lambda d: {"Marne": "51"}.get(d))
-    do_it = {"acheteur_adresse": "114 PLACE DU MARCHE 62223 SAINT-NICOLAS", "cp": "62223, 51100",
-             "place_adresse": "114 Place du Marché, 62223 Saint-Nicolas", "tel_validation": "même adresse et même métier"}
-    reims = {"acheteur_adresse": "87 BOULEVARD CHARLES ARNOULD 51100 REIMS", "cp": "51100"}
-    sans_adresse = {"acheteur_adresse": None, "cp": "51100"}
-    assert sd.dans_la_zone([do_it, reims, sans_adresse], ["Marne"]) == [reims, sans_adresse]

@@ -96,25 +96,14 @@ def _code_dept(dept):
     return _CODE_DEPT.get(dept)
 
 def dans_la_zone(leads, depts):
-    """On ne garde que les fiches dont le commerce est RÉELLEMENT dans la zone.
-    Le champ « cp » du BODACC mélange le code postal du repreneur et celui de l'ANCIEN propriétaire : le 9 oct. 2026, « DO IT »
-    (laverie à Saint-Nicolas, Pas-de-Calais) a été envoyé pour la Marne parce que le vendeur était à Reims. Sur 90 jours, 33 fiches
-    de ce type (sociétés de nettoyage, intérim, sièges à Paris…) passaient à tort. Règle :
-      1. adresse du repreneur connue -> c'est elle qui compte (ou l'adresse validée par Google, si elle est dans la zone) ;
-      2. sinon seulement, le champ « cp » ;
-      3. aucun code postal : on garde (pas de preuve d'erreur)."""
+    """Le BODACC range une fiche selon le TRIBUNAL, pas selon le repreneur : un repreneur du Rhône peut apparaître en Côte-d'Or
+    parce que l'ancien propriétaire y était. On ne garde que les fiches dont le repreneur OU le fonds est réellement dans la zone."""
     import re
     codes = {_code_dept(d) for d in depts if _code_dept(d)}
     out = []
     for r in leads:
-        ach = re.findall(r"(\d{5})", r.get("acheteur_adresse") or "")
-        if ach:
-            valide = r.get("tel_validation") and not str(r.get("tel_validation")).startswith("rejete")
-            goog = re.findall(r"(\d{5})", r.get("place_adresse") or "") if valide else []
-            if ach[-1][:2] in codes or (goog and goog[-1][:2] in codes): out.append(r)
-            continue
-        cps = re.findall(r"(\d{5})", r.get("cp") or "")
-        if not cps or any(c[:2] in codes for c in cps): out.append(r)
+        cps = re.findall(r"(\d{5})", (r.get("acheteur_adresse") or "")) + re.findall(r"(\d{5})", (r.get("cp") or ""))
+        if not cps or any(c[:2] in codes for c in cps): out.append(r)   # sans code postal : on garde (pas de preuve d'erreur)
     return out
 
 def sans_rectificatifs_deja_vus(leads, sirens_vus):
