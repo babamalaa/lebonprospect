@@ -54,13 +54,19 @@ def _log_test(s, kind, subject, html_body, leads, edition, resend_id, today):
              f"values ({s['id']}, '{today}', {len(leads)}, '{resend_id}', 'envoye', '{kind}', $lbp${subject}$lbp$, '{edition}', $lbp${snap}$lbp$::jsonb, $lbp${h}$lbp$);")
 
 def sans_doublons(leads):
-    """Une même reprise publiée en deux avis (cas « DO IT », 9 oct. 2026 : deux numéros BODACC, même SIREN, même vendeur, même adresse)
-    n'apparaît qu'une fois. Clé : SIREN du repreneur + vendeur, sinon nom + adresse. On garde l'avis le plus récent."""
+    """Une même reprise publiée en deux avis n'apparaît qu'une fois. Clé : SIREN du repreneur + ADRESSE DU COMMERCE (fonds cédé).
+    Attention : « DO IT » (9 oct. 2026) n'était PAS un doublon : même société, même vendeur, mais deux commerces à Reims
+    (un pressing 13 esplanade Fléchambault, une laverie 237 avenue Jean Jaurès). Sans adresse de fonds : SIREN + vendeur + siège."""
+    import re
+    def norm(t): return re.sub(r"[^a-z0-9]", "", (t or "").lower())
     vus, out = set(), []
     for r in sorted(leads, key=lambda x: str(x.get("date_parution") or ""), reverse=True):
         siren = (r.get("acheteur_siren") or "").replace(" ", "")
-        cle = (siren, (r.get("vendeur_nom") or "").strip().lower()) if siren else \
-              ((r.get("acheteur_nom") or r.get("commercant") or "").strip().lower(), (r.get("acheteur_adresse") or "").strip().lower())
+        lieu = norm(r.get("fonds_adresse")) or norm(r.get("acheteur_adresse"))
+        if siren:
+            cle = (siren, lieu) if r.get("fonds_adresse") else (siren, norm(r.get("vendeur_nom")), lieu)
+        else:
+            cle = (norm(r.get("acheteur_nom") or r.get("commercant")), lieu)
         if cle in vus:
             continue
         vus.add(cle); out.append(r)

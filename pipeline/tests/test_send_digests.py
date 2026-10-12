@@ -185,13 +185,18 @@ def test_pas_de_second_envoi_le_meme_jour(monkeypatch):
 def test_recap_du_lundi_pas_renvoye(monkeypatch):
     assert _essai(monkeypatch, "2026-10-12", "2026-10-11", deja=[("bienvenue", "2026-10-04"), ("quotidien", "2026-10-11")], jour_deja=["relache", "hebdo"]) == []
 
-def test_doublon_do_it_supprime():
+def test_do_it_deux_commerces_gardes():
     import send_digests as sd
-    a = {"id": 656955, "acheteur_nom": "DO IT", "acheteur_siren": "103239356", "vendeur_nom": "ADULIE", "date_parution": "2026-10-09"}
-    b = {**a, "id": 657031}
-    autre = {"id": 3, "acheteur_nom": "AUTRE", "acheteur_siren": "222", "vendeur_nom": "Z", "date_parution": "2026-10-09"}
-    assert [r["id"] for r in sd.sans_doublons([a, b, autre])].count(656955) + [r["id"] for r in sd.sans_doublons([a, b, autre])].count(657031) == 1
-    assert len(sd.sans_doublons([a, b, autre])) == 2
+    a = {"id": 656955, "acheteur_nom": "DO IT", "acheteur_siren": "103239356", "vendeur_nom": "ADULIE", "date_parution": "2026-10-09",
+         "fonds_adresse": "13 Esplanade Flechambault 51100 Reims"}
+    b = {**a, "id": 657031, "fonds_adresse": "237 Avenue Jean Jaurès 51100 Reims"}
+    assert len(sd.sans_doublons([a, b])) == 2          # pressing + laverie : deux commerces réels
+
+def test_meme_avis_publie_deux_fois_supprime():
+    import send_digests as sd
+    a = {"id": 1, "acheteur_nom": "X", "acheteur_siren": "111", "vendeur_nom": "V", "date_parution": "2026-10-09", "fonds_adresse": "1 rue A 51100 Reims"}
+    b = {**a, "id": 2}
+    assert len(sd.sans_doublons([a, b])) == 1
 
 def test_meme_repreneur_deux_fonds_differents_garde_les_deux():
     import send_digests as sd
