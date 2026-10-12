@@ -53,10 +53,9 @@ def test_render_digest_regroupe_par_departement(fixture):
     assert "23 septembre 2026" in h
 
 def test_render_digest_singulier():
-    """Fige le comportement actuel : le verbe n'est pas accordé au singulier.
-    Correction du texte = décision copy, hors périmètre."""
+    """Accord au singulier corrigé le 12 oct. 2026 (« 1 commerce vient de changer de mains »)."""
     h = digest.render_digest("chr", [{"acheteur_nom": "X", "ville": "V", "departement": "D"}], date="2026-09-23")
-    assert "1 commerce viennent de changer de mains" in h
+    assert "1 commerce vient de changer de mains" in h
 
 def test_render_digest_zone_label():
     h = digest.render_digest("tous", [], date="2026-09-23", zone_label="Toulon + 10 km")

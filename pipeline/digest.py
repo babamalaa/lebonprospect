@@ -83,7 +83,7 @@ def fetch_range(verticale, depts, date_from=None, date_to=None, limit=60):
 
 def lead_block(r):
     nom = html.escape(r.get("acheteur_nom") or r.get("commercant") or "Repreneur")
-    ville = html.escape(r.get("ville") or "")
+    ville = html.escape(r.get("fonds_ville") or r.get("ville") or "")
     dept = html.escape(r.get("departement") or "")
     dirigeants = r.get("acheteur_dirigeants") or []
     if isinstance(dirigeants, str):
@@ -149,8 +149,8 @@ def render_digest(verticale, leads, region=None, departement=None, date=None, zo
 <tr><td>{blocks}</td></tr>
 </table>""")
     plural = "s" if n > 1 else ""
-    head_html = headline or f"{n} commerce{plural} viennent de changer de mains"
-    sub_html = subline or f"{label.capitalize()} · {html.escape(zone)} · publiés hier au Journal officiel"
+    head_html = headline or (f"{n} commerces viennent de changer de mains" if n > 1 else "1 commerce vient de changer de mains")
+    sub_html = subline or f"{label.capitalize()} · {html.escape(zone)} · publié{'s' if n > 1 else ''} au Journal officiel du {_jours(date) if date else 'jour'}"
     intro_row = (f'<tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:{INK};line-height:1.6;padding-top:14px;">{intro_html}</td></tr>' if intro_html else "")
     conseil_open, conseil_close = ("", "") if not headline else ("<!--", "-->")   # conseil du matin masqué pour les emails à titre personnalisé (bienvenue, filet, hebdo)
     flag_row = (f'<tr><td style="padding-top:16px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px dashed {MUTED};border-radius:10px;">'
