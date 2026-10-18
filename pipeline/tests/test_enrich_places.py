@@ -173,3 +173,33 @@ def test_google_valide_a_l_adresse_du_commerce_pas_au_siege():
     # la laverie du siège (62) ne doit plus être acceptée : le commerce est à Reims
     ok, why = valider_lieu(_place("Laverie Clean idéal", "114 Place du Marché, 62223 Saint-Nicolas", types=("laundry",)), row)
     assert not ok and why == "autre commune"
+
+
+def test_plafond_de_requetes_google(monkeypatch):
+    import pytest, enrich_places as ep
+    monkeypatch.setattr(ep, "env", lambda k: "x")
+    monkeypatch.setitem(ep.REQUETES, "n", 300); monkeypatch.setitem(ep.REQUETES, "max", 300)
+    with pytest.raises(ep.PlafondAtteint):
+        ep.places_search_n("test")                     # au-delà du plafond, aucune requête ne part
+
+def test_zones_abonnes_ignore_les_comptes_sans_numeros_et_le_national(monkeypatch):
+    import enrich_places as ep
+    subs = [{"id": 1, "departements": None, "regions": ["Auvergne-Rhône-Alpes"], "villes": None, "verticales": ["chr"], "deja_servi": True, "sans_numeros": True},
+            {"id": 8, "departements": ["Marne"], "regions": None, "villes": None, "verticales": ["commerces"], "deja_servi": True},
+            {"id": 99, "departements": None, "regions": None, "villes": None, "verticales": ["chr"], "deja_servi": True}]
+    # la requête SQL exclut déjà sans_numeros ; on vérifie la construction pour les autres
+    monkeypatch.setattr(ep, "sql_exec", lambda q: [x for x in subs if not x.get("sans_numeros")])
+    z = ep.zones_abonnes(3)
+    assert "'Marne'" in z and "Auvergne" not in z     # le national (id 99) ne déclenche rien
+    assert "current_date - 3" in z
+
+def test_zones_abonnes_nouvel_abonne_cherche_15_jours(monkeypatch):
+    import enrich_places as ep
+    monkeypatch.setattr(ep, "sql_exec", lambda q: [{"id": 12, "departements": ["Vendée"], "regions": None, "villes": None, "verticales": ["chr"], "deja_servi": False}])
+    assert "current_date - 15" in ep.zones_abonnes(3)
+
+def test_zones_abonnes_aucun_abonne():
+    import enrich_places as ep
+    import unittest.mock as m
+    with m.patch.object(ep, "sql_exec", return_value=[]):
+        assert ep.zones_abonnes(3) == "false"            # aucun abonné : aucune recherche

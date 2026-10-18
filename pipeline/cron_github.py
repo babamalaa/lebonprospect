@@ -57,13 +57,10 @@ def main():
     rr = subprocess.run([sys.executable, "enrich_places.py", "--days", "3"],
                         capture_output=True, text=True, cwd=HERE)
     print("places:", (rr.stdout or "").strip().splitlines()[-1] if rr.stdout else rr.stderr[-300:])
-    # RETRY: les leads sans numéro sont re-tentés à J+7 et J+21 (max 3 tentatives)
+    # NOUVELLE TENTATIVE : une seule, à J+22, pour les fiches sans numéro (la tentative de J+8 a été supprimée le 18 oct. 2026).
+    # Un commerce tout juste repris met souvent quelques semaines à apparaître sur Google.
     sql_exec("update cessions set enrichi_places = false "
-             "where telephone is null and places_tentatives < 3 "
-             "and verticale in ('chr','alimentaire','coiffure_beaute','garage_auto',"
-             "'pressing_services','sante','fleuriste','tabac_presse') "
-             "and (  (places_tentatives = 1 and date_parution = current_date - 8)"
-             "    or (places_tentatives = 2 and date_parution = current_date - 22));")
+             "where telephone is null and places_tentatives = 1 and date_parution = current_date - 22;")
     rr = subprocess.run([sys.executable, "enrich_places.py", "--days", "30"],
                         capture_output=True, text=True, cwd=HERE)
     print("places-retry:", (rr.stdout or "").strip().splitlines()[-1] if rr.stdout else "rien")

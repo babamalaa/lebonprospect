@@ -26,8 +26,18 @@ VENDABLES = ("chr", "alimentaire", "coiffure_beaute", "garage_auto",
 class GoogleErreur(Exception):
     """Google Places a refusé ou n'a pas répondu (clé, facturation, quota, réseau). Ce n'est PAS « aucun résultat »."""
 
+# Plafond dur de requêtes Google par passage. Le 12 oct. 2026, une relance sur toute la France a coûté 62 € en une journée.
+# Au-delà du plafond, la recherche s'arrête (les fiches restantes seront cherchées au prochain passage).
+REQUETES = {"n": 0, "max": 300}
+
+class PlafondAtteint(Exception):
+    pass
+
 def places_search_n(query, n=5):
     """Jusqu'à n lieux candidats (le premier n'est pas toujours le bon : on valide ensuite)."""
+    if REQUETES["n"] >= REQUETES["max"]:
+        raise PlafondAtteint(f"plafond de {REQUETES['max']} requêtes Google atteint")
+    REQUETES["n"] += 1
     key = env("GOOGLE_PLACES_KEY")
     req = urllib.request.Request(
         "https://places.googleapis.com/v1/places:searchText",
@@ -279,6 +289,33 @@ def best_query(row):
     adresse = row.get("acheteur_adresse") or ""
     return f"{nom} {adresse}" if adresse and nom else f"{nom} {ville}"
 
+def zones_abonnes(days, jours_bienvenue=15):
+    """Condition SQL : la fiche est dans la zone ET les métiers d'au moins un abonné actif qui a besoin des numéros.
+    On ne paie Google que pour ce que quelqu'un reçoit. Les abonnés « sans_numeros » (adresse de test) ne déclenchent rien.
+    Un abonné qui n'a pas encore eu sa bienvenue fait chercher ses 15 derniers jours (sa bienvenue en contient 14)."""
+    from digest import _vert_where
+    subs = sql_exec("""select s.id, s.departements, s.regions, s.villes, s.verticales,
+                       exists (select 1 from digests_log l where l.subscriber_id = s.id) as deja_servi
+                       from subscribers s where s.statut = 'actif' and not s.sans_numeros;""")
+    def lst(v):
+        if not v: return []
+        if isinstance(v, list): return [x for x in v if x]
+        return [x.strip().strip('"') for x in str(v).strip("{}").split(",") if x.strip()]
+    q = lambda x: "'" + str(x).replace("'", "''") + "'"
+    parts = []
+    for s in subs:
+        depts, regions, villes = lst(s["departements"]), lst(s["regions"]), lst(s["villes"])
+        if not (depts or regions or villes):
+            continue                                   # abonné « France entière » : jamais de recherche nationale automatique
+        zone = []
+        if depts:   zone.append(f"departement in ({','.join(q(d) for d in depts)}) or left(fonds_cp, 2) in (select left(cp, 2) from cessions where departement in ({','.join(q(d) for d in depts)}) and cp ~ '^[0-9]{{5}}$' group by 1 having count(*) > 20)")
+        if regions: zone.append(f"region in ({','.join(q(r) for r in regions)})")
+        if villes:  zone.append(f"split_part(ville, ',', 1) in ({','.join(q(v) for v in villes)})")
+        verts = [" and ".join(_vert_where(v)) or "true" for v in (lst(s["verticales"]) or ["chr"])]
+        d = days if s["deja_servi"] else max(days or 0, jours_bienvenue)
+        parts.append(f"(({' or '.join(zone)}) and ({' or '.join('(' + v + ')' for v in verts)}) and date_parution >= current_date - {int(d)})")
+    return "(" + " or ".join(parts) + ")" if parts else "false"
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--days", type=int)
@@ -289,7 +326,10 @@ def main():
     ap.add_argument("--departement")
     ap.add_argument("--depts", help="départements séparés par | (avec --reverifier)")
     ap.add_argument("--reverifier", action="store_true", help="re-vérifie les numéros déjà en base avec la règle stricte (l'ancien est conservé dans telephone_ancien)")
+    ap.add_argument("--toute-la-france", action="store_true", help="ignore les zones des abonnés (COÛTEUX : à n'utiliser qu'après accord de Baptiste)")
+    ap.add_argument("--max-requetes", type=int, default=300, help="plafond dur de requêtes Google pour ce passage")
     args = ap.parse_args()
+    REQUETES["max"] = args.max_requetes
     conds = ["telephone is null", "enrichi_places = false"] if not args.reverifier else ["(telephone is not null or enrichi_places = true)", "tel_validation is null"]
     if args.depts:
         dl = ",".join("'" + d.strip().replace("'", "''") + "'" for d in args.depts.split("|") if d.strip())
@@ -304,8 +344,11 @@ def main():
         conds.append("verticale in " + str(VENDABLES))
     if args.date:
         conds.append(f"date_parution = '{args.date}'")
-    elif args.days:
+    elif args.days and args.toute_la_france:
         conds.append(f"date_parution >= current_date - {args.days}")
+    if not args.toute_la_france:
+        conds = [c for c in conds if not c.startswith("verticale in ")]   # les métiers viennent des abonnés eux-mêmes
+        conds.append(zones_abonnes(args.days or 3))
     rows = sql_exec(f"select id, bodacc_id, commercant, ville, cp, vendeur_nom, acheteur_nom, acheteur_adresse, fonds_adresse, verticale, telephone "
                     f"from cessions where {' and '.join(conds)} order by date_parution desc limit {args.limit};")
     print(f"{len(rows)} cessions à enrichir")
@@ -326,6 +369,9 @@ def main():
     for i, row in enumerate(rows):
         try:
             place, raison = trouver_lieu(row)
+        except PlafondAtteint as e:
+            print(f"  ARRÊT : {e} ({i}/{len(rows)} fiches traitées, le reste au prochain passage)", flush=True)
+            break
         except GoogleErreur as e:
             erreurs_google += 1; derniere_erreur = str(e)
             if erreurs_google >= 3 and found == 0:
@@ -350,7 +396,7 @@ def main():
     flush()
     if erreurs_google:
         alerte_google(erreurs_google, derniere_erreur)
-    print(f"DONE: {found}/{len(rows)} numéros validés ({100*found/max(len(rows),1):.0f}%)"
+    print(f"DONE: {found}/{len(rows)} numéros validés ({100*found/max(len(rows),1):.0f}%) · {REQUETES['n']} requêtes Google"
           + (f" · {rejetes} anciens numéros écartés" if args.reverifier else "")
           + (f" · ERREUR GOOGLE ({erreurs_google} refus) : {derniere_erreur[:120]}" if erreurs_google else ""))
 

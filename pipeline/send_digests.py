@@ -218,6 +218,8 @@ def main():
                     all_leads += fetch_leads(v, departement=d, date=str(last_ed))
             else:  # national
                 all_leads += fetch_leads(v, date=str(last_ed))
+        if s.get("sans_numeros"):                    # adresse de test : livrée sans numéro, aucune recherche Google pour elle
+            all_leads = [{**r, "telephone": None} for r in all_leads]
         all_leads = numeros_verifies(sans_doublons(all_leads))      # un numéro jamais validé par la règle stricte n'est JAMAIS envoyé, quel que soit l'abonné
         if not all_leads:
             empty += 1
