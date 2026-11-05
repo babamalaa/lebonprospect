@@ -110,14 +110,14 @@ def lead_block(r):
                 if tel else f'<span style="color:{MUTED};">bientôt disponible</span>')
     rows = []
     if dirigeants_txt:
-        rows.append(f'<tr><td style="padding:1px 0;font-size:13px;color:{INK};"><strong>Dirigeant(s)&nbsp;:</strong> {dirigeants_txt}</td></tr>')
+        rows.append(f'<tr><td style="padding:1px 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:{INK};"><strong>Dirigeant(s)&nbsp;:</strong> {dirigeants_txt}</td></tr>')
     if adresse:
-        rows.append(f'<tr><td style="padding:1px 0;font-size:13px;color:{INK};"><strong>Adresse&nbsp;:</strong> {adresse.title()}</td></tr>')
+        rows.append(f'<tr><td style="padding:1px 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:{INK};"><strong>Adresse&nbsp;:</strong> {adresse.title()}</td></tr>')
     if siege_ailleurs:
-        rows.append(f'<tr><td style="padding:1px 0;font-size:12px;color:{MUTED};">Siège du repreneur&nbsp;: {siege_ailleurs.title()}</td></tr>')
-    rows.append(f'<tr><td style="padding:1px 0;font-size:13px;"><strong style="color:{INK};">Téléphone&nbsp;:</strong> {tel_html}</td></tr>')
+        rows.append(f'<tr><td style="padding:1px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:{MUTED};">Siège du repreneur&nbsp;: {siege_ailleurs.title()}</td></tr>')
+    rows.append(f'<tr><td style="padding:1px 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;"><strong style="color:{INK};">Téléphone&nbsp;:</strong> {tel_html}</td></tr>')
     if fresh:
-        rows.append(f'<tr><td style="padding:3px 0 0;font-size:12px;color:{RED};font-weight:bold;">{fresh}</td></tr>')
+        rows.append(f'<tr><td style="padding:3px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:{RED};font-weight:bold;">{fresh}</td></tr>')
     return f"""
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="border-bottom:1px dashed {LINE};background:#ffffff;">
 <tr><td style="padding:14px 18px;">
@@ -141,13 +141,16 @@ def render_digest(verticale, leads, region=None, departement=None, date=None, zo
     sections = []
     for dept in sorted(by_dept):
         blocks = "".join(lead_block(r) for r in by_dept[dept])
-        sections.append(f"""
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="margin-top:18px;border:2px solid {INK};border-radius:12px;background:#ffffff;">
+        # Chaque bloc doit être DANS une ligne du tableau principal (<tr><td>) : un <table> posé directement dans un <table>
+        # est sorti du cadre de 600 px par les navigateurs et Apple Mail (bloc pleine largeur sur ordinateur, relevé le 5 nov. 2026).
+        sections.append(f"""<tr><td style="padding-top:18px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="border:2px solid {INK};border-radius:12px;background:#ffffff;">
 <tr><td style="background:{TEAL};padding:9px 18px;border-radius:10px 10px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;color:#ffffff;letter-spacing:.4px;">
   {html.escape(dept.upper())} · {len(by_dept[dept])} reprise{'s' if len(by_dept[dept]) > 1 else ''}
 </td></tr>
 <tr><td>{blocks}</td></tr>
-</table>""")
+</table>
+</td></tr>""")
     plural = "s" if n > 1 else ""
     head_html = headline or (f"{n} commerces viennent de changer de mains" if n > 1 else "1 commerce vient de changer de mains")
     sub_html = subline or f"{label.capitalize()} · {html.escape(zone)} · publié{'s' if n > 1 else ''} au Journal officiel du {_jours(date) if date else 'jour'}"
