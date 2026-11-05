@@ -54,19 +54,25 @@ def _log_test(s, kind, subject, html_body, leads, edition, resend_id, today):
              f"values ({s['id']}, '{today}', {len(leads)}, '{resend_id}', 'envoye', '{kind}', $lbp${subject}$lbp$, '{edition}', $lbp${snap}$lbp$::jsonb, $lbp${h}$lbp$);")
 
 def sans_doublons(leads):
-    """Une même reprise publiée en deux avis n'apparaît qu'une fois. Clé : SIREN du repreneur + ADRESSE DU COMMERCE (fonds cédé).
-    Attention : « DO IT » (9 oct. 2026) n'était PAS un doublon : même société, même vendeur, mais deux commerces à Reims
-    (un pressing 13 esplanade Fléchambault, une laverie 237 avenue Jean Jaurès). Sans adresse de fonds : SIREN + vendeur + siège."""
+    """Une même reprise publiée en plusieurs avis n'apparaît qu'une fois.
+    Le BODACC publie souvent la même vente deux fois (avis du greffe + annonce légale), avec l'adresse écrite autrement :
+    « 5D rue Haute 08300 L'Écaille » / « L'Ecaille » ; « Centre E. Leclerc route d'Epernay » / « route d'Epernay - Centre
+    Commercial Leclerc » (relevé le 5 nov. 2026, CHALLARD, CKDIS, LJ COLLECTION). On compare donc ce qui ne varie pas :
+    SIREN du repreneur + vendeur + code postal du commerce + numéro de rue (s'il y en a un).
+    Restent distincts : DO IT (13 esplanade Fléchambault / 237 av. Jean Jaurès, même CP) et les 3 boutiques RIKA 51 (3 CP)."""
     import re
     def norm(t): return re.sub(r"[^a-z0-9]", "", (t or "").lower())
+    def lieu(r):
+        adr = r.get("fonds_adresse") or r.get("acheteur_adresse") or ""
+        cps = re.findall(r"\b(\d{5})\b", adr)
+        cp = str(r.get("fonds_cp") or (cps[-1] if cps else ""))
+        sans_cp = re.sub(r"\b\d{5}\b", " ", adr)
+        num = re.findall(r"\b(\d{1,4})\s*[a-zA-Z]?\b", sans_cp)
+        return (cp, num[0] if num else "")
     vus, out = set(), []
-    for r in sorted(leads, key=lambda x: str(x.get("date_parution") or ""), reverse=True):
+    for r in sorted(leads, key=lambda x: (str(x.get("date_parution") or ""), 0 if "rectif" in str(x.get("type_avis") or "").lower() else 1), reverse=True):
         siren = (r.get("acheteur_siren") or "").replace(" ", "")
-        lieu = norm(r.get("fonds_adresse")) or norm(r.get("acheteur_adresse"))
-        if siren:
-            cle = (siren, lieu) if r.get("fonds_adresse") else (siren, norm(r.get("vendeur_nom")), lieu)
-        else:
-            cle = (norm(r.get("acheteur_nom") or r.get("commercant")), lieu)
+        cle = (siren or norm(r.get("acheteur_nom") or r.get("commercant")), norm(r.get("vendeur_nom")), *lieu(r))
         if cle in vus:
             continue
         vus.add(cle); out.append(r)

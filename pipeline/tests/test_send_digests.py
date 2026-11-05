@@ -235,3 +235,27 @@ def test_zone_sans_adresse_de_fonds_google_confirme(monkeypatch):
 def test_zone_sans_adresse_de_fonds_siege_et_google_hors_zone_ecarte(monkeypatch):
     r = {"id": 5, "acheteur_adresse": "31 RUE MARBEUF 75008 PARIS", "cp": "75008, 51100"}
     assert _zone(monkeypatch, [r], ["Marne"]) == []
+
+
+# --- doublons : même vente publiée deux fois avec l'adresse écrite autrement (5 nov. 2026) ---
+def _l(i, siren, vendeur, adr, cp, d="2026-10-20", t="Avis initial"):
+    return {"id": i, "acheteur_siren": siren, "vendeur_nom": vendeur, "fonds_adresse": adr, "fonds_cp": cp, "date_parution": d, "type_avis": t}
+
+def test_doublons_adresse_ecrite_autrement():
+    import send_digests as sd
+    cas = [_l(1, "109781377", "S.B. COUVERTURE", "5D rue Haute 08300 L'Écaille", "08300"),
+           _l(2, "109781377", "S.B. COUVERTURE", "5D rue Haute 08300 L'Ecaille", "08300", "2026-10-25"),
+           _l(3, "881748313", "SC DISTRIBUTION", "Angle du Boulevard Henri Martin et de la Rue Chantrelle 02100 Saint-Quentin", "02100"),
+           _l(4, "881748313", "SC DISTRIBUTION", "à l'Angle du Boulevard Henri Mar 02100 Saint-Quentin", "02100", "2026-11-02"),
+           _l(5, "130190051", "SD FAGNIERES", "Centre E. Leclerc route d'Epernay 51510 Fagnières", "51510", "2026-10-31", "Avis rectificatif"),
+           _l(6, "130190051", "SD FAGNIERES", "route d'Epernay - Centre Commercial Leclerc 51510 Fagnières", "51510", "2026-11-04")]
+    assert sorted(r["id"] for r in sd.sans_doublons(cas)) == [2, 4, 6]       # on garde l'avis le plus récent
+
+def test_doublons_vrais_commerces_differents_gardes():
+    import send_digests as sd
+    do_it = [_l(1, "103239356", "ADULIE", "13 Esplanade Flechambault 51100 Reims", "51100"),
+             _l(2, "103239356", "ADULIE", "237 Avenue Jean Jaurès 51100 Reims", "51100")]
+    rika = [_l(3, "107377186", "AVEC LES FLAMMES", "15 Rue Des Rémouleurs 51350 Cormontreuil", "51350"),
+            _l(4, "107377186", "AVEC LES FLAMMES", "6 rue André Marie Ampère 51300 Vitry-le-François", "51300"),
+            _l(5, "107377186", "AVEC LES FLAMMES", "17 bis rue Raoul Follereau 51520 Saint-Martin-sur-le-Pré", "51520")]
+    assert len(sd.sans_doublons(do_it)) == 2 and len(sd.sans_doublons(rika)) == 3
