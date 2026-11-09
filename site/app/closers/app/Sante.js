@@ -58,7 +58,7 @@ export default function Sante({ authedFetch }) {
               <tr key={j.d} className={j.ok ? "" : "sante-ko"}>
                 <td><b>{fmtJour(j.d)}</b></td>
                 <td>{j.avis || <span className="sante-muted">pas de parution</span>}{j.ingestion === false && <span className="sante-err"> · échec</span>}</td>
-                <td>{j.servis}/{j.abonnes} abonnés · {j.emails} email{j.emails > 1 ? "s" : ""}</td>
+                <td>{j.servis}/{j.abonnes} abonnés · {j.emails} email{j.emails > 1 ? "s" : ""}{j.fichesClients ? <span className={j.fichesTel ? "sante-muted" : "sante-err"}> · {j.fichesTel}/{j.fichesClients} fiches avec n°</span> : ""}</td>
                 <td>{j.suiviLivraison
                   ? <>{j.livres} livré{j.livres > 1 ? "s" : ""}{j.rejetes ? <span className="sante-err"> · {j.rejetes} rejeté{j.rejetes > 1 ? "s" : ""}</span> : ""}{j.sansStatut ? <span className="sante-muted"> · {j.sansStatut} en attente</span> : ""}</>
                   : <span className="sante-muted">non suivie</span>}</td>
