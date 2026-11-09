@@ -1012,3 +1012,20 @@ footer .wrap { display: flex; justify-content: space-between; }
 .suivi-maj button:disabled { opacity: .5; cursor: default; }
 .suivi-alerte { background: #fbeaea; border: 1px solid #efc4c4; color: #8a2d2d; border-radius: 10px; padding: 9px 12px; font-size: 13px; margin: 6px 0 10px; }
 .suivi-alerte a { color: #8a2d2d; font-weight: 700; }
+
+/* Tableau de santé (admin) */
+.sante-maj { font-size: 12px; color: #6f6a5c; margin: -6px 0 14px; }
+.sante-btn { background: none; border: 0; color: #31777A; font-weight: 700; cursor: pointer; padding: 0; font: inherit; }
+.sante-table-wrap { overflow-x: auto; padding: 0; }
+.sante-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.sante-table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #6f6a5c; padding: 10px 12px; border-bottom: 1px solid #e6e0d0; white-space: nowrap; }
+.sante-table td { padding: 9px 12px; border-bottom: 1px dashed #e6e0d0; vertical-align: top; }
+.sante-table tr.sante-ko td { background: #fdf1ef; }
+.sante-ok { color: #31777A; font-weight: 700; }
+.sante-err { color: #c0392b; font-weight: 700; }
+.sante-muted { color: #9a9385; }
+.sante-h2 { font-family: Archivo, sans-serif; font-size: 16px; font-weight: 800; margin: 22px 0 10px; }
+.sante-note { font-size: 12px; color: #6f6a5c; margin-top: 12px; }
+.suivi-livr { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px; background: #f1ede2; color: #6f6a5c; white-space: nowrap; }
+.suivi-livr.ok { background: #e3f0ef; color: #31777A; }
+.suivi-livr.ko { background: #fbe4e0; color: #c0392b; }

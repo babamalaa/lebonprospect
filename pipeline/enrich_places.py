@@ -29,6 +29,7 @@ class GoogleErreur(Exception):
 # Plafond dur de requêtes Google par passage. Le 12 oct. 2026, une relance sur toute la France a coûté 62 € en une journée.
 # Au-delà du plafond, la recherche s'arrête (les fiches restantes seront cherchées au prochain passage).
 REQUETES = {"n": 0, "max": 300}
+COUT_REQUETE_EUR = 0.03   # Text Search avec téléphone, estimation à recaler sur la facture Google réelle
 
 class PlafondAtteint(Exception):
     pass
@@ -256,6 +257,26 @@ def trouver_lieu(row):
         time.sleep(0.05)
     return None, dernier
 
+def journal_passage(args, nb, ok, erreurs, detail):
+    """Une ligne par passage dans pipeline_runs : alimente le tableau de santé et le coût Google du jour."""
+    try:
+        etape = "places_retry" if (args.days or 0) >= 30 else ("places_reverif" if args.reverifier else "places")
+        cout = round(REQUETES["n"] * COUT_REQUETE_EUR, 2)
+        err = (detail or "")[:300].replace("'", "''") if erreurs else None
+        sql_exec(f"insert into pipeline_runs (etape, fin, ok, nb, nb_ok, requetes_google, cout_estime_eur, erreur) values "
+                 f"('{etape}', now(), {'false' if erreurs and ok == 0 else 'true'}, {nb}, {ok}, {REQUETES['n']}, {cout}, "
+                 f"{'null' if err is None else chr(39) + err + chr(39)});")
+        # coût du jour au-delà de 2 € : alerte (une fois par jour)
+        jour = sql_exec("select coalesce(sum(cout_estime_eur), 0) c from pipeline_runs where debut >= (now() at time zone 'Europe/Paris')::date;")[0]["c"]
+        if float(jour) > 2 and not sql_exec("select 1 from lbp_dispatch_log where workflow = 'alerte-cout-google' and created_at >= (now() at time zone 'Europe/Paris')::date limit 1;"):
+            from digest import send_resend
+            send_resend("baptportugal@gmail.com", f"[ALERTE] Coût Google du jour : {float(jour):.2f} €",
+                        f"<p>Les recherches de numéros ont coûté environ <b>{float(jour):.2f} €</b> aujourd'hui (seuil d'alerte : 2 €).</p>"
+                        f"<p>Dernier passage : {REQUETES['n']} requêtes, étape {etape}. Le plafond Google est de 150 recherches par jour.</p>")
+            sql_exec(f"insert into lbp_dispatch_log (workflow, declenche, note) values ('alerte-cout-google', true, '{float(jour):.2f} €');")
+    except Exception as e:
+        print(f"journal du passage non enregistré : {e}", file=sys.stderr)
+
 def alerte_google(n, detail):
     """Prévient Baptiste (une fois par jour) que Google Places refuse les requêtes : sans ça, les emails partent sans aucun numéro."""
     try:
@@ -396,6 +417,7 @@ def main():
     flush()
     if erreurs_google:
         alerte_google(erreurs_google, derniere_erreur)
+    journal_passage(args, len(rows), found, erreurs_google, derniere_erreur)
     print(f"DONE: {found}/{len(rows)} numéros validés ({100*found/max(len(rows),1):.0f}%) · {REQUETES['n']} requêtes Google"
           + (f" · {rejetes} anciens numéros écartés" if args.reverifier else "")
           + (f" · ERREUR GOOGLE ({erreurs_google} refus) : {derniere_erreur[:120]}" if erreurs_google else ""))

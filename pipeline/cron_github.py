@@ -11,11 +11,25 @@ sys.path.insert(0, HERE)
 from ingest import process_day, save_day
 from load_db import sql_exec
 
+def journal(etape, ok, nb=None, nb_ok=None, erreur=None, detail=None):
+    """Une ligne par étape dans pipeline_runs (tableau de santé). Ne fait jamais échouer le traitement."""
+    try:
+        import json
+        e = "null" if not erreur else "'" + str(erreur)[:300].replace("'", "''") + "'"
+        d = "null" if detail is None else "$j$" + json.dumps(detail, ensure_ascii=False) + "$j$::jsonb"
+        sql_exec(f"insert into pipeline_runs (etape, fin, ok, nb, nb_ok, erreur, detail) values "
+                 f"('{etape}', now(), {'true' if ok else 'false'}, {'null' if nb is None else int(nb)}, {'null' if nb_ok is None else int(nb_ok)}, {e}, {d});")
+    except Exception as ex:
+        print(f"journal {etape} non enregistré : {ex}", file=sys.stderr)
+
 def envoyer_digests():
     """Envoi des digests aux abonnés actifs. Idempotent : un abonné déjà servi aujourd'hui est sauté."""
-    import subprocess
+    import subprocess, re
     rr = subprocess.run([sys.executable, "send_digests.py"], capture_output=True, text=True, cwd=HERE)
     out = (rr.stdout or "").strip()
+    m = re.search(r"BILAN: (\d+) envoyés, (\d+) sans leads.*?(\d+) déjà servis", out)
+    journal("digests", rr.returncode == 0, nb=(sum(int(x) for x in m.groups()) if m else None), nb_ok=(int(m.group(1)) if m else None),
+            erreur=(rr.stderr[-300:] if rr.returncode != 0 else None), detail={"bilan": out.splitlines()[-1] if out else ""})
     print("digests:", out.splitlines()[-1] if out else rr.stderr[-300:])
     for ln in out.splitlines()[:-1]:
         print("  ", ln)
@@ -51,7 +65,9 @@ def main():
     print(rr.stdout[-2000:])
     if rr.returncode != 0:
         print(rr.stderr[-2000:])
+        journal("ingest", False, nb=total, erreur=rr.stderr[-300:], detail={"jours": days})
         sys.exit(1)
+    journal("ingest", True, nb=total, detail={"jours": days})
     sql_exec("refresh materialized view stats_verticale_region;")
     # Enrichissement téléphones (Places) sur les jours fraîchement ingérés
     rr = subprocess.run([sys.executable, "enrich_places.py", "--days", "3"],

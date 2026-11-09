@@ -6,6 +6,7 @@ import { ToastProvider, useToast } from "../../lib/ToastContext";
 import SCRIPTS_V2 from "./scripts";
 import ContenuStudio from "./ContenuStudio";
 import SuiviTest from "./SuiviTest";
+import Sante from "./Sante";
 
 const STATUTS = [
   { v: "a_contacter", l: "À contacter" },
@@ -415,7 +416,7 @@ function AppPageInner() {
             <span>{profile?.role === "admin" ? "Admin" : "Closer"}</span>
           </div>
           <nav className="app-nav app-nav-mobile">
-            {[...Object.entries(profile?.role === "admin" ? TAB_LABELS_ADMIN : TAB_LABELS_CLOSER), ...((profile?.role === "admin") ? [["contenu", "Contenu"], ["essai-verisure", "Essai Verisure"]] : [])].map(([key, label]) => (
+            {[...Object.entries(profile?.role === "admin" ? TAB_LABELS_ADMIN : TAB_LABELS_CLOSER), ...((profile?.role === "admin") ? [["contenu", "Contenu"], ["essai-verisure", "Essai Verisure"], ["sante", "Santé"]] : [])].map(([key, label]) => (
               <button
                 key={key}
                 className={tab === key ? "active" : ""}
@@ -453,6 +454,7 @@ function AppPageInner() {
           <button className={tab === "script" ? "active" : ""} onClick={() => setTab("script")}>Scripts d&apos;appel</button>
           {(profile?.role === "admin") && <button className={tab === "contenu" ? "active" : ""} onClick={() => setTab("contenu")}>Contenu</button>}
           {(profile?.role === "admin") && <button className={tab === "essai-verisure" ? "active" : ""} onClick={() => setTab("essai-verisure")}>Essai Verisure</button>}
+          {(profile?.role === "admin") && <button className={tab === "sante" ? "active" : ""} onClick={() => setTab("sante")}>Santé</button>}
           <a className="app-nav-link" href="https://mail.zoho.eu" target="_blank" rel="noreferrer">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -976,6 +978,7 @@ function AppPageInner() {
         )}
 
         {tab === "essai-verisure" && (profile?.role === "admin") && <SuiviTest authedFetch={authedFetch} />}
+        {tab === "sante" && (profile?.role === "admin") && <Sante authedFetch={authedFetch} />}
 
             {tab === "contenu" && (profile?.role === "admin") && (
           <div className="app-panel">

@@ -18,8 +18,15 @@ export async function GET(req) {
   if (ids.length) {
     const { data } = await admin.from("digests_log")
       .select("id, subscriber_id, date_digest, nb_leads, resend_id, statut, type, sujet, edition, lead_snapshot, created_at")
-      .in("subscriber_id", ids).in("type", ["bienvenue", "quotidien", "filet", "relache", "hebdo"]).order("created_at", { ascending: false }).limit(500);
+      .in("subscriber_id", ids).in("type", ["bienvenue", "quotidien", "filet", "relache", "hebdo", "rattrapage", "rattrapage_numeros"]).order("created_at", { ascending: false }).limit(500);
     logs = data || [];
+    // statut réel de livraison (webhooks Resend, depuis le 9 nov. 2026)
+    const rids = logs.map((l) => l.resend_id).filter(Boolean);
+    if (rids.length) {
+      const { data: st } = await admin.from("email_statut").select("resend_id, statut, ouvert").in("resend_id", rids);
+      const parId = Object.fromEntries((st || []).map((x) => [x.resend_id, x]));
+      logs = logs.map((l) => ({ ...l, livraison: parId[l.resend_id]?.statut || null, ouvert: parId[l.resend_id]?.ouvert || false }));
+    }
   }
   // couverture du jour : combien de reprises auraient pu être envoyées chaque jour dans leurs départements (diagnostic « jours creux »)
   const depts = [...new Set((subs || []).flatMap((s) => (Array.isArray(s.departements) ? s.departements : [])))];

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-const KIND = { bienvenue: "Bienvenue", quotidien: "Quotidien", filet: "Filet (jour creux)", relache: "Pas de parution", hebdo: "Récap hebdo" };
+const KIND = { bienvenue: "Bienvenue", quotidien: "Quotidien", filet: "Filet (jour creux)", relache: "Pas de parution", hebdo: "Récap hebdo", rattrapage: "Rattrapage", rattrapage_numeros: "Rattrapage numéros" };
 const fmtDate = (iso) => (iso ? new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" }) : "—");
 const fmtHeure = (iso) => (iso ? new Date(iso).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "—");
 
@@ -182,6 +182,7 @@ export default function SuiviTest({ authedFetch }) {
           <div key={l.id} className="suivi-log">
             <div className="suivi-log-head" onClick={() => voir(l.id)}>
               <span className={`suivi-kind k-${l.type}`}>{KIND[l.type] || l.type}</span>
+              {l.livraison && <span className={`suivi-livr ${l.livraison === "livré" ? "ok" : ["rejeté", "signalé spam"].includes(l.livraison) ? "ko" : ""}`}>{l.livraison}{l.ouvert ? " · ouvert" : ""}</span>}
               <span style={{ flex: 1, fontSize: 13.5 }}><b>{subById[l.subscriber_id]?.nom}</b> <span style={{ color: "#6f6a5c" }}>({subById[l.subscriber_id]?.email})</span> · {l.sujet}</span>
               <span style={{ fontSize: 12, color: "#6f6a5c", whiteSpace: "nowrap" }}>{l.nb_leads} reprise{l.nb_leads > 1 ? "s" : ""} · {fmtHeure(l.created_at)}</span>
             </div>
