@@ -7,8 +7,8 @@ export const metadata = {
 };
 
 const S = { maxWidth: 720, margin: "0 auto", padding: "48px 24px", lineHeight: 1.7 };
-const H2 = { fontFamily: "Archivo, sans-serif", fontSize: 20, fontWeight: 800, margin: "32px 0 8px" };
-const H3 = { fontFamily: "Archivo, sans-serif", fontSize: 16, fontWeight: 700, margin: "18px 0 6px" };
+const H2 = { fontFamily: "var(--f-archivo), Archivo, sans-serif", fontSize: 20, fontWeight: 800, margin: "32px 0 8px" };
+const H3 = { fontFamily: "var(--f-archivo), Archivo, sans-serif", fontSize: 16, fontWeight: 700, margin: "18px 0 6px" };
 const TABLE = { width: "100%", borderCollapse: "collapse", fontSize: 14, margin: "12px 0 6px" };
 const TH = { textAlign: "left", padding: "8px 10px", borderBottom: "2px solid #E6E0D0", fontWeight: 700 };
 const TD = { padding: "8px 10px", borderBottom: "1px solid #E6E0D0", verticalAlign: "top" };
@@ -18,7 +18,7 @@ export default function Confidentialite() {
     <>
       <Header />
       <main style={S}>
-        <h1 className="disp" style={{ fontFamily: "Archivo, sans-serif", fontSize: 32, fontWeight: 900, marginBottom: 6 }}>
+        <h1 className="disp" style={{ fontFamily: "var(--f-archivo), Archivo, sans-serif", fontSize: 32, fontWeight: 900, marginBottom: 6 }}>
           Politique de confidentialité
         </h1>
         <p style={{ color: "#6f6a5c", fontSize: 14, marginBottom: 18 }}>Dernière mise à jour : 22 septembre 2026</p>

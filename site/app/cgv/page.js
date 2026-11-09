@@ -6,14 +6,14 @@ export const metadata = {
 };
 
 const S = { maxWidth: 720, margin: "0 auto", padding: "48px 24px", lineHeight: 1.7 };
-const H2 = { fontFamily: "Archivo, sans-serif", fontSize: 20, fontWeight: 800, margin: "28px 0 8px" };
+const H2 = { fontFamily: "var(--f-archivo), Archivo, sans-serif", fontSize: 20, fontWeight: 800, margin: "28px 0 8px" };
 
 export default function CGV() {
   return (
     <>
       <Header />
       <main style={S}>
-        <h1 style={{ fontFamily: "Archivo, sans-serif", fontSize: 32, fontWeight: 900, marginBottom: 18 }}>
+        <h1 style={{ fontFamily: "var(--f-archivo), Archivo, sans-serif", fontSize: 32, fontWeight: 900, marginBottom: 18 }}>
           Conditions générales de vente
         </h1>
         <p style={{ color: "#6f6a5c", fontSize: 14 }}>Dernière mise à jour : septembre 2026</p>
