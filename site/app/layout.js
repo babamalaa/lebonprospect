@@ -1,5 +1,12 @@
 import "./globals.css";
+import "./home.css";
 import { Analytics } from "@vercel/analytics/next";
+import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
+
+// Polices de la home refondue (nov. 2026), servies par Next (pas de requête vers Google au chargement).
+const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--f-inter", display: "swap" });
+const tight = Inter_Tight({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--f-tight", display: "swap" });
+const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["500"], variable: "--f-mono", display: "swap" });
 
 export const metadata = {
   metadataBase: new URL("https://www.lebonprospect.fr"),
@@ -12,7 +19,7 @@ export const metadata = {
   openGraph: {
     title: "LeBonProspect · Vos futurs clients, publiés chaque matin au Journal officiel",
     description:
-      "3 950 commerces changent de mains chaque mois en France. Recevez ceux de votre métier et de votre zone, chaque matin avant 8h, avec le nom du repreneur et son numéro quand il est vérifié.",
+      "Près de 4 000 commerces changent de mains chaque mois en France. Recevez ceux de votre métier et de votre zone, chaque matin avant 8h, avec le nom du repreneur et son numéro quand il est vérifié.",
     url: "https://www.lebonprospect.fr",
     siteName: "LeBonProspect",
     locale: "fr_FR",
@@ -23,7 +30,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="fr">
+    <html lang="fr" className={`${inter.variable} ${tight.variable} ${mono.variable}`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

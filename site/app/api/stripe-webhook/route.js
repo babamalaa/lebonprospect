@@ -100,7 +100,9 @@ async function upsertFromSession(session) {
   const plan = session.metadata?.plan || null;
   const fields = Object.fromEntries((session.custom_fields || []).map((f) => [f.key, f.text?.value || null]));
   const zoneRaw = fields.zone || null;
-  const zone = zoneRaw ? resolveZone(zoneRaw, plan) : null;
+  // Zone choisie sur la carte de la home (lien Stripe ?client_reference_id=dep-69), utilisée seulement si le client n'a rien saisi
+  const depCarte = /^dep-([0-9]{2}|2A|2B)$/i.exec(session.client_reference_id || "")?.[1]?.toUpperCase() || null;
+  const zone = zoneRaw ? resolveZone(zoneRaw, plan) : depCarte ? resolveZone(depCarte, "departemental") : null;
   const essai = session.metadata?.essai === "7j";
   const sub = session.subscription ? await stripe.subscriptions.retrieve(session.subscription) : null;
 
