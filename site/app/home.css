@@ -395,3 +395,111 @@ html:has(.h-page) { scroll-behavior: smooth; }
 .h-vs-foot.link { display: block; color: #7CC3C6; text-decoration: none; }
 .h-vs-foot.link:hover, .h-vs-foot.link:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
 .lg-switch-2 { display: block; margin-top: 10px; font-size: 13px; }
+
+
+/* ===================================================================================
+   VERSION COMPACTE (essai du 9 nov. 2026) : tout environ 15-20 % plus petit.
+   Pour revenir à la version précédente, supprimer ce bloc jusqu'à « FIN VERSION COMPACTE ».
+   Garde-fous : cibles tactiles >= 44 px, texte courant >= 15 px.
+   =================================================================================== */
+.h-sec { padding: 72px 0; }
+.h-zone { padding-top: 72px; }
+.h-comment { padding-bottom: 28px; }
+.h-calc { padding-top: 28px; }
+.h-eyebrow { margin-bottom: 12px; }
+.h-h2 { font-size: clamp(26px, 3.2vw, 38px); margin-bottom: 12px; }
+.h-lead { font-size: 16.5px; margin-bottom: 32px; }
+.h-h2.mb { margin-bottom: 28px; }
+
+/* Hero */
+.h-hero { padding-bottom: 64px; }
+.h-nav { padding-top: 16px; padding-bottom: 16px; }
+.h-hero-grid { padding-top: 36px; gap: 44px; }
+.h-h1 { font-size: clamp(32px, 4.2vw, 54px); }
+.h-hero-sub { font-size: 17px; }
+.h-ctas { margin-top: 26px; }
+.h-btn-lg { min-height: 48px; padding: 0 22px; font-size: 15px; }
+.h-btn-outline { min-height: 48px; padding: 0 18px; }
+.h-chips { margin-top: 28px; gap: 10px; }
+.h-chips > div, .h-chips > a { padding: 13px 15px; border-radius: 12px; }
+.h-chips b { font-size: 23px; }
+.h-chips .h-chip-link b { font-size: 17px; }
+.h-hero-note { margin-top: 16px; font-size: 13px; }
+.h-console-body { padding: 14px; gap: 8px; }
+.h-console-t { font-size: 18px; }
+.h-crow { padding: 10px 12px; }
+.h-ini { width: 34px; height: 34px; }
+.h-delay { padding: 16px 18px; gap: 12px; }
+
+/* Comment ça marche */
+.h-flow { padding: 20px; border-radius: 18px; }
+.h-flow-card { padding: 16px; }
+.h-flow-ico { width: 36px; height: 36px; }
+.h-flow-card h3 { font-size: 16.5px; }
+.h-card { padding: 22px; border-radius: 14px; }
+.h-card.dark { padding: 22px; }
+.h-card h3 { font-size: 18.5px; margin-top: 12px; }
+.h-card-ico { width: 40px; height: 40px; }
+.h-card-ico + h3 { font-size: 18px; margin-top: 14px; }
+.h-why-n { margin-bottom: 18px; }
+
+/* Carte de zone */
+.zm-map-col { padding: 22px; gap: 14px; }
+.zm-panel { padding: 26px; }
+.zm-stack { gap: 16px; }
+.zm-h3 { font-size: 25px; }
+.zm-cp { padding: 16px; }
+.zm-total span { font-size: 28px; }
+.zm-name { font-size: 32px; }
+.zm-counters > div { padding: 13px 15px; }
+.zm-counters b { font-size: 27px; }
+.zm-row { padding: 12px 14px; gap: 8px; }
+.zm-ctas .h-btn-lg { min-height: 50px; }
+
+/* Calculateur */
+.calc-set, .calc-res { padding: 26px; border-radius: 20px; gap: 20px; }
+.calc-toggle button { min-height: 46px; }
+.calc-sl-head span { font-size: 20px; }
+.calc-big .n { font-size: clamp(52px, 7vw, 80px); }
+.calc-big .t { font-size: 20px; }
+.calc-tiles > div { padding: 14px; }
+.calc-tiles b { font-size: 25px; }
+.calc-cta { min-height: 48px; }
+
+/* Exemple d'email, flux */
+.h-steps { gap: 16px; }
+.h-steps b { font-size: 16px; }
+.h-mail-body { padding: 20px 18px 6px; }
+.h-mail-body h3 { font-size: 22px; }
+.h-mail-row { padding: 12px 14px; }
+.h-feed-row, .h-skel-row { padding: 13px 18px; }
+
+/* Comparatif, tarifs, FAQ */
+.h-vs-col { padding: 24px; border-radius: 16px; }
+.h-vs-col ul { gap: 11px; }
+.h-vs-foot { margin-top: 20px; padding-top: 16px; }
+.h-plan { padding: 24px; border-radius: 18px; }
+.h-plan-t { font-size: 18px; }
+.h-plan-p b { font-size: 44px; }
+.h-plan-p.devis b { font-size: 34px; }
+.h-plan-s { margin: 6px 0 18px; }
+.h-plan ul { margin-bottom: 22px; gap: 10px; }
+.h-plan-btn { min-height: 46px; }
+.h-engage { padding: 13px 18px; }
+.h-faq summary { padding: 16px 0; font-size: 17px; }
+.h-faq p { margin-bottom: 18px; font-size: 15.5px; }
+
+/* Appel final, footer */
+.h-final-wrap { padding-bottom: 72px; }
+.h-final { padding: 60px 28px; border-radius: 24px; }
+.h-final h2 { font-size: clamp(26px, 3.4vw, 42px); }
+.h-final p { font-size: 16.5px; margin-bottom: 26px; }
+.h-foot { padding: 56px 0 28px; }
+.h-foot-bot { margin-top: 40px; }
+
+@media (max-width: 760px) {
+  .h-sec { padding: 56px 0; }
+  .h-zone { padding-top: 56px; }
+  .h-final { padding: 44px 18px; }
+}
+/* FIN VERSION COMPACTE */
