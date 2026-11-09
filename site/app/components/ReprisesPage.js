@@ -54,8 +54,8 @@ export default function ReprisesPage({ verticaleKey, v, region, stats, autres })
         <div className="wrap proof">
           <div><div className="n">{fmt(stats.n365)}</div><div className="l">reprises {zone} sur 12 mois</div></div>
           <div><div className="n">{fmt(stats.n30)}</div><div className="l">sur les 30 derniers jours</div></div>
-          <div><div className="n">{stats.pctTel} %</div><div className="l">livrées avec le téléphone de l&apos;établissement</div></div>
-          <div><div className="n">24 h</div><div className="l">entre la publication et votre email</div></div>
+          <div><div className="n">0</div><div className="l">donnée inventée : tout est vérifiable au BODACC</div></div>
+          <div><div className="n">Avant 8h</div><div className="l">le matin même de la publication</div></div>
         </div>
       </section>
 
@@ -121,7 +121,7 @@ export default function ReprisesPage({ verticaleKey, v, region, stats, autres })
         <div className="why-grid">
           <div className="why"><div className="why-n">01</div><h3>Son financement est validé</h3><p>Pour racheter un fonds, il a convaincu une banque. Ce n&apos;est pas un projet sur papier, c&apos;est un budget disponible.</p></div>
           <div className="why"><div className="why-n">02</div><h3>Il achète maintenant, pas dans un an</h3><p>Les fournisseurs concernés : {v.fournisseurs}. Le premier qui appelle prend une longueur d&apos;avance.</p></div>
-          <div className="why"><div className="why-n">03</div><h3>Vous l&apos;apprenez à J+1</h3><p>La cession est publiée au Journal officiel. Le lendemain à 8h, son nom, son adresse et le numéro de l&apos;établissement sont dans votre boîte mail.</p></div>
+          <div className="why"><div className="why-n">03</div><h3>Vous l&apos;apprenez le jour même</h3><p>La cession est publiée au Journal officiel. Le matin même, avant 8h, son nom, son adresse et, quand on l&apos;a vérifié, le numéro de l&apos;établissement sont dans votre boîte mail.</p></div>
         </div>
       </section>
 
@@ -135,7 +135,7 @@ export default function ReprisesPage({ verticaleKey, v, region, stats, autres })
             <h3>Mon département</h3>
             <div className="price">149 € <small>/mois</small></div>
             <div className="vol">1 département au choix</div>
-            <ul><li>Email chaque matin à 8h</li><li>Nom, société et adresse du repreneur</li><li>Numéro de téléphone de l&apos;établissement</li></ul>
+            <ul><li>Email chaque matin avant 8h</li><li>Nom, société et adresse du repreneur</li><li>Numéro de l&apos;établissement, quand il est vérifié</li></ul>
             <a className="btn inv" href="https://buy.stripe.com/8x26oH2sN1i4gpv0b78N200">Surveiller mon département</a>
           </div>
           <div className="plan mid">

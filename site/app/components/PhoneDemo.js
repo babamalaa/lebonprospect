@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 /* Séquence animée : ce que reçoit un abonné chaque matin.
-   Phase 0: écran verrouillé, 8h00, la notification tombe
+   Phase 0: écran verrouillé, avant 8h, la notification tombe
    Phase 1: l'email s'ouvre, header du digest
    Phase 2+: les leads apparaissent un à un
    Phase finale: pause, puis boucle. */
@@ -45,7 +45,7 @@ export default function PhoneDemo() {
   return (
     <section className="demo-sec" ref={ref}>
       <div className="wrap">
-        <h2 className="disp">Voici votre 8h00, chaque matin</h2>
+        <h2 className="disp">Voici votre matin, avant 8h</h2>
         <p className="center-sub">
           Pas de dashboard à ouvrir, pas de logiciel à apprendre. Un email, des reprises, des numéros. Vous lisez,
           vous appelez.
@@ -123,7 +123,7 @@ export default function PhoneDemo() {
             </div>
             <div className={`dpoint${phase >= 3 ? " lit" : ""}`}>
               <span className="dpoint-n">3</span>
-              <div><b>Numéro prêt à appeler</b><br />un tap et vous êtes le premier fournisseur en ligne</div>
+              <div><b>Numéro vérifié</b><br />quand on le trouve, un tap suffit</div>
             </div>
           </div>
         </div>

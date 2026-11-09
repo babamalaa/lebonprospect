@@ -80,7 +80,7 @@ export default function KitPage() {
         <div className="cl-card">
           <p>
             Chaque jour, des commerces changent de propriétaire en France, c&apos;est publié obligatoirement au
-            Journal officiel (BODACC). LeBonProspect détecte ces reprises et livre chaque matin à 8h, par email,
+            Journal officiel (BODACC). LeBonProspect détecte ces reprises et livre chaque matin avant 8h, par email,
             le contact du repreneur (nom, adresse, téléphone quand disponible) aux fournisseurs qui veulent
             l&apos;approcher avant leurs concurrents.
           </p>
@@ -311,7 +311,7 @@ export default function KitPage() {
           </div>
           <div className="cl-step">
             <div className="n">2</div>
-            <p><b>On vend le résultat, pas le mécanisme.</b> « On détecte, vous recevez la liste à 8h » décrit du travail en plus. « Vous appelez un repreneur qui a du budget avant vos concurrents » décrit un chantier. Le BODACC, le tri, l&apos;enrichissement : on n&apos;en parle que si on nous le demande.</p>
+            <p><b>On vend le résultat, pas le mécanisme.</b> « On détecte, vous recevez la liste avant 8h » décrit du travail en plus. « Vous appelez un repreneur qui a du budget avant vos concurrents » décrit un chantier. Le BODACC, le tri, l&apos;enrichissement : on n&apos;en parle que si on nous le demande.</p>
           </div>
           <div className="cl-step">
             <div className="n">3</div>
@@ -348,7 +348,7 @@ export default function KitPage() {
               <li>Envoyer le lien de sa page par SMS pendant l&apos;appel, puis se taire 10 secondes</li>
               <li>Chiffrer avec SES chiffres : lui demander son panier moyen, jamais le donner à sa place</li>
               <li>Dire son propre prénom à l&apos;ouverture</li>
-              <li>Répondre honnêtement sur l&apos;exclusivité : il n&apos;y en a pas, la garantie c&apos;est 8h le lendemain</li>
+              <li>Répondre honnêtement sur l&apos;exclusivité : il n&apos;y en a pas, la garantie c&apos;est le matin même de la publication, avant 8h</li>
               <li>Proposer spontanément le retrait du fichier si on vous demande d&apos;où vient le numéro</li>
               <li>Noter la date du prochain contact avant de raccrocher, systématiquement</li>
             </ul>

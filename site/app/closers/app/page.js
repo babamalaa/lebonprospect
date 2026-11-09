@@ -60,7 +60,7 @@ J'ai essayé de vous joindre par téléphone ce matin, sans succès. Je vous éc
 
 Chaque jour, des restaurants, bars et hôtels changent de propriétaire dans votre zone. C'est publié au Journal officiel, et le nouveau propriétaire refait tout dans les 90 jours : agencement, matériel, caisse, enseigne, contrats. Le premier fournisseur qui l'appelle prend la place.
 
-LeBonProspect vous envoie chaque matin à 8h la liste de ces reprises, avec le nom du repreneur, l'adresse de l'établissement et le numéro de téléphone.
+LeBonProspect vous envoie chaque matin avant 8h la liste de ces reprises, avec le nom du repreneur, l'adresse de l'établissement et le numéro de téléphone quand nous l'avons vérifié.
 
 Je vous ai préparé une page avec les chiffres réels de votre zone et les dernières reprises publiées : [lien de la page]
 
@@ -83,7 +83,7 @@ Merci pour votre temps au téléphone tout à l'heure.
 Comme convenu, voici de quoi voir concrètement ce que vous recevriez chaque matin :
 
 1. Votre page, avec les chiffres réels de votre zone et les dernières reprises publiées : [lien de la page]
-2. La plaquette, avec un exemple de l'email tel qu'il arrive à 8h dans la boîte mail : [lien de la plaquette]
+2. La plaquette, avec un exemple de l'email tel qu'il arrive avant 8h dans la boîte mail : [lien de la plaquette]
 
 Pour résumer ce qu'on s'est dit : un repreneur choisit ses fournisseurs dans les 90 jours qui suivent la reprise. Avec LeBonProspect, vous l'appelez le lendemain de la publication, avant vos concurrents. Un seul client signé dans l'année rembourse l'abonnement.
 

@@ -18,7 +18,7 @@ export async function generateMetadata({ params }) {
   const s = await getReprisesStats(key, region);
   return {
     title: `${v.h1} en ${region} : ${fmt(s.n365)} cessions sur 12 mois`,
-    description: `${fmt(s.n365)} ${v.nom} ont changé de propriétaire en ${region} sur les 12 derniers mois, soit ${fmt(s.perMonth)} par mois (source BODACC). Nom, adresse et téléphone du repreneur, chaque matin à 8h.`,
+    description: `${fmt(s.n365)} ${v.nom} ont changé de propriétaire en ${region} sur les 12 derniers mois, soit ${fmt(s.perMonth)} par mois (source BODACC). Nom et adresse du repreneur, son téléphone quand il est vérifié, chaque matin avant 8h.`,
     alternates: { canonical: `https://www.lebonprospect.fr/reprises/${v.slug}/${params.region}` },
   };
 }

@@ -62,8 +62,8 @@ export default async function Home() {
         </h1>
         <p className="sub">
           Nouvelle enseigne, travaux, matériel, caisse, contrats… Un repreneur refait tout dans les 90 jours.
-          LeBonProspect vous donne son nom, son adresse <b>et le numéro où l&apos;appeler</b> dès la publication
-          officielle. À vous de décrocher le téléphone.
+          LeBonProspect vous donne son nom, son adresse <b>et son numéro, quand on a pu le vérifier</b>, dès la
+          publication officielle. À vous de décrocher le téléphone.
         </p>
         <div className="cta-row">
           <a className="btn" href="#tarifs">Voir les reprises de ma zone</a>
@@ -91,12 +91,12 @@ export default async function Home() {
             </p>
           </div>
           <div className="story-cell mid">
-            <div className="day">Mardi · 8h00</div>
+            <div className="day">Mardi · avant 8h</div>
             <h3>Le nom du repreneur est dans votre email</h3>
             <p>
               Sur les 89 pages de jargon juridique publiées ce matin-là, 3 reprises concernent votre métier et
               votre zone. On les a trouvées, identifiées, enrichies : société, dirigeant, adresse, et le téléphone
-              de l&apos;établissement.
+              quand il est trouvé et vérifié.
             </p>
           </div>
           <div className="story-cell">
@@ -122,8 +122,8 @@ export default async function Home() {
             <div className="l">sur les 12 derniers mois</div>
           </div>
           <div>
-            <div className="n">24 h</div>
-            <div className="l">entre la publication et votre email</div>
+            <div className="n">Avant 8h</div>
+            <div className="l">le matin même de la publication</div>
           </div>
           <div>
             <div className="n accent">0</div>
@@ -245,7 +245,7 @@ export default async function Home() {
           <div className="sec-head">
             <span className="eyebrow">La question que tout le monde se pose</span>
             <h2 className="disp">Oui, le BODACC est public. Ce n&apos;est pas ce que vous achetez.</h2>
-            <p className="center-sub">Ce que contient le Journal officiel, et ce que vous recevez à 8h.</p>
+            <p className="center-sub">Ce que contient le Journal officiel, et ce que vous recevez avant 8h.</p>
           </div>
           <div className="compare">
             <div className="compare-col">
@@ -260,7 +260,7 @@ export default async function Home() {
               <div className="compare-foot">Public, oui. Exploitable, non.</div>
             </div>
             <div className="compare-col main">
-              <div className="compare-title">Ce que vous recevez à 8h</div>
+              <div className="compare-title">Ce que vous recevez avant 8h</div>
               <ul>
                 <li><span className="ok" />Les reprises de votre métier, dans votre zone, publiées la veille</li>
                 <li><span className="ok" />Le repreneur identifié : société, dirigeant, adresse de l&apos;établissement</li>
@@ -289,9 +289,9 @@ export default async function Home() {
             <div className="vol">soit environ 5,50 € le prospect nominatif</div>
             <ul>
               <li>1 département au choix</li>
-              <li>Email chaque matin à 8h</li>
+              <li>Email chaque matin avant 8h</li>
               <li>Nom, société et adresse du repreneur</li>
-              <li>Numéro de téléphone de l&apos;établissement</li>
+              <li>Numéro de l&apos;établissement, quand il est vérifié</li>
             </ul>
             <a className="btn inv" href="https://buy.stripe.com/8x26oH2sN1i4gpv0b78N200">Surveiller mon département</a>
           </div>
@@ -340,7 +340,7 @@ export default async function Home() {
       {/* 11. CTA FINAL */}
       <section className="final-cta" data-reveal>
         <div className="wrap">
-          <h2>Demain matin à 8h, les reprises de votre zone seront dans votre boîte mail.</h2>
+          <h2>Demain matin, avant 8h, les reprises de votre zone seront dans votre boîte mail.</h2>
           <p>Le premier fournisseur qui appelle prend une longueur d&apos;avance. Autant que ce soit vous.</p>
           <a className="btn light" href="#tarifs">Voir les reprises de ma zone</a>
           <div className="final-note">Sans engagement · Résiliable en 1 clic · Données 100 % officielles</div>

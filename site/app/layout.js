@@ -12,7 +12,7 @@ export const metadata = {
   openGraph: {
     title: "LeBonProspect · Vos futurs clients, publiés chaque matin au Journal officiel",
     description:
-      "3 950 commerces changent de mains chaque mois en France. Recevez ceux de votre métier et de votre zone, chaque matin à 8h, avec le nom du repreneur et le numéro où l'appeler.",
+      "3 950 commerces changent de mains chaque mois en France. Recevez ceux de votre métier et de votre zone, chaque matin avant 8h, avec le nom du repreneur et son numéro quand il est vérifié.",
     url: "https://www.lebonprospect.fr",
     siteName: "LeBonProspect",
     locale: "fr_FR",

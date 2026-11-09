@@ -5,7 +5,7 @@ import { useState } from "react";
 const FAQ = [
   {
     q: "D'où viennent les données ?",
-    a: "Du BODACC, le Bulletin officiel des annonces civiles et commerciales. Chaque cession de fonds de commerce y est publiée par obligation légale. Nous ne faisons que la détecter, la trier par métier et par zone, et l'enrichir avec l'identité du repreneur et le téléphone de l'établissement. Chaque ligne reste vérifiable publiquement, gratuitement, pour toujours.",
+    a: "Du BODACC, le Bulletin officiel des annonces civiles et commerciales. Chaque cession de fonds de commerce y est publiée par obligation légale. Nous ne faisons que la détecter, la trier par métier et par zone, et l'enrichir avec l'identité du repreneur et, quand on le trouve et qu'on le vérifie, le téléphone de l'établissement. Chaque ligne reste vérifiable publiquement, gratuitement, pour toujours.",
   },
   {
     q: "Pourquoi payer, si le BODACC est public ?",

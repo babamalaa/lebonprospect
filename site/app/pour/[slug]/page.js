@@ -198,13 +198,13 @@ export default async function TeaserPage({ params }) {
         </h1>
         <p className="sub">
           Chacun de ces repreneurs investit en ce moment dans {cible.metier}. La question n&apos;est pas de savoir
-          s&apos;ils vont acheter — c&apos;est de savoir qui les appellera en premier.
+          s&apos;ils vont acheter : c&apos;est de savoir qui les appellera en premier.
         </p>
         <div className="proof tz-proof">
           <div><div className="n">{reg.n90}</div><div className="l">reprises CHR en 90 jours dans votre région</div></div>
           <div><div className="n">{reg.n30}</div><div className="l">sur les 30 derniers jours</div></div>
-          <div><div className="n">{reg.pct_tel} %</div><div className="l">livrées avec le téléphone de l&apos;établissement</div></div>
-          <div><div className="n">8h00</div><div className="l">dans votre boîte mail, chaque matin</div></div>
+          <div><div className="n">0</div><div className="l">donnée inventée : tout est vérifiable au BODACC</div></div>
+          <div><div className="n">Avant 8h</div><div className="l">dans votre boîte mail, chaque matin</div></div>
         </div>
       </section>
 
@@ -231,7 +231,7 @@ export default async function TeaserPage({ params }) {
                   {l.tel_masque ? (
                     <>☎ <span className="tz-tel-num">{l.tel_masque}</span> <span className="tz-pill">n° vérifié · complet pour les abonnés</span></>
                   ) : (
-                    <>☎ <span className="tz-pill soft">numéro en recherche — livré dès trouvé</span></>
+                    <>☎ <span className="tz-pill soft">numéro en recherche, livré dès qu&apos;il est vérifié</span></>
                   )}
                 </div>
               </div>
@@ -270,7 +270,7 @@ export default async function TeaserPage({ params }) {
       <section className="pricing wrap tz-offer">
         <h2 className="disp">{cible.essai ? "Essayez 7 jours. Gratuitement." : "Ce que ça coûte. Ce que ça rapporte."}</h2>
         {cible.essai && (
-          <p className="center-sub">Vous renseignez votre zone et votre carte, vous recevez le digest dès demain 8h00, et vous n&apos;êtes débité qu&apos;au 8e jour. Vous arrêtez avant, ça ne vous coûte rien.</p>
+          <p className="center-sub">Vous renseignez votre zone et votre carte, vous recevez le digest dès demain matin, avant 8h, et vous n&apos;êtes débité qu&apos;au 8e jour. Vous arrêtez avant, ça ne vous coûte rien.</p>
         )}
         <div className="tz-maths">
           <div className="tz-math">
@@ -294,7 +294,7 @@ export default async function TeaserPage({ params }) {
         <p className="engage">
           {cible.essai
             ? <>7 jours offerts, puis 299 €/mois (région) ou 149 €/mois (département) · sans engagement · résiliable en un clic</>
-            : <>Sans engagement · résiliable en un clic · premier digest dès demain 8h00</>}
+            : <>Sans engagement · résiliable en un clic · premier digest dès demain matin, avant 8h</>}
         </p>
       </section>
       )}

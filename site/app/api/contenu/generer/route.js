@@ -7,7 +7,7 @@ export const maxDuration = 60;
 const MODELS = (process.env.TEXT_MODELS || "gemini-2.5-flash,gemini-3.5-flash,gemini-2.5-flash-lite,gemini-3.1-flash-lite").split(",").map((m) => m.trim());
 const BASE = process.env.GEMINI_BASE_URL || "https://generativelanguage.googleapis.com/v1beta";
 
-const SYSTEM = `Tu écris les posts Instagram et LinkedIn de LeBonProspect, un service français qui envoie chaque matin à 8h, aux fournisseurs B2B des commerces (agenceurs, équipementiers de cuisine, enseignistes, solutions de caisse, brasseurs, hottes, mobilier), la liste des commerces qui viennent de changer de propriétaire, avec le nom du repreneur et le téléphone de l'établissement. Source : BODACC (cessions de fonds de commerce, publiées au Journal officiel par obligation légale). Tarifs : Départemental 149 €/mois, Régional 299 €/mois, sans engagement. Tagline : « Le repreneur avant tout le monde. »
+const SYSTEM = `Tu écris les posts Instagram et LinkedIn de LeBonProspect, un service français qui envoie chaque matin avant 8h, aux fournisseurs B2B des commerces (agenceurs, équipementiers de cuisine, enseignistes, solutions de caisse, brasseurs, hottes, mobilier), la liste des commerces qui viennent de changer de propriétaire, avec le nom du repreneur et, quand il est trouvé et vérifié, le téléphone de l'établissement. Source : BODACC (cessions de fonds de commerce, publiées au Journal officiel par obligation légale). Tarifs : Départemental 149 €/mois, Régional 299 €/mois, sans engagement. Tagline : « Le repreneur avant tout le monde. »
 
 LIGNE ÉDITORIALE (non négociable)
 1. La légende ouvre sur une SCÈNE, jamais sur un chiffre ni une annonce. Un personnage, un lieu, un moment (« Jeudi dernier, un type a racheté un restaurant à Bordeaux. »). La première ligne est la seule visible avant « voir plus » : elle doit donner envie, pas informer.
@@ -22,7 +22,7 @@ LIGNE ÉDITORIALE (non négociable)
 
 FRANÇAIS
 - Français impeccable avec TOUS les accents (é, è, ê, à, ç, ô…) : « propriétaire », « publiés », « créée », « rembourse l'année ». Un texte sans accents est un échec.
-- Le produit est un EMAIL reçu chaque matin à 8h. Jamais « Excel », « fichier », « tableau », « application », « plateforme ». On dit : « la liste dans votre boîte mail », « l'email de 8h ».
+- Le produit est un EMAIL reçu chaque matin avant 8h (jamais « à 8h pile »). Ne jamais donner de pourcentage de fiches avec téléphone, ni promettre un numéro pour chaque fiche. Jamais « Excel », « fichier », « tableau », « application », « plateforme ». On dit : « la liste dans votre boîte mail », « l'email de 8h ».
 - Les noms de commerces fournis dans les données s'écrivent en casse normale (« Giugno », pas « GIUGNO »).
 
 INTERDITS ABSOLUS
@@ -57,14 +57,13 @@ function donnees(s) {
 - Commerces ayant changé de propriétaire en France sur 12 mois (tous types) : ${s.total_12m}
 - Soit par mois : ${s.par_mois} ; par jour ouvré : ${s.par_jour_ouvre}
 - Restaurants, bars et hôtels (CHR) repris : environ ${s.chr_par_mois} par mois (moyenne des 90 derniers jours : ${s.chr_90j} sur 90 jours, ${s.chr_30j} sur 30 jours). Ne jamais donner de chiffre CHR « sur 12 mois »
-- Part des fiches CHR livrées avec le téléphone (90 j) : ${s.pct_tel_chr_90j} %
 - Part des repreneurs CHR ayant créé leur société il y a moins de 90 jours (« budgets ouverts ») : ${s.pct_neufs_chr_90j} %
 - Dernière édition du BODACC : ${s.jour_type_total} commerces repris, dont ${s.jour_type_chr} CHR
 - Top régions CHR sur 90 jours : ${r}
 - Top villes CHR sur 90 jours : ${v}
 - Le bulletin quotidien du BODACC fait environ 89 pages, tous secteurs mélangés, sans téléphone ni nom de dirigeant (fait établi, utilisable)
 - Fenêtre d'achat d'un repreneur : les 90 jours qui suivent la reprise (fait établi, utilisable)
-- Délai entre la publication et l'email : le lendemain à 8h (fait établi)
+- Délai entre la publication et l'email : le matin même de la publication, avant 8h (fait établi)
 - Dernières reprises CHR réelles avec téléphone (noms utilisables tels quels, numéros jamais) : ${d}`;
 }
 

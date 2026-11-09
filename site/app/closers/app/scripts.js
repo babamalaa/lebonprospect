@@ -66,7 +66,7 @@ Règle : on ne prononce pas le mot « abonnement » avant d'avoir sa réponse.`,
       {
         title: "Le pitch (20 secondes, orienté résultat)",
         style: "teal",
-        text: `« Concrètement : demain matin à 8h, vous avez sur votre téléphone les commerces de votre secteur qui ont changé de main, avec le nom du repreneur et son numéro. Vous en appelez un, vous vous présentez, vous êtes le premier à l'avoir eu. C'est tout le produit. »
+        text: `« Concrètement : demain matin avant 8h, vous avez sur votre téléphone les commerces de votre secteur qui ont changé de main, avec le nom du repreneur et son numéro. Vous en appelez un, vous vous présentez, vous êtes le premier à l'avoir eu. C'est tout le produit. »
 
 Aucun mot technique, jamais « base de données » ni « BODACC », et on s'arrête là. Le silence après « c'est tout le produit » fait le travail.`,
       },
@@ -155,7 +155,7 @@ Un pilote ne se refuse presque jamais, il engage l'entreprise, et il produit la 
         title: "Le close par défaut : l'essai 7 jours",
         style: "teal",
         essaiOnly: true,
-        text: `« Voilà ce que je vous propose : sept jours gratuits. Sur la page que je vous ai envoyée, vous cliquez sur « Démarrer mon essai », vous mettez votre zone et votre carte, et vous n'êtes débité de rien pendant sept jours. Demain matin à 8h, vous recevez les vraies reprises de votre secteur avec les vrais numéros. Vous en appelez deux ou trois et vous verrez par vous-même. Si au bout de la semaine ça ne vous a rien apporté, vous arrêtez en un clic et ça ne vous a rien coûté. Vous le faites pendant qu'on est en ligne ? »
+        text: `« Voilà ce que je vous propose : sept jours gratuits. Sur la page que je vous ai envoyée, vous cliquez sur « Démarrer mon essai », vous mettez votre zone et votre carte, et vous n'êtes débité de rien pendant sept jours. Demain matin avant 8h, vous recevez les vraies reprises de votre secteur, avec les numéros que nous avons vérifiés. Vous en appelez deux ou trois et vous verrez par vous-même. Si au bout de la semaine ça ne vous a rien apporté, vous arrêtez en un clic et ça ne vous a rien coûté. Vous le faites pendant qu'on est en ligne ? »
 
 Il ne demande pas d'argent aujourd'hui, il ne demande pas de décision. La carte est renseignée dès maintenant : c'est ce qui fait qu'un essai est un vrai essai, et non un curieux. Un client en essai, c'est un prospect actif ; un « non » sur 149 €, c'est une fiche morte.`,
       },
@@ -163,14 +163,14 @@ Il ne demande pas d'argent aujourd'hui, il ne demande pas de décision. La carte
         title: "Le close par défaut : un mois, sans engagement",
         style: "teal",
         noEssai: true,
-        text: `« Voilà ce que je vous propose : vous testez un mois. Sur la page que je vous ai envoyée, vous cliquez sur « Mon département » ou « Ma région », vous mettez votre zone, et demain matin à 8h vous recevez les vraies reprises de votre secteur avec les vrais numéros. Vous en appelez deux ou trois. C'est sans engagement : si au bout du mois ça ne vous a rien apporté, vous résiliez en un clic. Vous le faites pendant qu'on est en ligne ? »
+        text: `« Voilà ce que je vous propose : vous testez un mois. Sur la page que je vous ai envoyée, vous cliquez sur « Mon département » ou « Ma région », vous mettez votre zone, et demain matin avant 8h vous recevez les vraies reprises de votre secteur, avec les numéros que nous avons vérifiés. Vous en appelez deux ou trois. C'est sans engagement : si au bout du mois ça ne vous a rien apporté, vous résiliez en un clic. Vous le faites pendant qu'on est en ligne ? »
 
 On ne demande pas une décision d'un an, on demande un mois, sans engagement. Rester en ligne pendant qu'il valide : c'est le moment où les questions sortent, et où l'on y répond.`,
       },
       {
         title: "Enchaîner immédiatement sur la date",
         style: "dark",
-        text: `« Parfait. Vous recevez votre première liste demain à 8h. Je vous rappelle vendredi en fin de matinée pour voir ce que ça a donné. Vendredi 11h, ça vous va ? »
+        text: `« Parfait. Vous recevez votre première liste demain matin, avant 8h. Je vous rappelle vendredi en fin de matinée pour voir ce que ça a donné. Vendredi 11h, ça vous va ? »
 
 On ne raccroche jamais sans créneau précis, noté dans la fiche (champ « prochaine action » + date). Sans date, le dossier meurt.`,
       },
@@ -228,7 +228,7 @@ Jamais un nombre de clients inventé, jamais un témoignage fabriqué. Un prospe
         style: "",
         text: `Réponse honnête : il n'y a pas d'exclusivité.
 
-« Non, l'information peut partir à un autre abonné de votre zone. Ce que je vous garantis, c'est que vous l'avez à 8h le lendemain de la publication. Celui qui appelle en premier signe. »`,
+« Non, l'information peut partir à un autre abonné de votre zone. Ce que je vous garantis, c'est que vous l'avez le matin même de la publication, avant 8h. Celui qui appelle en premier signe. »`,
       },
       {
         title: "« On a déjà Pappers / Societeinfo / Kompass »",
