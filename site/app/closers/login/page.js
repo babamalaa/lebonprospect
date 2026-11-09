@@ -147,7 +147,10 @@ export default function LoginPage() {
 
           <div className="lg-switch">
             {login ? (
-              <>Pas encore de compte ? <a href="#" className="lg-link" onClick={changer("signup")}>Créer un compte</a></>
+              <>
+                Accès sur invitation. <a href="mailto:contact@lebonprospect.fr?subject=Demande%20d%27acc%C3%A8s%20closer" className="lg-link">Demander un accès</a>
+                <span className="lg-switch-2">Vous avez reçu un code ? <a href="#" className="lg-link" onClick={changer("signup")}>Activer mon compte</a></span>
+              </>
             ) : (
               <>Déjà un compte ? <a href="#" className="lg-link" onClick={changer("login")}>Se connecter</a></>
             )}

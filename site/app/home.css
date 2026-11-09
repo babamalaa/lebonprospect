@@ -44,9 +44,9 @@ html:has(.h-page) { scroll-behavior: smooth; }
 
 /* --- badges --- */
 .h-badge { display: inline-block; font-size: 12px; padding: 2px 9px; border-radius: 999px; background: #DCEDED; color: #1F5457; font-weight: 500; white-space: nowrap; }
-.h-badge.amber { background: #FEF3C7; color: #92400E; }
+.h-badge.neutre { background: #EEF0F5; color: #3B4560; }
 .h-badge.dark { background: rgba(49,119,122,0.28); color: #7CC3C6; }
-.h-badge.amber.dark { background: rgba(251,191,36,0.14); color: #FCD34D; }
+.h-badge.neutre.dark { background: rgba(124,195,198,0.12); color: #C5CEE3; }
 
 /* ============ HERO ============ */
 .h-hero { color: #E8ECF5; padding-bottom: 88px; }
@@ -65,7 +65,7 @@ html:has(.h-page) { scroll-behavior: smooth; }
 .h-hero-sub strong { color: #E8ECF5; font-weight: 600; }
 .h-ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
 .h-chips { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
-.h-chips > div { flex: 1 1 150px; padding: 16px 18px; border: 1px solid #222B42; border-radius: 14px; background: #0F1424; }
+.h-chips > div, .h-chips > a { flex: 1 1 150px; padding: 16px 18px; border: 1px solid #222B42; border-radius: 14px; background: #0F1424; }
 .h-chips b { display: block; font-family: var(--f-tight), "Inter Tight", Inter, sans-serif; font-weight: 700; font-size: 28px; line-height: 1; letter-spacing: -0.02em; color: #FFFFFF; }
 .h-chips span { display: block; font-size: 13px; color: #9AA5BD; margin-top: 8px; line-height: 1.4; }
 .h-hero-note { margin: 20px 0 0; font-size: 14px; color: #8792AB; }
@@ -387,3 +387,11 @@ html:has(.h-page) { scroll-behavior: smooth; }
 .lg-link:hover { text-decoration: underline; }
 .lg-switch { margin-top: 28px; padding-top: 24px; border-top: 1px solid #E4E7EE; font-size: 15px; color: #556079; text-align: center; }
 @media (max-width: 1000px) { .lg-brand { flex-basis: 100%; padding: 28px 24px; gap: 32px; } .lg-brand-mid { margin: 0; } }
+
+/* Puce « Votre point mort » (lien vers le calculateur) et lien du comparatif */
+.h-chips .h-chip-link { color: inherit; text-decoration: none; display: block; min-height: 44px; }
+.h-chips .h-chip-link b { font-size: 20px; line-height: 1.4; }
+.h-chips .h-chip-link:hover b, .h-chips .h-chip-link:focus-visible b { text-decoration: underline; text-underline-offset: 3px; }
+.h-vs-foot.link { display: block; color: #7CC3C6; text-decoration: none; }
+.h-vs-foot.link:hover, .h-vs-foot.link:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+.lg-switch-2 { display: block; margin-top: 10px; font-size: 13px; }

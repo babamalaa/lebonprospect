@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "./supabaseAdmin";
+import { libellePublic } from "./activite";
 
 // Données de la home refondue (novembre 2026).
 // Règle : rien d'inventé. Chaque chiffre vient de la table cessions ; les exemples sont de vraies reprises.
@@ -29,30 +30,26 @@ export async function getChiffres() {
   return { parMois: Math.round((n12 || 0) / 12), sur12Mois: n12 || 0, derniere, nDernier };
 }
 
-// Les 3 reprises d'exemple (hero et email d'exemple) : vraies reprises du 06/09/2026, Auvergne-Rhône-Alpes,
-// restaurants, bars et hôtels. Affichées en clair (décision de Baptiste du 9 nov. 2026), en attendant l'avis juridique.
-// Figées volontairement : ce bloc est présenté comme un EXEMPLE d'édition, pas comme l'édition du jour.
+// Les 3 reprises d'exemple (hero et email d'exemple) : vraies reprises CHR publiées le 06/09/2026 en
+// Auvergne-Rhône-Alpes (ids 47680, 47711, 47738, vérifiées en base), présentées comme un EXEMPLE d'édition.
+// ANONYMISÉES (décision du 9 nov. 2026, en attendant l'avis juridique) : activité et commune seulement,
+// aucun nom de repreneur, numéro masqué. Le nom complet et le numéro ne figurent que dans l'email des abonnés.
+// Badge : « budgets ouverts » si la société repreneuse a moins de 90 jours à la parution, sinon « en expansion ».
 export const EXEMPLE = {
   date: "2026-09-06",
   zone: "Auvergne-Rhône-Alpes",
   metier: "Restaurants, bars & hôtels",
   nZone: 5,          // reprises CHR publiées ce jour-là en Auvergne-Rhône-Alpes (compté en base)
   rows: [
-    { name: "Les Glougloutons", place: "Lyon · Rhône", owner: "Shelly Bernicot", phone: "04 72 13 96 26", badge: "budgets ouverts" },
-    { name: "MexiKebab", place: "Ambérieu-en-Bugey · Ain", owner: "Serkan & Yasin Tuna", phone: "04 74 61 49 70", badge: "en expansion" },
-    { name: "Bee's Café", place: "Mirabel-et-Blacons · Drôme", owner: "Didier & Nolan Millier", phone: "04 75 40 05 99", badge: "budgets ouverts" },
+    { name: "Restaurant, brasserie", place: "Lyon · Rhône", phone: "04 72 ●● ●● ●●", badge: "budgets ouverts" },
+    { name: "Restauration rapide", place: "Ambérieu-en-Bugey · Ain", phone: "04 74 ●● ●● ●●", badge: "en expansion" },
+    { name: "Restaurant, bar, café", place: "Optevoz · Isère", phone: "09 61 ●● ●● ●●", badge: "en expansion" },
   ],
 };
 
 function badge(dateCreation, dateParution) {
   if (!dateCreation) return null;
   return (new Date(dateParution) - new Date(dateCreation)) / 86400000 <= 90 ? "budgets ouverts" : "en expansion";
-}
-function enseigne(r) {
-  if (r.place_name) return r.place_name;
-  const m = /\(([^()]+)\)\s*$/.exec(r.acheteur_nom || "");
-  const brut = (m ? m[1] : r.acheteur_nom || "").trim();
-  return brut.toLowerCase().replace(/(^|[\s'’-])(\p{L})/gu, (_, a, b) => a + b.toUpperCase());
 }
 
 // Flux en direct : 3 lignes visibles (enseigne, commune, département, badge). Le repreneur et le téléphone ne
@@ -66,7 +63,7 @@ export async function getFlux() {
   if (!date) return null;
   const [{ data: rows }, { count: nJour }] = await Promise.all([
     admin.from("cessions")
-      .select("id, date_parution, acheteur_nom, place_name, fonds_ville, ville, departement, cp, fonds_cp, acheteur_date_creation, telephone, tel_validation")
+      .select("id, date_parution, acheteur_nom, naf_fonds, fonds_activite, verticale, fonds_ville, ville, departement, cp, fonds_cp, acheteur_date_creation, telephone, tel_validation")
       .eq("verticale", "chr").eq("date_parution", date).not("acheteur_nom", "is", null)
       .neq("type_avis", "Avis d’annulation").order("id", { ascending: false }).limit(12),
     admin.from("cessions").select("id", { count: "exact", head: true }).eq("date_parution", date),
@@ -75,7 +72,7 @@ export async function getFlux() {
   const tri = (rows || []).sort((a, b) => Number(!!verifie(b)) - Number(!!verifie(a)));
   const items = tri.slice(0, 3).map((r) => ({
     id: r.id,
-    nom: enseigne(r),
+    nom: libellePublic(r.acheteur_nom, r.naf_fonds, r.fonds_activite, r.verticale),
     commune: (r.fonds_ville || r.ville || "").split(",")[0].trim(),
     dep: (r.fonds_cp || r.cp || "").slice(0, 2),
     departement: r.departement,

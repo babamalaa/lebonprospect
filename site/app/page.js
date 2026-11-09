@@ -6,7 +6,7 @@ import { TARIFS } from "./lib/tarifs";
 
 export const revalidate = 3600; // chiffres et flux rafraîchis toutes les heures
 
-const fmt = (n) => Number(n || 0).toLocaleString("fr-FR");
+const fmt = (n) => Number(n || 0).toLocaleString("fr-FR").replace(/\u202f/g, "\u00a0");
 const Fleche = () => (
   <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18"><path d="M3 9h11M10 4.5L14.5 9 10 13.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
@@ -16,7 +16,7 @@ const Logo = ({ size = 28 }) => (
 const Coche = ({ c = "#7CC3C6" }) => (
   <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" className="h-ico"><path d="M4 9.5l3.2 3.2L14 5.8" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
-const badgeCls = (b) => (b === "en expansion" ? "h-badge amber" : "h-badge");
+const badgeCls = (b) => (b === "en expansion" ? "h-badge neutre" : "h-badge");
 
 const FLOW = [
   { tag: "01", title: "Journal officiel", desc: "Chaque cession de fonds de commerce est publiée par obligation légale.", icon: "M6 3h9l4 4v14H6z M15 3v4h4 M9 12h7 M9 16h7" },
@@ -109,7 +109,7 @@ export default async function Home() {
             <div className="h-chips">
               <div><b>Avant 8h</b><span>le matin même de la publication</span></div>
               <div><b>{TARIFS.departement.prix} €</b><span>par mois pour un département</span></div>
-              <div><b>1 client</b><span>signé rembourse un an d&apos;abonnement</span></div>
+              <a href="#calculateur" className="h-chip-link"><b>Votre point mort</b><span>calculez-le avec vos chiffres</span></a>
             </div>
             <p className="h-hero-note">Sans engagement · Données 100 % officielles · Aucun lead revendu</p>
           </div>
@@ -126,11 +126,11 @@ export default async function Home() {
                   <div className="h-console-s">{ex.zone} · {ex.metier}</div>
                 </div>
                 {ex.rows.map((r) => (
-                  <div key={r.name} className="h-crow">
+                  <div key={r.place} className="h-crow">
                     <div className="h-ini" aria-hidden="true">{r.name[0]}</div>
                     <div className="h-crow-m">
                       <div><b>{r.name}</b><span className={`${badgeCls(r.badge)} dark`}>{r.badge}</span></div>
-                      <span>{r.place} · {r.owner}</span>
+                      <span>{r.place} · repreneur identifié</span>
                     </div>
                     <span className="h-tel"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" /></svg>{r.phone}</span>
                   </div>
@@ -209,11 +209,11 @@ export default async function Home() {
                 <h3>{ex.nZone} commerces viennent de changer de mains</h3>
                 <p className="h-mail-sub">{ex.metier} · publiés au Journal officiel le {dateLongue(ex.date)}</p>
                 {ex.rows.map((r) => (
-                  <div key={r.name} className="h-mail-row">
+                  <div key={r.place} className="h-mail-row">
                     <div>
                       <div><b>{r.name}</b><span className={badgeCls(r.badge)}>{r.badge}</span></div>
                       <span className="m">{r.place}</span>
-                      <span className="o">Repreneur : <strong>{r.owner}</strong></span>
+                      <span className="o">Repreneur : <strong>nom et société en clair dans l&apos;email</strong></span>
                     </div>
                     <span className="h-tel dark">{r.phone}</span>
                   </div>
@@ -314,7 +314,7 @@ export default async function Home() {
             <div className="h-vs-col dark">
               <div className="h-mono-l soft">Ce que vous recevez avant 8h</div>
               <ul>{LBP.map((t) => <li key={t}><Coche /><span>{t}</span></li>)}</ul>
-              <div className="h-vs-foot">Un client signé rembourse un an d&apos;abonnement. Il n&apos;y a pas d&apos;autre calcul à faire.</div>
+              <a href="#calculateur" className="h-vs-foot link">Combien de clients pour rentabiliser ? Faites le calcul avec vos chiffres →</a>
             </div>
           </div>
         </div>

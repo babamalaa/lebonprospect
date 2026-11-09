@@ -18,7 +18,7 @@ export function calculer({ plan, contrat, appels, taux }) {
   return { prix, coutAnnuel, pointMort, clientsParMois, caMois, barreCout: (prix / max) * 100, barreCa: (caMois / max) * 100, verdict };
 }
 
-const eur = (n) => `${Math.round(n).toLocaleString("fr-FR")} €`;
+const eur = (n) => `${Math.round(n).toLocaleString("fr-FR").replace(/\u202f/g, "\u00a0")}\u00a0€`;
 const un = (n) => n.toLocaleString("fr-FR", { maximumFractionDigits: 1 });
 
 export default function Calculateur() {

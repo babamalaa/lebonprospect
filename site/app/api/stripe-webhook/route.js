@@ -122,7 +122,7 @@ async function upsertFromSession(session) {
     source: session.metadata?.source || "site",
     telephone: session.customer_details?.phone || null,
     secteur: fields.secteur || null,
-    zone_saisie: zoneRaw,
+    zone_saisie: zoneRaw || (depCarte ? `carte de la home : ${depCarte}` : null),
   };
   const { error } = await admin.from("subscribers").upsert(row, { onConflict: "email" });
   if (error) throw new Error(error.message);

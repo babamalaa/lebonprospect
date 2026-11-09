@@ -8,7 +8,7 @@ import NOMS from "../lib/geo/depNames.json";
 // Les contours (118 Ko) sont chargés en différé, quand la section approche de l'écran.
 const FEAT = ["69", "75", "13", "33", "44", "59", "67", "31"];
 const nomCourt = (id) => (id === "75" ? "Paris" : NOMS[id] || id);
-const fmt = (n) => Number(n || 0).toLocaleString("fr-FR");
+const fmt = (n) => Number(n || 0).toLocaleString("fr-FR").replace(/\u202f/g, "\u00a0");
 
 function codeDepuisCp(cp) {
   const c = String(cp || "").replace(/\D/g, "");
@@ -103,12 +103,15 @@ export default function ZoneMap({ parMois }) {
                       strokeDasharray={`${(6 / S).toFixed(2)} ${(5 / S).toFixed(2)}`} strokeLinejoin="round" />
                   </svg>
                 )}
-                {isZone && zone?.code === zoneId && zone.pins.map((p, i) => (
-                  <span key={i} className={`zm-pin${p.hier ? " hot" : ""}`}
-                    style={{ left: `${((p.x / 680) * 100).toFixed(3)}%`, top: `${((p.y / 660) * 100).toFixed(3)}%`,
-                      width: `${(14 / S).toFixed(2)}px`, height: `${(14 / S).toFixed(2)}px`,
-                      boxShadow: p.hier ? `0 0 0 ${(6 / S).toFixed(2)}px rgba(49,119,122,0.40)` : `0 0 0 ${(4 / S).toFixed(2)}px rgba(107,120,150,0.25)` }} />
-                ))}
+                {isZone && zone?.code === zoneId && [...zone.pins].sort((a, b) => Number(a.hier) - Number(b.hier)).map((p, i) => {
+                  const d = Math.min(10 + 3 * Math.sqrt((p.n || 1) - 1), 22) / S;   // 10 px, un peu plus gros si plusieurs reprises
+                  return (
+                    <span key={i} className={`zm-pin${p.hier ? " hot" : ""}`}
+                      style={{ left: `${((p.x / 680) * 100).toFixed(3)}%`, top: `${((p.y / 660) * 100).toFixed(3)}%`,
+                        width: `${d.toFixed(2)}px`, height: `${d.toFixed(2)}px`,
+                        boxShadow: p.hier ? `0 0 0 ${(5 / S).toFixed(2)}px rgba(49,119,122,0.40)` : `0 0 0 ${(1.5 / S).toFixed(2)}px #0C1120` }} />
+                  );
+                })}
               </div>
               {!isZone && deps && FEAT.filter((id) => byId[id]).map((id) => {
                 const b = byId[id].b; const x = (b[0] + b[2]) / 2, y = (b[1] + b[3]) / 2;
