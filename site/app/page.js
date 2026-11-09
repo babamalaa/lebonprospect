@@ -69,7 +69,7 @@ const FEAT = {
 const faq = (parMois) => [
   { q: "D'où viennent les données ?", a: "Du BODACC, le Bulletin officiel des annonces civiles et commerciales. Chaque cession de fonds de commerce y est publiée par obligation légale. Nous ne faisons que la détecter, la trier par métier et par zone, et l'enrichir avec l'identité du repreneur et, quand on le trouve et qu'on le vérifie, le téléphone de l'établissement. Chaque ligne reste vérifiable publiquement, gratuitement, pour toujours." },
   { q: "Pourquoi payer, si le BODACC est public ?", a: "Parce que le BODACC est public, mais pas exploitable. Ce que vous achetez, ce n'est pas l'accès à l'information : c'est la fiche prête à appeler, le matin même de la publication, avant votre concurrent. Un repreneur choisit ses fournisseurs dans les 90 jours. Arriver à J+1 plutôt qu'à J+30, c'est toute la différence entre signer et arriver après." },
-  { q: "C'est légal de démarcher ces repreneurs ?", a: "Oui. Il s'agit de données professionnelles publiées officiellement, concernant des entreprises et non des particuliers. Le démarchage B2B sur ces bases est conforme au RGPD, à condition de respecter le droit d'opposition, ce qui est le cas de tout démarchage professionnel classique." },
+  { q: "Comment démarcher ces repreneurs dans les règles ?", a: "Les reprises viennent d'annonces officielles, publiées au BODACC. Entre professionnels, la règle est simple : présentez-vous clairement, proposez une offre en rapport avec l'activité du repreneur, et respectez sa demande s'il ne souhaite plus être contacté. Le démarchage reste sous votre responsabilité, comme tout démarchage commercial." },
   { q: "Combien de reprises vais-je recevoir chaque jour ?", a: `Ça dépend de votre zone et de votre métier. À l'échelle nationale, environ ${fmt(Math.round(parMois / 100) * 100)} commerces changent de mains chaque mois. Sur un département dense comme Paris ou le Rhône, comptez plusieurs reprises par jour dans le secteur CHR ; sur un département rural, quelques-unes par semaine. La carte ci-dessus vous montre le volume réel de votre département.` },
   { q: "Sans engagement, ça veut dire quoi concrètement ?", a: "Vous payez mois par mois et vous pouvez résilier en un clic depuis votre espace client, sans préavis ni justification. Si vous préférez vous engager sur 6 ou 12 mois, un ou deux mois vous sont offerts en échange." },
 ];
@@ -329,14 +329,14 @@ export default async function Home() {
             <div className="h-plan">
               <div className="h-plan-t">{TARIFS.departement.label}</div>
               <div className="h-plan-p"><b>{TARIFS.departement.prix} €</b><span>/mois</span></div>
-              <div className="h-plan-s">soit environ 5,50 € le prospect nominatif</div>
+              <div className="h-plan-s">un département au choix, sans engagement</div>
               <ul>{FEAT.departement.map((t) => <li key={t}><Coche c="#31777A" /><span>{t}</span></li>)}</ul>
               <a href={TARIFS.departement.stripe} className="h-plan-btn">Surveiller mon département</a>
             </div>
             <div className="h-plan dark">
-              <div className="h-plan-t"><span>{TARIFS.region.label}</span><span className="h-plan-tag">Le plus choisi</span></div>
+              <div className="h-plan-t"><span>{TARIFS.region.label}</span></div>
               <div className="h-plan-p"><b>{TARIFS.region.prix} €</b><span>/mois</span></div>
-              <div className="h-plan-s">soit environ 3,50 € le prospect nominatif</div>
+              <div className="h-plan-s">tous les départements de votre région</div>
               <ul>{FEAT.region.map((t) => <li key={t}><Coche /><span>{t}</span></li>)}</ul>
               <a href={TARIFS.region.stripe} className="h-plan-btn fill">Prendre ma région</a>
             </div>
