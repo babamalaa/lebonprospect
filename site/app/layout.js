@@ -1,12 +1,14 @@
 import "./globals.css";
 import "./home.css";
 import { Analytics } from "@vercel/analytics/next";
-import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
+import { Archivo, Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
 
 // Polices de la home refondue (nov. 2026), servies par Next (pas de requête vers Google au chargement).
-const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--f-inter", display: "swap" });
+const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--f-inter", display: "swap" });
 const tight = Inter_Tight({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--f-tight", display: "swap" });
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["500"], variable: "--f-mono", display: "swap" });
+const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["500", "600"], variable: "--f-mono", display: "swap" });
+// Police des pages internes (pages légales, régions, CRM), servie par Next au lieu de Google Fonts (plus de CSS bloquant)
+const archivo = Archivo({ subsets: ["latin"], variable: "--f-archivo", display: "swap" });
 
 export const metadata = {
   metadataBase: new URL("https://www.lebonprospect.fr"),
@@ -30,15 +32,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="fr" className={`${inter.variable} ${tight.variable} ${mono.variable}`}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="fr" className={`${inter.variable} ${tight.variable} ${mono.variable} ${archivo.variable}`}>
       <body>
         {children}
         <Analytics />

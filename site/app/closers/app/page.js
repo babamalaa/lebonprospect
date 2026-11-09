@@ -641,7 +641,7 @@ function AppPageInner() {
                             transform="rotate(-90 55 55)"
                           />
                         ))}
-                        <text x="55" y="60" textAnchor="middle" fontFamily="Archivo" fontWeight="900" fontSize="22" fill="#14181d">{nSigned}</text>
+                        <text x="55" y="60" textAnchor="middle" fontFamily="var(--f-archivo), Archivo" fontWeight="900" fontSize="22" fill="#14181d">{nSigned}</text>
                       </svg>
                       <div className="donut-legend">
                         {donutSegments.map((seg) => (
