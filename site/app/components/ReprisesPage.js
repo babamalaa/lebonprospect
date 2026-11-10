@@ -78,7 +78,7 @@ export default function ReprisesPage({ verticaleKey, v, region, stats, autres })
               <div className="date">{short(it.date)}<br />{it.ville}</div>
               <div className="what">
                 <b>{it.acheteur}</b> reprend {it.etablissement ? <>« {it.etablissement} »</> : "un fonds de commerce"}{" "}
-                {it.badge && <span className={`badge-fresh${it.badge === "en expansion" ? " exp" : ""}`}>{it.badge}</span>}
+                {it.badge && <span className={`badge-fresh${it.badge === "acquéreur établi" ? " exp" : ""}`}>{it.badge}</span>}
                 <br />
                 <span className="meta">
                   {it.telMasque ? <>Repreneur identifié · ☎ {it.telMasque}</> : <>Repreneur identifié · numéro en recherche</>} · {it.departement}

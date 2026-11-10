@@ -1,3 +1,4 @@
+import { badgeAge } from "../../lib/badge";
 import teasers from "../../../data/teasers.json";
 import PhoneDemo from "../../components/PhoneDemo";
 import { supabaseAdmin } from "../../lib/supabaseAdmin";
@@ -59,11 +60,7 @@ async function fetchRegionPayload(region) {
 
   const today = new Date();
   const leads = rowsWithTel.slice(0, 6).map((r) => {
-    let badge = null;
-    if (r.acheteur_date_creation) {
-      const age = Math.floor((today - new Date(r.acheteur_date_creation)) / 86400000);
-      badge = age <= 180 ? "budgets ouverts" : "en expansion";
-    }
+    const badge = badgeAge(r.acheteur_date_creation, r.date_parution);
     let dirigeants = r.acheteur_dirigeants;
     if (typeof dirigeants === "string") {
       dirigeants = dirigeants.replace(/[{}]/g, "").split(",").map((d) => d.trim()).filter(Boolean);
@@ -222,7 +219,7 @@ export default async function TeaserPage({ params }) {
             <div className="row" key={l.nom + l.ville}>
               <div className="what">
                 <b>{l.nom}</b>
-                {l.badge && <span className={`tz-badge${l.badge === "en expansion" ? " exp" : ""}`}>{l.badge}</span>}
+                {l.badge && <span className={`tz-badge${l.badge === "acquéreur établi" ? " exp" : ""}`}>{l.badge}</span>}
                 <div className="meta">
                   {l.ville} · {l.dept} · publié le {fmtDate(l.date)}
                   {l.dirigeants.length > 0 && <> · repreneur : {l.dirigeants.join(", ")}</>}

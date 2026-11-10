@@ -503,3 +503,10 @@ html:has(.h-page) { scroll-behavior: smooth; }
   .h-final { padding: 44px 18px; }
 }
 /* FIN VERSION COMPACTE */
+
+/* Lien vers l'annonce officielle au BODACC (décision du 11 nov. 2026) */
+.h-annonce { display: inline-block; margin-top: 4px; font-size: 13px; color: #31777A; text-decoration: underline; text-underline-offset: 2px; }
+.h-feed-row .h-annonce { display: block; font-weight: 400; margin-top: 2px; }
+.h-console .h-annonce, .h-feed-veil .h-annonce { color: #7CC3C6; }
+.h-delay-txt { margin: 8px 0 0; font-size: 14px; line-height: 21px; color: #9AA5BD; }
+.h-delay-txt b { color: #E8ECF5; font-weight: 600; }

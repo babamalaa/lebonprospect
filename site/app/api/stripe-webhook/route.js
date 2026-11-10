@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import { supabaseAdmin } from "../../lib/supabaseAdmin";
 import { resolveZone } from "../../lib/geo";
+import { confirmationClient } from "../../lib/emailConfirmation";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,13 +14,13 @@ const PLAN_LABEL = { departemental: "Départemental", regional: "Régional", nat
 const eur = (c) => (c == null ? "" : `${(c / 100).toLocaleString("fr-FR", { maximumFractionDigits: 2 })} €`);
 const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-async function sendMail(to, subject, html, from = "LeBonProspect <onboarding@lebonprospect.fr>") {
+async function sendMail(to, subject, html, from = "LeBonProspect <onboarding@lebonprospect.fr>", replyTo = null) {
   const key = process.env.RESEND_API_KEY;
   if (!key) return;
   await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from, to: Array.isArray(to) ? to : [to], subject, html }),
+    body: JSON.stringify({ from, to: Array.isArray(to) ? to : [to], subject, html, ...(replyTo ? { reply_to: replyTo } : {}) }),
   });
 }
 
@@ -78,6 +79,21 @@ async function notifyDeal(admin, session, row) {
   }
   await sendMail(EQUIPE, `[Deal] ${nom} · ${plan}${closer ? " · " + closer.full_name : ""}`, `<div style="font-family:Inter,Arial,sans-serif;color:#14181d;max-width:520px">${lignes}<p style="font-size:13px;color:#6f6a5c;margin-top:12px">Closer : ${esc(closer?.full_name || "non identifié (lien sans étiquette)")}</p></div>`);
   sent.push("equipe");
+  // Client (décision du 11 nov. 2026) : confirmation immédiate, puis bienvenue 14 jours déclenchée tout de suite (GitHub, via Supabase)
+  try {
+    const conf = confirmationClient({ prenom: (session.customer_details?.name || "").split(" ")[0], plan: row.plan, zone: row._zone,
+      zoneSaisie: row.zone_saisie, metier: row.secteur, essai: row.essai });
+    await sendMail(row.email, conf.subject, conf.html, "LeBonProspect <alerte@lebonprospect.fr>", "lawrenza@lebonprospect.fr");
+    sent.push("client");
+    if (conf.automatique) {
+      const { data: abo } = await admin.from("subscribers").select("id").eq("email", row.email).maybeSingle();
+      if (abo?.id) {
+        const { error } = await admin.rpc("lbp_dispatch", { p_workflow: "bienvenue.yml", p_inputs: { abonne: String(abo.id) } });
+        if (!error) sent.push("bienvenue");
+        else console.error("[deal] bienvenue", error.message);
+      }
+    }
+  } catch (e) { console.error("[deal] client", e.message); }
   // Groupe WhatsApp (optionnel) : un seul appel HTTP vers le pont configuré, sans bloquer le webhook s'il échoue
   const hook = process.env.WHATSAPP_DEAL_WEBHOOK;
   if (hook) {
@@ -92,7 +108,7 @@ async function notifyDeal(admin, session, row) {
 
 // Inscrit (ou met à jour) l'abonné à partir d'une Checkout Session terminée.
 // Fonctionne pour un paiement direct comme pour un essai gratuit : dans les deux cas
-// l'abonné reçoit son premier digest dès le lendemain 8h.
+// l'abonné reçoit sa confirmation immédiatement, puis l'édition de bienvenue (14 derniers jours) quelques minutes plus tard.
 async function upsertFromSession(session) {
   const admin = supabaseAdmin();
   const email = (session.customer_details?.email || session.customer_email || "").toLowerCase();
@@ -125,6 +141,7 @@ async function upsertFromSession(session) {
     zone_saisie: zoneRaw || (depCarte ? `carte de la home : ${depCarte}` : null),
   };
   const { error } = await admin.from("subscribers").upsert(row, { onConflict: "email" });
+  row._zone = zone;
   if (error) throw new Error(error.message);
   let notif = null;
   const confirme = essai || session.payment_status === "paid" || session.payment_status === "no_payment_required";

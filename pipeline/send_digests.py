@@ -15,7 +15,7 @@ import os, sys, argparse, datetime, time
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from load_db import sql_exec
-from digest import fetch_leads, fetch_range, build_email, render_digest, send_resend, VERT_LABELS, REPLY_TO
+from digest import fetch_leads, fetch_range, build_email, render_digest, send_resend, VERT_LABELS, REPLY_TO, badge_age, BADGE_NEUF
 
 def _as_list(v):
     """Champ Supabase liste : déjà une liste, ou str postgres '{a,b}' / '{"a b","c"}'."""
@@ -40,7 +40,7 @@ def _snapshot(leads):
     out = []
     for r in leads:
         c = r.get("acheteur_date_creation")
-        neuf = bool(c and (datetime.date.fromisoformat(str(r["date_parution"])[:10]) - datetime.date.fromisoformat(str(c)[:10])).days <= 180)
+        neuf = badge_age(c, r.get("date_parution")) == BADGE_NEUF
         out.append({"id": r.get("id"), "nom": (r.get("acheteur_nom") or r.get("commercant") or "").split("(")[0].strip()[:80],
                     "ville": (r.get("ville") or "").split(",")[0], "dept": r.get("departement"), "tel": bool(r.get("telephone")), "neuf": neuf,
                     "date": str(r.get("date_parution")), "naf": r.get("naf_fonds") or r.get("acheteur_naf")})
@@ -188,11 +188,64 @@ def handle_test_subscriber(s, last_ed, today, dry):
         res.append(kind); time.sleep(0.3)
     return res
 
+def depts_de(regions, depts):
+    """Départements couverts par l'abonné : ses départements, plus ceux de ses régions (lus en base)."""
+    if not regions:
+        return list(depts)
+    q = ",".join("'" + r.replace("'", "''") + "'" for r in regions)
+    return sorted(set(depts) | {d["departement"] for d in sql_exec(f"select distinct departement from cessions where region in ({q}) and departement is not null;")})
+
+def handle_bienvenue_abonne(s, last_ed, today, dry):
+    """Abonné PAYANT (décision du 11 nov. 2026) : édition de bienvenue avec les reprises des 14 derniers jours de sa zone,
+    même logique que l'essai (handle_test_subscriber) : zone réelle du fonds, doublons retirés, numéros validés seulement.
+    Envoyée une seule fois (au premier passage), soit juste après le paiement (workflow bienvenue.yml), soit au cron suivant.
+    Zone non reconnue ou « France entière » : rien d'automatique, l'équipe confirme la zone à la main."""
+    verticales, regions, depts, villes, zone = plan_for_subscriber(s)
+    if villes or not (regions or depts):
+        print(f"  bienvenue {s['email']} : zone sur mesure ou absente, pas d'envoi automatique")
+        return None
+    ds = depts_de(regions, depts)
+    ed = datetime.date.fromisoformat(str(last_ed))
+    d1 = (ed - datetime.timedelta(days=14)).isoformat()
+    leads = []
+    for v in verticales:
+        leads += fetch_range(v, ds, d1, str(last_ed), limit=120)
+    if s.get("sans_numeros"):
+        leads = [{**r, "telephone": None} for r in leads]
+    leads = numeros_verifies(sans_doublons(dans_la_zone(leads, ds)))
+    leads.sort(key=lambda r: (str(r.get("date_parution")), bool(r.get("telephone"))), reverse=True)
+    leads = leads[:60]
+    if not leads:
+        print(f"  bienvenue {s['email']} : aucune reprise sur 14 jours, rien envoyé (le quotidien prendra le relais)")
+        if not dry:
+            sql_exec(f"insert into digests_log (subscriber_id, date_digest, nb_leads, statut, type, edition) values ({s['id']}, '{today}', 0, 'vide', 'bienvenue_ignoree', '{last_ed}');")
+        return "bienvenue_ignoree"
+    metier = VERT_LABELS.get(verticales[0], verticales[0]) if verticales else None
+    subject, body = build_email("bienvenue", leads, zone, ds, last_ed, d1, nom=s.get("nom"), contexte="abonne", metier=metier)
+    if dry:
+        print(f"DRY[bienvenue]: {s['email']:35s} ← {len(leads)} leads · {subject}")
+        return "bienvenue"
+    r = send_resend(s["email"], subject, body, reply_to=REPLY_TO)
+    _log_test(s, "bienvenue", subject, body, leads, last_ed, r.get("id", ""), today)
+    sql_exec(f"update subscribers set dernier_digest = '{today}' where id = {s['id']};")
+    print(f"OK[bienvenue]: {s['email']} ← {len(leads)} leads")
+    return "bienvenue"
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--bienvenue", type=int, help="id abonné : envoie seulement sa bienvenue (appelé juste après le paiement)")
     args = ap.parse_args()
     today = datetime.date.today().isoformat()
+    if args.bienvenue:
+        subs = sql_exec(f"select * from subscribers where id = {int(args.bienvenue)} and statut = 'actif' and not coalesce(suivi_test, false);")
+        last_ed = sql_exec("select max(date_parution) as d from cessions;")[0]["d"]
+        deja = sql_exec(f"select 1 from digests_log where subscriber_id = {int(args.bienvenue)} limit 1;")
+        if not subs or deja:
+            print("Rien à faire (abonné inconnu, inactif, de l'essai, ou déjà servi).")
+            return
+        handle_bienvenue_abonne(subs[0], last_ed, today, args.dry_run)
+        return
     subs = sql_exec("select * from subscribers where statut = 'actif' order by id;")
     if not subs:
         print("Aucun abonné actif.")
@@ -200,6 +253,7 @@ def main():
     # dernière édition disponible en base
     last_ed = sql_exec("select max(date_parution) as d from cessions;")[0]["d"]
     sent = skipped = empty = 0
+    deja_servis = {d["subscriber_id"] for d in sql_exec("select distinct subscriber_id from digests_log;")}
     for s in subs:
         if s.get("suivi_test"):
             # l'essai a sa propre règle « un envoi de chaque type par jour » (voir handle_test_subscriber)
@@ -210,6 +264,11 @@ def main():
         if str(s.get("dernier_digest") or "") == today:
             skipped += 1
             continue
+        if s["id"] not in deja_servis:
+            # premier passage d'un abonné payant (la bienvenue n'est pas partie juste après le paiement) : bienvenue, pas de quotidien
+            if handle_bienvenue_abonne(s, last_ed, today, args.dry_run) == "bienvenue":
+                sent += 1
+                continue
         verticales, regions, depts, villes, zone = plan_for_subscriber(s)
         # collecte multi-verticales / multi-zones
         all_leads = []

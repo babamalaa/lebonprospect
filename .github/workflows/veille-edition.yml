@@ -1,0 +1,28 @@
+name: veille-edition
+
+# Ingestion anticipée + contrôle « édition du jour en base avant 7h » (décision du 11 nov. 2026).
+# Déclenché à 6h40 heure de Paris par Supabase (lbp_veille_hiver / lbp_veille_ete + garde de fuseau dans lbp_dispatch).
+on:
+  workflow_dispatch: {}
+
+concurrency:
+  group: cron-daily
+  cancel-in-progress: false
+
+jobs:
+  veille:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Ingestion du jour et contrôle
+        env:
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_TOKEN: ${{ secrets.SUPABASE_TOKEN }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: |
+          cd pipeline
+          python3 veille_edition.py

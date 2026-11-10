@@ -42,6 +42,7 @@ def test_main_dry_run_saute_deja_servi(fixture, monkeypatch, capsys):
     def fake_sql(q):
         if "from subscribers" in q: return subs
         if "max(date_parution)" in q: return [{"d": "2026-09-23"}]
+        if "distinct subscriber_id from digests_log" in q: return [{"subscriber_id": x["id"]} for x in subs]   # tous déjà servis : pas de bienvenue
         calls.append(q); return []
     def fake_fetch(*a, **k):
         fetched.append((a, k))
@@ -259,3 +260,42 @@ def test_doublons_vrais_commerces_differents_gardes():
             _l(4, "107377186", "AVEC LES FLAMMES", "6 rue André Marie Ampère 51300 Vitry-le-François", "51300"),
             _l(5, "107377186", "AVEC LES FLAMMES", "17 bis rue Raoul Follereau 51520 Saint-Martin-sur-le-Pré", "51520")]
     assert len(sd.sans_doublons(do_it)) == 2 and len(sd.sans_doublons(rika)) == 3
+
+
+def test_bienvenue_abonne_payant_14_jours(monkeypatch, capsys):
+    """Abonné payant jamais servi : bienvenue avec les 14 jours de sa zone (règles de l'essai), pas de quotidien."""
+    sub = {"id": 42, "email": "nouveau@example.com", "nom": "Jean Martin", "statut": "actif", "suivi_test": False,
+           "verticales": ["chr"], "departements": ["Rhône"], "regions": None, "villes": None, "dernier_digest": None}
+    pris = []
+    def fake_sql(q):
+        if "from subscribers" in q: return [sub]
+        if "max(date_parution)" in q: return [{"d": "2026-11-10"}]
+        if "distinct subscriber_id from digests_log" in q: return []
+        if "mode() within group" in q: return [{"departement": "Rhône", "code": "69"}]
+        return []
+    def fake_range(v, depts, d1, d2, limit=60):
+        pris.append((v, tuple(depts), d1, d2))
+        return [{"id": 1, "acheteur_nom": "SAS TEST", "ville": "Lyon", "departement": "Rhône", "fonds_cp": "69003",
+                 "date_parution": "2026-11-05", "telephone": "04 00 00 00 00", "tel_validation": "ok"}]
+    monkeypatch.setattr(sd, "sql_exec", fake_sql)
+    monkeypatch.setattr(sd, "fetch_range", fake_range)
+    monkeypatch.setattr(sd, "fetch_leads", lambda *a, **k: (_ for _ in ()).throw(AssertionError("pas de quotidien le premier jour")))
+    monkeypatch.setattr(sd, "send_resend", lambda *a, **k: (_ for _ in ()).throw(AssertionError("envoi interdit en dry-run")))
+    monkeypatch.setattr("sys.argv", ["send_digests.py", "--dry-run"])
+    sd.main()
+    out = capsys.readouterr().out
+    assert "DRY[bienvenue]: nouveau@example.com" in out
+    assert "14 derniers jours" in out
+    assert pris == [("chr", ("Rhône",), "2026-10-27", "2026-11-10")]
+
+
+def test_bienvenue_contexte_abonne_sans_mot_essai():
+    from digest import build_email
+    leads = [{"id": 1, "acheteur_nom": "SAS TEST", "ville": "Lyon", "departement": "Rhône", "date_parution": "2026-11-05",
+              "bodacc_id": "A20260216934", "acheteur_date_creation": "2026-10-01"}]
+    sujet, h = build_email("bienvenue", leads, "Rhône", ["Rhône"], "2026-11-10", "2026-10-27", nom="Jean Martin", contexte="abonne", metier="restaurants, bars & hôtels")
+    assert "14 derniers jours" in sujet
+    assert "essai" not in h.lower()
+    assert "le jour de la publication" in h
+    assert "q.id=id:A20260216934" in h and "Voir l&#39;annonce officielle" in h
+    assert "Société de moins de 6 mois" in h

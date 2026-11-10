@@ -18,15 +18,15 @@ def test_lead_block_complet(fixture):
     h = digest.lead_block(leads[0])
     assert "04 00 00 00 00" in h
     assert 'href="tel:0400000000"' in h
-    assert "budgets ouverts" in h          # création à J-23
+    assert "Société de moins de 6 mois" in h          # création à J-23 (règle unique : 180 jours avant la parution)
     assert leads[0]["ville"] in h
     assert "Jean Test, Marie Test" in h
 
 def test_lead_block_sans_telephone(fixture):
     h = digest.lead_block(fixture("leads.json")[1])
     assert "bientôt disponible" in h
-    assert "en expansion" in h
-    assert "établi depuis 2021" in h
+    assert "Acquéreur établi" in h
+    assert "société créée en" in h and "2021)" in h
 
 def test_lead_block_dirigeants_postgres_et_nom_usage(fixture):
     h = digest.lead_block(fixture("leads.json")[2])

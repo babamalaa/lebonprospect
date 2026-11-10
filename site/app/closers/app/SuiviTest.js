@@ -117,7 +117,7 @@ export default function SuiviTest({ authedFetch }) {
         <div className="app-card"><div className="kpi-n">{tot.envois}</div><div className="kpi-l">emails envoyés</div></div>
         <div className="app-card"><div className="kpi-n">{tot.leads}</div><div className="kpi-l">reprises transmises (sans doublon)</div></div>
         <div className="app-card"><div className="kpi-n">{tot.leads ? Math.round((100 * tot.tel) / tot.leads) : 0} %</div><div className="kpi-l">avec téléphone</div></div>
-        <div className="app-card"><div className="kpi-n">{tot.neufs}</div><div className="kpi-l">repreneurs « budgets ouverts »</div></div>
+        <div className="app-card"><div className="kpi-n">{tot.neufs}</div><div className="kpi-l">sociétés de moins de 6 mois</div></div>
       </div>
 
       <div className="suivi-grid">
@@ -196,7 +196,7 @@ export default function SuiviTest({ authedFetch }) {
                       {(l.lead_snapshot || []).map((x, i) => (
                         <tr key={i} style={{ borderBottom: "1px solid #f0ebde" }}>
                           <td style={{ padding: "4px 6px" }}><b>{x.nom}</b></td><td>{x.ville} ({x.dept})</td><td>{fmtDate(x.date)}</td>
-                          <td>{x.tel ? "tél." : "pas de tél."}</td><td>{x.neuf ? "budgets ouverts" : ""}</td>
+                          <td>{x.tel ? "tél." : "pas de tél."}</td><td>{x.neuf ? "société de moins de 6 mois" : ""}</td>
                         </tr>
                       ))}
                     </tbody>

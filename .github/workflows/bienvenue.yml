@@ -1,0 +1,37 @@
+name: bienvenue
+
+# Édition de bienvenue d'un abonné payant (14 derniers jours de sa zone), déclenchée par le webhook Stripe
+# juste après le paiement (via lbp_dispatch dans Supabase). Idempotent : un abonné déjà servi n'est jamais relancé.
+on:
+  workflow_dispatch:
+    inputs:
+      abonne:
+        description: "id de l'abonné (table subscribers)"
+        required: true
+
+concurrency:
+  group: bienvenue-${{ inputs.abonne }}
+  cancel-in-progress: false
+
+jobs:
+  bienvenue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Numéros de la zone (plafonnés), puis bienvenue
+        env:
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_TOKEN: ${{ secrets.SUPABASE_TOKEN }}
+          GOOGLE_PLACES_KEY: ${{ secrets.GOOGLE_PLACES_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          ABONNE: ${{ inputs.abonne }}
+        run: |
+          cd pipeline
+          case "$ABONNE" in (*[!0-9]*|"") echo "id invalide"; exit 1;; esac
+          # recherche des numéros limitée aux zones des abonnés (dont ce nouvel abonné, 15 jours), plafond de 150 requêtes
+          python3 enrich_places.py --days 1 --max-requetes 150 || echo "::warning::recherche des numéros incomplète, bienvenue envoyée quand même"
+          python3 send_digests.py --bienvenue "$ABONNE"

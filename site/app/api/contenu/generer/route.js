@@ -57,11 +57,11 @@ function donnees(s) {
 - Commerces ayant changé de propriétaire en France sur 12 mois (tous types) : ${s.total_12m}
 - Soit par mois : ${s.par_mois} ; par jour ouvré : ${s.par_jour_ouvre}
 - Restaurants, bars et hôtels (CHR) repris : environ ${s.chr_par_mois} par mois (moyenne des 90 derniers jours : ${s.chr_90j} sur 90 jours, ${s.chr_30j} sur 30 jours). Ne jamais donner de chiffre CHR « sur 12 mois »
-- Part des repreneurs CHR ayant créé leur société il y a moins de 90 jours (« budgets ouverts ») : ${s.pct_neufs_chr_90j} %
+- Part des repreneurs CHR dont la société a été créée moins de 6 mois avant la reprise (badge « société de moins de 6 mois ») : ${s.pct_neufs_chr} %
 - Dernière édition du BODACC : ${s.jour_type_total} commerces repris, dont ${s.jour_type_chr} CHR
 - Top régions CHR sur 90 jours : ${r}
 - Top villes CHR sur 90 jours : ${v}
-- Le bulletin quotidien du BODACC fait environ 89 pages, tous secteurs mélangés, sans téléphone ni nom de dirigeant (fait établi, utilisable)
+- Le BODACC publie chaque jour de parution des milliers d'annonces (entre 5 986 et 25 717 les 4, 8 et 10 nov. 2026), dont quelques centaines de cessions de fonds, tous secteurs mélangés, sans téléphone ni nom de dirigeant. Ne jamais citer de nombre de pages.
 - Fenêtre d'achat d'un repreneur : les 90 jours qui suivent la reprise (fait établi, utilisable)
 - Délai entre la publication et l'email : le matin même de la publication, avant 8h (fait établi)
 - Dernières reprises CHR réelles avec téléphone (noms utilisables tels quels, numéros jamais) : ${d}`;
@@ -97,10 +97,10 @@ const RESPONSE_SCHEMA = {
 
 const SUJETS_AUTO = [
   "Un repreneur de restaurant qui ne reçoit aucun appel de fournisseur pendant ses trois premiers mois",
-  "Le bulletin du BODACC de 89 pages que personne ne lit, et ce qu'il contient vraiment",
+  "Le bulletin du BODACC que personne ne lit en entier, et ce qu'il contient vraiment",
   "La différence entre un fichier de tous les restaurants (le stock) et ceux qui ont changé de main hier (le signal)",
   "Ce que fait un nouveau patron de bar dans les 90 jours après la reprise, et à qui il dit oui",
-  "Le badge « budgets ouverts » : pourquoi un repreneur qui vient de créer sa société est le meilleur client possible",
+  "Le badge « société de moins de 6 mois » : pourquoi un repreneur qui vient de créer sa société est le meilleur client possible",
   "Un enseigniste qui travaille au bouche-à-oreille et découvre combien de commerces ont changé de main dans son rayon",
   "L'objection « c'est public, je peux le faire moi-même », prise au sérieux",
   "Une journée ordinaire au Journal officiel, racontée comme une scène",

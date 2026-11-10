@@ -1,3 +1,4 @@
+import { badgeAge } from "./badge";
 import { supabaseAdmin } from "./supabaseAdmin";
 
 // Pseudonymise les 4 derniers chiffres d'un téléphone : "06 22 72 17 75" -> "06 22 72 ██ ██"
@@ -8,14 +9,8 @@ function maskPhone(tel) {
   return tel.slice(0, Math.max(0, tel.length - 5)) + " ██ ██";
 }
 
-// Badge de fraîcheur : repreneur créé il y a moins de 90 jours = budgets ouverts, sinon en expansion
-function freshnessBadge(dateCreation, dateParution) {
-  if (!dateCreation) return null;
-  const c = new Date(dateCreation);
-  const p = new Date(dateParution);
-  const days = (p - c) / 86400000;
-  return days <= 90 ? "budgets ouverts" : "en expansion";
-}
+// Badge : règle unique de lib/badge.js (société créée moins de 180 jours avant la parution)
+const freshnessBadge = badgeAge;
 
 function shortRegion(r) {
   const map = {

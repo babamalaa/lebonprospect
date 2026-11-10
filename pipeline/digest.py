@@ -81,6 +81,21 @@ def fetch_range(verticale, depts, date_from=None, date_to=None, limit=60):
     if date_to: where.append(f"date_parution <= '{date_to}'")
     return sql_exec(f"select * from cessions where {' and '.join(where)} order by date_parution desc, (telephone is not null) desc, departement, ville limit {int(limit)};")
 
+# Badge unique (décision du 11 nov. 2026), identique sur le site, l'email et les teasers :
+# société repreneuse créée moins de 180 jours avant la publication de la reprise.
+SEUIL_NEUF_JOURS = 180
+BADGE_NEUF, BADGE_ETABLI = "Société de moins de 6 mois", "Acquéreur établi"
+
+def badge_age(date_creation, date_parution):
+    if not date_creation:
+        return ""
+    ref = datetime.date.fromisoformat(str(date_parution)[:10]) if date_parution else datetime.date.today()
+    return BADGE_NEUF if (ref - datetime.date.fromisoformat(str(date_creation)[:10])).days <= SEUIL_NEUF_JOURS else BADGE_ETABLI
+
+def url_annonce(bodacc_id):
+    """Adresse officielle de l'annonce (champ url_complete de l'API BODACC, même format pour toutes)."""
+    return f"https://www.bodacc.fr/pages/annonces-commerciales-detail/?q.id=id:{bodacc_id}" if bodacc_id else ""
+
 def lead_block(r):
     nom = html.escape(r.get("acheteur_nom") or r.get("commercant") or "Repreneur")
     ville = html.escape(r.get("fonds_ville") or r.get("ville") or "")
@@ -100,12 +115,7 @@ def lead_block(r):
     _cpf, _cps = _re2.findall(r"(\d{5})", r.get("fonds_adresse") or ""), _re2.findall(r"(\d{5})", siege)
     siege_ailleurs = html.escape(siege) if (r.get("fonds_adresse") and _cpf and _cps and _cpf[-1] != _cps[-1]) else ""
     tel = r.get("telephone")
-    creation = r.get("acheteur_date_creation")
-    fresh = ""
-    if creation:
-        age = (datetime.date.today() - datetime.date.fromisoformat(str(creation))).days
-        fresh = ("Société toute neuve : budgets ouverts" if age <= 180
-                 else f"Acquéreur établi depuis {str(creation)[:4]} : en expansion")
+    fresh = badge_age(r.get("acheteur_date_creation"), r.get("date_parution"))
     tel_html = (f'<a href="tel:{tel.replace(" ", "")}" style="color:{TEAL};font-weight:bold;text-decoration:none;">{tel}</a>'
                 if tel else f'<span style="color:{MUTED};">bientôt disponible</span>')
     rows = []
@@ -117,7 +127,12 @@ def lead_block(r):
         rows.append(f'<tr><td style="padding:1px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:{MUTED};">Siège du repreneur&nbsp;: {siege_ailleurs.title()}</td></tr>')
     rows.append(f'<tr><td style="padding:1px 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;"><strong style="color:{INK};">Téléphone&nbsp;:</strong> {tel_html}</td></tr>')
     if fresh:
-        rows.append(f'<tr><td style="padding:3px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:{RED};font-weight:bold;">{fresh}</td></tr>')
+        coul = RED if fresh == BADGE_NEUF else MUTED
+        _c = datetime.date.fromisoformat(str(r.get("acheteur_date_creation"))[:10])
+        detail = f" (société créée en {MONTHS_FR[_c.month]} {_c.year})" if fresh == BADGE_ETABLI else ""
+        rows.append(f'<tr><td style="padding:3px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:{coul};font-weight:bold;">{fresh}{detail}</td></tr>')
+    if url_annonce(r.get("bodacc_id")):
+        rows.append(f'<tr><td style="padding:5px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;"><a href="{url_annonce(r.get("bodacc_id"))}" style="color:{TEAL};text-decoration:underline;">Voir l&#39;annonce officielle</a></td></tr>')
     return f"""
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="border-bottom:1px dashed {LINE};background:#ffffff;">
 <tr><td style="padding:14px 18px;">
@@ -237,10 +252,10 @@ def _stats(leads):
     neufs = 0
     for r in leads:
         c = r.get("acheteur_date_creation")
-        if c and (datetime.date.fromisoformat(str(r["date_parution"])[:10]) - datetime.date.fromisoformat(str(c)[:10])).days <= 180: neufs += 1
+        if badge_age(c, r.get("date_parution")) == BADGE_NEUF: neufs += 1
     return tel, neufs
 
-def build_email(kind, leads, zone, depts, date_to, date_from=None, nom=None):
+def build_email(kind, leads, zone, depts, date_to, date_from=None, nom=None, contexte="essai", metier=None):
     """Retourne (sujet, html). kind : bienvenue | quotidien | filet | relache | hebdo. Ne touche pas à la base."""
     prenom = (nom or "").split(" ")[0] or ""
     hello = f"Bonjour {html.escape(prenom)}," if prenom else "Bonjour,"
@@ -248,9 +263,21 @@ def build_email(kind, leads, zone, depts, date_to, date_from=None, nom=None):
     zone_h = html.escape(zone)
     sign = "<br><br>Baptiste et Lawrenza<br><span style=\"color:#6f6a5c;\">LeBonProspect</span>"
     outro_q = "Une question, un retour, un métier à ajouter ou à retirer ? Répondez simplement à cet email, on vous répond dans la journée."
+    if kind == "bienvenue" and contexte == "abonne":
+        # Abonné payant (décision du 11 nov. 2026) : envoyée dans les minutes qui suivent le paiement.
+        met = html.escape(metier or "vos métiers")
+        subject = f"Bienvenue : {n} reprise{plural} dans votre zone ces 14 derniers jours"
+        intro = (f"{hello}<br><br>Votre abonnement est actif. Pour démarrer, voici les reprises de <b>{met}</b> publiées au Journal officiel "
+                 f"ces 14 derniers jours dans votre zone (<b>{zone_h}</b>), du {_jours(date_from)} au {_jours(date_to)}.<br><br>"
+                 f"Ensuite, chaque matin, le jour de la publication, vous recevez ici les nouvelles reprises avant 8h : le repreneur, sa société, "
+                 f"l'adresse du commerce et le téléphone quand on l'a vérifié.")
+        return subject, render_digest("commerces", leads, date=str(date_to), zone_label=zone,
+            headline=f"{n} reprise{plural} chez vous ces 14 derniers jours",
+            subline=f"{zone_h} · du {_jours(date_from)} au {_jours(date_to)} · publiées au Journal officiel",
+            intro_html=intro, outro_html=outro_q + sign)
     if kind == "bienvenue":
         subject = f"Bienvenue : {n} commerce{plural} repris dans vos départements ces 14 derniers jours"
-        intro = (f"{hello}<br><br>Voici comment va se passer votre essai de trois mois. Chaque matin, vous recevez ici les commerces repris la veille dans vos départements "
+        intro = (f"{hello}<br><br>Voici comment va se passer votre essai de trois mois. Chaque matin, le jour de leur publication au Journal officiel, vous recevez ici les commerces repris dans vos départements "
                  f"(<b>{zone_h}</b>), tous métiers confondus, avec le repreneur, l'adresse et le téléphone quand il est disponible. "
                  f"Les jours où rien n'est publié chez vous, vous recevez un court message avec les plus récentes plutôt qu'un silence. Chaque lundi, un récapitulatif de la semaine.<br><br>"
                  f"Pour démarrer, voici ce qui s'est passé chez vous du {_jours(date_from)} au {_jours(date_to)}.")
