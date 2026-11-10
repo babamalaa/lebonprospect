@@ -26,7 +26,6 @@ export async function GET(req) {
   if (!nom) return Response.json({ error: "département inconnu" }, { status: 400 });
   const admin = supabaseAdmin();
   const depuis = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
-  // Toutes activités (retour demandé le 11 nov. 2026 au soir, comme la version en ligne), annulations exclues
   const base = () => admin.from("cessions").select("id", { count: "exact", head: true })
     .eq("departement", nom).neq("type_avis", "Avis d’annulation");
 
