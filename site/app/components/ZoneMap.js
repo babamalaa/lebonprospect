@@ -2,13 +2,15 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TARIFS, stripeDepartement } from "../lib/tarifs";
+import { fr, nombre } from "../lib/typo";
+import Icon from "./Icon";
 import NOMS from "../lib/geo/depNames.json";
 
-// Carte de zone (#zone). La carte est décorative : l'accès réel se fait par les pastilles et le code postal.
-// Les contours (118 Ko) sont chargés en différé, quand la section approche de l'écran.
+// Carte de zone (#zone). La carte est décorative : l'accès réel se fait par le code postal et les zones populaires.
+// Les contours (118 Ko) sont chargés en différé, quand la section approche de l'écran. Logique et données inchangées.
 const FEAT = ["69", "75", "13", "33", "44", "59", "67", "31"];
+const ETIQ_MOBILE = new Set(["75", "69", "59"]);   // sur mobile, 3 étiquettes seulement (pas de chevauchement)
 const nomCourt = (id) => (id === "75" ? "Paris" : NOMS[id] || id);
-const fmt = (n) => Number(n || 0).toLocaleString("fr-FR").replace(/\u202f/g, "\u00a0");
 
 function codeDepuisCp(cp) {
   const c = String(cp || "").replace(/\D/g, "");
@@ -70,132 +72,125 @@ export default function ZoneMap({ parMois }) {
   const transform = `translate(${((tx / 680) * 100).toFixed(3)}%, ${((ty / 660) * 100).toFixed(3)}%) scale(${S.toFixed(3)})`;
   const isZone = !!zoneId;
   const nomZone = zoneId ? nomCourt(zoneId) : "";
+  const pret = zone?.code === zoneId;
 
   return (
-    <section id="zone" ref={ref} className="h-sec h-zone">
-      <div className="h-wrap">
-        <p className="h-eyebrow">Votre zone</p>
-        <h2 className="h-h2">Choisissez votre zone. Voyez ce qui s&apos;y passe.</h2>
-        <p className="h-lead">Chaque point est une reprise publiée au Journal officiel. Le nom du repreneur et son numéro se débloquent à l&apos;abonnement.</p>
+    <section id="zone" ref={ref} className="hp-sec">
+      <div className="hp-wrap">
+        <div className="hp-head">
+          <p className="hp-eyebrow">Votre zone</p>
+          <h2 className="hp-h2">{fr("Choisissez votre zone, voyez ce qui s'y passe")}</h2>
+          <p className="hp-lead">{fr("Chaque point est une reprise publiée au Journal officiel. Le nom du repreneur et son numéro sont réservés aux abonnés.")}</p>
+        </div>
 
-        <div className="zm">
-          <div className="zm-map-col">
-            <div className="zm-top">
-              <span className="zm-crumb"><span className="h-dot" aria-hidden="true" />{isZone ? `Zone · ${nomZone}` : "Toute la France"}</span>
-              <div className="zm-legend">
-                <span><i className="zm-l zm-l-hot" aria-hidden="true" />Dernière édition</span>
-                <span><i className="zm-l" aria-hidden="true" />30 derniers jours</span>
+        <div className="hp-zm">
+          <div className="hp-zm-map-col">
+            <div className="hp-zm-top">
+              <span className="hp-zm-crumb">{isZone ? `Zone · ${nomZone}` : "Toute la France"}</span>
+              <div className="hp-zm-legend">
+                <span><i className="hot" aria-hidden="true" />Dernière édition</span>
+                <span><i aria-hidden="true" />30 derniers jours</span>
               </div>
             </div>
 
-            <div className="zm-map" aria-hidden="true">
-              <div className="zm-layer" style={{ transform }}>
+            <div className="hp-zm-map" aria-hidden="true">
+              <div className="hp-zm-layer" style={{ transform }}>
                 {(deps || []).map((d) => (
-                  <svg key={d.id} viewBox="0 0 680 660" className="zm-svg">
-                    <path className="zm-dep" d={d.d} onClick={() => choisir(d.id)}
+                  <svg key={d.id} viewBox="0 0 680 660" className="hp-zm-svg">
+                    <path className="hp-zm-dep" d={d.d} onClick={() => choisir(d.id)}
                       fill={d.id === zoneId ? "rgba(49,119,122,0.22)" : isZone ? "#0F1424" : "#121829"}
                       strokeWidth={(0.7 / S).toFixed(3)} />
                   </svg>
                 ))}
                 {sel && (
-                  <svg viewBox="0 0 680 660" className="zm-svg zm-sel">
-                    <path d={sel.d} fill="rgba(49,119,122,0.25)" stroke="#31777A" strokeWidth={(1.8 / S).toFixed(3)}
+                  <svg viewBox="0 0 680 660" className="hp-zm-svg hp-zm-sel">
+                    <path d={sel.d} fill="rgba(49,119,122,0.25)" stroke="#31777A" strokeWidth={(1.6 / S).toFixed(3)}
                       strokeDasharray={`${(6 / S).toFixed(2)} ${(5 / S).toFixed(2)}`} strokeLinejoin="round" />
                   </svg>
                 )}
-                {isZone && zone?.code === zoneId && [...zone.pins].sort((a, b) => Number(a.hier) - Number(b.hier)).map((p, i) => {
-                  const d = Math.min(10 + 3 * Math.sqrt((p.n || 1) - 1), 22) / S;   // 10 px, un peu plus gros si plusieurs reprises
-                  return (
-                    <span key={i} className={`zm-pin${p.hier ? " hot" : ""}`}
-                      style={{ left: `${((p.x / 680) * 100).toFixed(3)}%`, top: `${((p.y / 660) * 100).toFixed(3)}%`,
-                        width: `${d.toFixed(2)}px`, height: `${d.toFixed(2)}px`,
-                        boxShadow: p.hier ? `0 0 0 ${(5 / S).toFixed(2)}px rgba(49,119,122,0.40)` : `0 0 0 ${(1.5 / S).toFixed(2)}px #0C1120` }} />
-                  );
-                })}
               </div>
+              <div className="hp-zm-geo">
+              {/* Points hors de la couche zoomée : position calculée, taille fixe de 8 px (nets à tout zoom) */}
+              {isZone && pret && [...zone.pins].sort((a, b) => Number(a.hier) - Number(b.hier)).map((p, i) => (
+                <span key={i} className={`hp-zm-pin${p.hier ? " hot" : ""}`}
+                  style={{ left: `${(((p.x * S + tx) / 680) * 100).toFixed(3)}%`, top: `${(((p.y * S + ty) / 660) * 100).toFixed(3)}%` }} />
+              ))}
               {!isZone && deps && FEAT.filter((id) => byId[id]).map((id) => {
                 const b = byId[id].b; const x = (b[0] + b[2]) / 2, y = (b[1] + b[3]) / 2;
                 return (
-                  <button key={id} type="button" tabIndex={-1} className="zm-spot" onClick={() => choisir(id)}
+                  <button key={id} type="button" tabIndex={-1} className={`hp-zm-spot${ETIQ_MOBILE.has(id) ? "" : " d"}`} onClick={() => choisir(id)}
                     style={{ left: `${((x / 680) * 100).toFixed(2)}%`, top: `${((y / 660) * 100).toFixed(2)}%`, flexDirection: x > 520 ? "row-reverse" : "row" }}>
-                    <span className="zm-spot-dot" /><span className="zm-spot-name">{nomCourt(id)}</span>
+                    <i /><span>{nomCourt(id)}</span>
                   </button>
                 );
               })}
-              {!deps && <div className="zm-loading">Chargement de la carte…</div>}
+              </div>
+              {!deps && <div className="hp-zm-loading">Chargement de la carte…</div>}
             </div>
-
-            <div className="zm-chips">
-              <span className="zm-chips-l">Zones populaires</span>
-              {FEAT.map((id) => (
-                <button key={id} type="button" className={`zm-chip${id === zoneId ? " on" : ""}`} onClick={() => choisir(id)}>{nomCourt(id)}</button>
-              ))}
-            </div>
-            <div className="zm-credit">Contours : svg-maps, Victor Cazanave (CC BY 4.0)</div>
+            <p className="hp-zm-credit">Contours{"\u00a0"}: svg-maps, Victor Cazanave (CC BY 4.0)</p>
           </div>
 
-          <div className="zm-panel">
+          <div className="hp-zm-panel">
             {!isZone ? (
-              <div className="zm-stack">
+              <>
                 <div>
-                  <h3 className="zm-h3">Cliquez sur votre département</h3>
-                  <p className="zm-p">La carte zoome et affiche les reprises publiées chez vous. Sur mobile, saisissez simplement votre code postal.</p>
+                  <h3 className="hp-zm-h3">Cliquez sur votre département</h3>
+                  <p className="hp-zm-p">La carte zoome et affiche les reprises publiées chez vous. Sur mobile, saisissez simplement votre code postal.</p>
                 </div>
-                <form className="zm-cp" onSubmit={goCp}>
+                <form className="hp-zm-cp" onSubmit={goCp}>
                   <label htmlFor="zm-cp">Code postal</label>
-                  <div className="zm-cp-row">
+                  <div className="hp-zm-cp-row">
                     <input id="zm-cp" type="text" inputMode="numeric" autoComplete="postal-code" placeholder="69003" value={cp}
                       onChange={(e) => { setCp(e.target.value.replace(/\D/g, "").slice(0, 5)); setCpErr(false); }}
                       aria-invalid={cpErr} aria-describedby={cpErr ? "zm-cp-err" : undefined} />
-                    <button type="submit" className="h-btn">Voir mes reprises</button>
+                    <button type="submit" className="hp-btn">Voir mes reprises</button>
                   </div>
-                  {cpErr && <div id="zm-cp-err" className="zm-err" role="alert">Code postal non reconnu en France métropolitaine.</div>}
+                  {cpErr && <p id="zm-cp-err" className="hp-zm-err" role="alert">Code postal non reconnu en France métropolitaine.</p>}
                 </form>
-                <div className="zm-total"><span>{fmt(parMois)}</span>cessions publiées chaque mois en France</div>
-              </div>
+                <div className="hp-zm-pop">
+                  <p>Zones populaires</p>
+                  <div>
+                    {FEAT.map((id) => (
+                      <button key={id} type="button" className="hp-zm-chip" onClick={() => choisir(id)}>{nomCourt(id)}</button>
+                    ))}
+                  </div>
+                </div>
+                <div className="hp-zm-total"><b>{nombre(parMois)}</b><span>cessions publiées chaque mois en France</span></div>
+              </>
             ) : (
-              <div className="zm-stack">
-                <button type="button" className="zm-back" onClick={() => setZoneId(null)}>
-                  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  France entière
+              <>
+                <button type="button" className="hp-zm-back" onClick={() => setZoneId(null)}>
+                  <Icon name="chevron-left" /> France entière
                 </button>
                 <div>
-                  <div className="zm-code">Département {zoneId}</div>
-                  <h3 className="zm-name">{nomZone}</h3>
+                  <p className="hp-zm-code">Département {zoneId}</p>
+                  <h3 className="hp-zm-name">{nomZone}</h3>
                 </div>
-                <div className="zm-counters" aria-live="polite">
-                  <div><b className="soft">{zone?.code === zoneId ? fmt(zone.n30) : "…"}</b><span>reprises publiées ces 30 derniers jours</span></div>
-                  <div><b>{zone?.code === zoneId ? fmt(zone.nDernier) : "…"}</b><span>dans la dernière édition du Journal officiel</span></div>
+                <div className="hp-zm-counters" aria-live="polite">
+                  <div><b>{pret ? nombre(zone.n30) : "…"}</b><span>reprises publiées ces 30 derniers jours</span></div>
+                  <div><b>{pret ? nombre(zone.nDernier) : "…"}</b><span>dans la dernière édition du Journal officiel</span></div>
                 </div>
-                <div className="zm-list">
-                  <div className="zm-list-l">Dernières reprises publiées</div>
-                  {(zone?.code === zoneId ? zone.liste : [null, null, null, null]).map((r, i) => (
-                    <div className="zm-row" key={i}>
-                      {r ? (
-                        <div><b>{r.nom}</b><span>{r.commune} · publiée le {new Date(r.date + "T12:00:00").toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" })}</span></div>
-                      ) : (
-                        <div className="zm-ph"><i style={{ width: "58%" }} /><i style={{ width: "34%" }} /></div>
-                      )}
-                      <div className="zm-lock">
-                        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 11V8a5 5 0 0 1 10 0v3 M5 11h14v10H5z" /></svg>
-                        <i aria-hidden="true" /><i aria-hidden="true" className="s" />
-                        <span>repreneur et téléphone à débloquer</span>
-                      </div>
-                    </div>
-                  ))}
-                  {zone?.code === zoneId && zone.liste.length === 0 && !chargement && (
-                    <p className="zm-p">Aucune reprise publiée ces 30 derniers jours dans ce département.</p>
-                  )}
+                <div className="hp-zm-list">
+                  <p>Dernières reprises publiées</p>
+                  <ul>
+                    {(pret ? zone.liste : [null, null, null, null]).map((r, i) => (
+                      <li key={i}>
+                        {r ? (
+                          <div><b>{fr(r.nom)}</b><span>{fr(r.commune)} · publiée le {new Date(r.date + "T12:00:00").toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" })}</span></div>
+                        ) : (
+                          <div className="hp-zm-ph"><i style={{ width: "58%" }} /><i style={{ width: "34%" }} /></div>
+                        )}
+                        <span className="hp-zm-lock"><Icon name="lock" size={14} />repreneur et téléphone réservés aux abonnés</span>
+                      </li>
+                    ))}
+                  </ul>
+                  {pret && zone.liste.length === 0 && !chargement && <p className="hp-zm-p">Aucune reprise publiée ces 30 derniers jours dans ce département.</p>}
                 </div>
-                <div className="zm-ctas">
-                  <a className="h-btn h-btn-lg" href={stripeDepartement(zoneId)}>
-                    Débloquer {nomZone} · {TARIFS.departement.prix} €/mois
-                    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18"><path d="M3 9h11M10 4.5L14.5 9 10 13.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  </a>
-                  <a className="h-btn-ghost" href="#exemple">Voir un exemple d&apos;email</a>
-                  <div className="zm-note">Sans engagement · Résiliable en 1 clic · Données 100 % officielles</div>
+                <div className="hp-zm-ctas">
+                  <a className="hp-btn" href={stripeDepartement(zoneId)}>S{"\u2019"}abonner pour {nomZone} · {TARIFS.departement.prix}{"\u00a0"}€/mois <Icon name="arrow-right" /></a>
+                  <a className="hp-link on-navy" href="#exemple">{fr("Voir un exemple d'email")} <Icon name="arrow-right" /></a>
                 </div>
-              </div>
+              </>
             )}
           </div>
         </div>
