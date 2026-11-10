@@ -1,3 +1,4 @@
+import { badgeAge } from "./badge";
 import { supabaseAdmin } from "./supabaseAdmin";
 
 // ---------- Référentiels ----------
@@ -111,8 +112,7 @@ export async function getReprisesStats(verticale, region = null) {
   const dernieres = (rows || []).map((r) => {
     let badge = null;
     if (r.acheteur_date_creation) {
-      const days = (new Date(r.date_parution) - new Date(r.acheteur_date_creation)) / 86400000;
-      badge = days <= 90 ? "budgets ouverts" : "en expansion";
+      badge = badgeAge(r.acheteur_date_creation, r.date_parution);
     }
     return {
       id: r.id, date: r.date_parution, acheteur: r.acheteur_nom, etablissement: r.place_name,

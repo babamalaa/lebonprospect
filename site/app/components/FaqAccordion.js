@@ -9,7 +9,7 @@ const FAQ = [
   },
   {
     q: "Pourquoi payer, si le BODACC est public ?",
-    a: "Parce que le BODACC est public, mais pas exploitable. Il donne une raison sociale et une adresse, perdues dans des dizaines de pages de jargon, sans tri par métier, sans téléphone, sans nom de dirigeant. Ce que vous achetez, ce n'est pas l'accès à l'information : c'est la fiche prête à appeler, le lendemain de la publication, avant votre concurrent. Un repreneur choisit ses fournisseurs dans les 90 jours. Arriver à J+1 plutôt qu'à J+30, c'est toute la différence entre signer et arriver après. Et le calcul est simple : un seul client signé dans l'année rembourse l'abonnement.",
+    a: "Parce que le BODACC est public, mais pas exploitable. Il donne une raison sociale et une adresse, perdues dans des dizaines de pages de jargon, sans tri par métier, sans téléphone, sans nom de dirigeant. Ce que vous achetez, ce n'est pas l'accès à l'information : c'est la fiche prête à appeler, le jour de la publication, avant votre concurrent. Un repreneur choisit ses fournisseurs dans les 90 jours. Appeler le jour de la publication plutôt que des semaines après, c'est toute la différence entre signer et arriver après. Et le calcul est simple : un seul client signé dans l'année rembourse l'abonnement.",
   },
   {
     q: "C'est légal de démarcher ces repreneurs ?",
@@ -17,11 +17,11 @@ const FAQ = [
   },
   {
     q: "Combien de reprises vais-je recevoir chaque jour ?",
-    a: "Ça dépend de votre zone et de votre métier. À l'échelle nationale, environ 3 900 commerces changent de mains chaque mois. Sur un département dense comme Paris ou le Rhône, comptez plusieurs reprises par jour dans le secteur CHR ; sur un département rural, quelques-unes par semaine. La fiche de votre zone vous donne le chiffre réel avant de vous abonner.",
+    a: "Ça dépend de votre zone et de votre métier. Pour les restaurants, bars et hôtels, environ 930 reprises sont publiées chaque mois en France. Sur un département dense comme Paris ou le Rhône, comptez plusieurs reprises par jour dans le secteur CHR ; sur un département rural, quelques-unes par semaine. La fiche de votre zone vous donne le chiffre réel avant de vous abonner.",
   },
   {
     q: "Je peux changer de zone ou de métier en cours de route ?",
-    a: "Oui, à tout moment, sur simple demande par email. Le changement est effectif dès l'édition du lendemain matin.",
+    a: "Oui, à tout moment, sur simple demande par email. Le changement est effectif dès l'édition suivante.",
   },
   {
     q: "Sans engagement, ça veut dire quoi concrètement ?",

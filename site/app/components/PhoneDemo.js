@@ -9,9 +9,9 @@ import { useEffect, useRef, useState } from "react";
    Phase finale: pause, puis boucle. */
 
 const LEADS = [
-  { nom: "Les Glougloutons", ville: "Lyon · Rhône", rep: "Shelly Bernicot", tel: "04 72 13 96 26", badge: "budgets ouverts" },
-  { nom: "MexiKebab", ville: "Ambérieu-en-Bugey · Ain", rep: "Serkan & Yasin Tuna", tel: "04 74 61 49 70", badge: "en expansion" },
-  { nom: "Bee's Café", ville: "Mirabel-et-Blacons · Drôme", rep: "Didier & Nolan Millier", tel: "04 75 40 05 99", badge: "budgets ouverts" },
+  { nom: "Les Glougloutons", ville: "Lyon · Rhône", rep: "Shelly Bernicot", tel: "04 72 13 96 26", badge: "société de moins de 6 mois" },
+  { nom: "MexiKebab", ville: "Ambérieu-en-Bugey · Ain", rep: "Serkan & Yasin Tuna", tel: "04 74 61 49 70", badge: "acquéreur établi" },
+  { nom: "Bee's Café", ville: "Mirabel-et-Blacons · Drôme", rep: "Didier & Nolan Millier", tel: "04 75 40 05 99", badge: "société de moins de 6 mois" },
 ];
 
 const PHASES = LEADS.length + 3; // lock → open → leads... → hold
@@ -89,7 +89,7 @@ export default function PhoneDemo() {
                   <div key={l.nom} className={`mlead${i < visibleLeads ? " show" : ""}`}>
                     <div className="mlead-top">
                       <span className="mlead-nom">{l.nom}</span>
-                      <span className={`mlead-badge${l.badge === "en expansion" ? " exp" : ""}`}>{l.badge}</span>
+                      <span className={`mlead-badge${l.badge === "acquéreur établi" ? " exp" : ""}`}>{l.badge}</span>
                     </div>
                     <div className="mlead-ville">{l.ville}</div>
                     <div className="mlead-row">Repreneur : <b>{l.rep}</b></div>

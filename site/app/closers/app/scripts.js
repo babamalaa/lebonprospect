@@ -203,7 +203,7 @@ S'il est plein toute l'année : on ne vend pas, on bascule sur Le non qui rappor
       {
         title: "« C'est public, je peux le faire moi-même »",
         style: "",
-        text: `« Vous avez raison, c'est public. Le bulletin d'hier fait 89 pages, tous secteurs et toute la France mélangés, sans téléphone ni nom de dirigeant. La question, ce n'est pas l'accès, c'est qui les lit tous les matins à votre place. »`,
+        text: `« Vous avez raison, c'est public. Le bulletin publie des milliers d'annonces par jour, tous secteurs et toute la France mélangés, sans téléphone ni nom de dirigeant. La question, ce n'est pas l'accès, c'est qui les lit tous les matins à votre place. »`,
       },
       {
         title: "« 149 € par mois, c'est cher »",

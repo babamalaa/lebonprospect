@@ -85,7 +85,7 @@ Comme convenu, voici de quoi voir concrètement ce que vous recevriez chaque mat
 1. Votre page, avec les chiffres réels de votre zone et les dernières reprises publiées : [lien de la page]
 2. La plaquette, avec un exemple de l'email tel qu'il arrive avant 8h dans la boîte mail : [lien de la plaquette]
 
-Pour résumer ce qu'on s'est dit : un repreneur choisit ses fournisseurs dans les 90 jours qui suivent la reprise. Avec LeBonProspect, vous l'appelez le lendemain de la publication, avant vos concurrents. Un seul client signé dans l'année rembourse l'abonnement.
+Pour résumer ce qu'on s'est dit : un repreneur choisit ses fournisseurs dans les 90 jours qui suivent la reprise. Avec LeBonProspect, vous l'appelez le jour de la publication, avant vos concurrents. Un seul client signé dans l'année rembourse l'abonnement.
 
 C'est sans engagement, résiliable en un clic. Vous pouvez tester un mois, appeler quelques repreneurs et juger sur pièce.
 
@@ -908,7 +908,7 @@ function AppPageInner() {
                   <div className="app-doc-plaquette-txt">
                     <b>Liens de paiement « Essai gratuit 7 jours »</b>
                     <p style={{ margin: "6px 0 0", fontSize: 13, color: "#55524a" }}>
-                      Réservés à votre compte. Le client renseigne sa carte et sa zone, n&apos;est pas débité pendant 7 jours, puis passe au tarif normal. S&apos;il résilie avant, aucun débit. Il reçoit son premier digest dès le lendemain 8h.
+                      Réservés à votre compte. Le client renseigne sa carte et sa zone, n&apos;est pas débité pendant 7 jours, puis passe au tarif normal. S&apos;il résilie avant, aucun débit. Il reçoit tout de suite un email de confirmation, puis une première édition avec les 14 derniers jours de sa zone.
                     </p>
                     <div className="essai-links">
                       <button type="button" className="page-gen-btn" onClick={() => copyToClipboard(`https://buy.stripe.com/8x26oHffzaSEc9faPL8N203?client_reference_id=cl_${profile?.id}`, "Lien essai Départemental")}>Copier · Départemental 149 €</button>

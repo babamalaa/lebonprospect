@@ -18,7 +18,7 @@ function codeDepuisCp(cp) {
   return NOMS[id] ? id : null;
 }
 
-export default function ZoneMap({ parMois }) {
+export default function ZoneMap({ chrParMois }) {
   const [deps, setDeps] = useState(null);
   const [zoneId, setZoneId] = useState(null);
   const [cp, setCp] = useState("");
@@ -151,7 +151,7 @@ export default function ZoneMap({ parMois }) {
                   </div>
                   {cpErr && <div id="zm-cp-err" className="zm-err" role="alert">Code postal non reconnu en France métropolitaine.</div>}
                 </form>
-                <div className="zm-total"><span>{fmt(parMois)}</span>cessions publiées chaque mois en France</div>
+                <div className="zm-total"><span>{fmt(chrParMois)}</span>reprises de restaurants, bars et hôtels publiées chaque mois en France</div>
               </div>
             ) : (
               <div className="zm-stack">
@@ -164,7 +164,7 @@ export default function ZoneMap({ parMois }) {
                   <h3 className="zm-name">{nomZone}</h3>
                 </div>
                 <div className="zm-counters" aria-live="polite">
-                  <div><b className="soft">{zone?.code === zoneId ? fmt(zone.n30) : "…"}</b><span>reprises publiées ces 30 derniers jours</span></div>
+                  <div><b className="soft">{zone?.code === zoneId ? fmt(zone.n30) : "…"}</b><span>reprises de restaurants, bars et hôtels ces 30 derniers jours</span></div>
                   <div><b>{zone?.code === zoneId ? fmt(zone.nDernier) : "…"}</b><span>dans la dernière édition du Journal officiel</span></div>
                 </div>
                 <div className="zm-list">
