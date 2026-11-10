@@ -17,7 +17,7 @@ const FAQ = [
   },
   {
     q: "Combien de reprises vais-je recevoir chaque jour ?",
-    a: "Ça dépend de votre zone et de votre métier. Pour les restaurants, bars et hôtels, environ 930 reprises sont publiées chaque mois en France. Sur un département dense comme Paris ou le Rhône, comptez plusieurs reprises par jour dans le secteur CHR ; sur un département rural, quelques-unes par semaine. La fiche de votre zone vous donne le chiffre réel avant de vous abonner.",
+    a: "Ça dépend de votre zone et de votre métier. Toutes activités confondues, environ 3 800 fonds de commerce changent de mains chaque mois en France, dont environ 930 restaurants, bars et hôtels. Sur un département dense comme Paris ou le Rhône, comptez plusieurs reprises par jour dans le secteur CHR ; sur un département rural, quelques-unes par semaine. La fiche de votre zone vous donne le chiffre réel avant de vous abonner.",
   },
   {
     q: "Je peux changer de zone ou de métier en cours de route ?",

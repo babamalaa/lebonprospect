@@ -25,7 +25,8 @@ export async function getChiffresChr() {
   return { chrParMois: Math.round((count || 0) / 4), mois: 4 };
 }
 
-// Ancienne mesure (toutes activités confondues) : n'est plus affichée sur le site.
+// Chiffre national affiché (retour du 11 nov. 2026 au soir) : TOUTES ACTIVITÉS, avis initiaux seulement (hors rectificatifs et
+// annulations), moyenne des 12 derniers mois complets. Au 10 nov. 2026 : 45 852 / 12 = 3 821 par mois.
 export async function getChiffres() {
   const admin = supabaseAdmin();
   const now = new Date();
@@ -34,7 +35,7 @@ export async function getChiffres() {
   const iso = (d) => d.toISOString().slice(0, 10);
   const [{ count: n12 }, { data: last }] = await Promise.all([
     admin.from("cessions").select("id", { count: "exact", head: true })
-      .gte("date_parution", iso(debut)).lt("date_parution", iso(fin)).neq("type_avis", "Avis d’annulation"),
+      .gte("date_parution", iso(debut)).lt("date_parution", iso(fin)).eq("type_avis", "Avis initial"),
     admin.from("cessions").select("date_parution").order("date_parution", { ascending: false }).limit(1),
   ]);
   const derniere = last?.[0]?.date_parution || null;
@@ -80,7 +81,7 @@ export async function getFlux() {
       .select("id, bodacc_id, date_parution, acheteur_nom, naf_fonds, fonds_activite, verticale, fonds_ville, ville, departement, cp, fonds_cp, acheteur_date_creation, telephone, tel_validation")
       .eq("verticale", "chr").eq("date_parution", date).not("acheteur_nom", "is", null)
       .neq("type_avis", "Avis d’annulation").order("id", { ascending: false }).limit(12),
-    admin.from("cessions").select("id", { count: "exact", head: true }).eq("date_parution", date).eq("verticale", "chr").eq("type_avis", "Avis initial"),
+    admin.from("cessions").select("id", { count: "exact", head: true }).eq("date_parution", date).eq("type_avis", "Avis initial"),
   ]);
   const verifie = (r) => r.telephone && r.tel_validation && !String(r.tel_validation).startsWith("rejete");
   const tri = (rows || []).sort((a, b) => Number(!!verifie(b)) - Number(!!verifie(a)));

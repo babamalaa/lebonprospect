@@ -26,12 +26,12 @@ export async function GET(req) {
   if (!nom) return Response.json({ error: "département inconnu" }, { status: 400 });
   const admin = supabaseAdmin();
   const depuis = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
-  // Même filtre que l'email CHR (fetch_leads("chr") dans pipeline/digest.py) : verticale chr, annulations exclues (décision du 11 nov. 2026)
+  // Toutes activités (retour demandé le 11 nov. 2026 au soir, comme la version en ligne), annulations exclues
   const base = () => admin.from("cessions").select("id", { count: "exact", head: true })
-    .eq("departement", nom).eq("verticale", "chr").neq("type_avis", "Avis d’annulation");
+    .eq("departement", nom).neq("type_avis", "Avis d’annulation");
 
   const [{ data: last }, { count: n30 }] = await Promise.all([
-    admin.from("cessions").select("date_parution").eq("verticale", "chr").order("date_parution", { ascending: false }).limit(1),
+    admin.from("cessions").select("date_parution").order("date_parution", { ascending: false }).limit(1),
     base().gte("date_parution", depuis),
   ]);
   const derniere = last?.[0]?.date_parution || null;
@@ -39,7 +39,7 @@ export async function GET(req) {
 
   const { data: rows } = await admin.from("cessions")
     .select("id, date_parution, acheteur_nom, naf_fonds, fonds_activite, verticale, fonds_cp, cp, fonds_ville, ville, type_avis")
-    .eq("departement", nom).eq("verticale", "chr").gte("date_parution", depuis).neq("type_avis", "Avis d’annulation")
+    .eq("departement", nom).gte("date_parution", depuis).neq("type_avis", "Avis d’annulation")
     .order("date_parution", { ascending: false }).order("id", { ascending: false }).limit(200);
 
   // Un point par commune (centre du code postal) : plusieurs reprises au même endroit forment un seul point,

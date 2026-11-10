@@ -1,7 +1,7 @@
 import Reveal from "./components/Reveal";
 import ZoneMap from "./components/ZoneMap";
 import Calculateur from "./components/Calculateur";
-import { getChiffresChr, getFlux, EXEMPLE, dateCourte, dateLongue, dateNum } from "./lib/homeData";
+import { getChiffres, getChiffresChr, getFlux, EXEMPLE, dateCourte, dateLongue, dateNum } from "./lib/homeData";
 import { TARIFS } from "./lib/tarifs";
 
 export const revalidate = 3600; // chiffres et flux rafraîchis toutes les heures
@@ -66,16 +66,16 @@ const FEAT = {
   region: ["1 région complète", "Toutes les verticales de votre métier", "Export CSV pour votre CRM", "Support prioritaire"],
   national: ["France entière ou multi-régions", "Chaque commercial reçoit les reprises de son secteur", "Export CSV & intégration CRM", "Interlocuteur dédié"],
 };
-const faq = (parMois) => [
+const faq = (parMois, chrParMois) => [
   { q: "D'où viennent les données ?", a: "Du BODACC, le Bulletin officiel des annonces civiles et commerciales. Chaque cession de fonds de commerce y est publiée par obligation légale. Nous ne faisons que la détecter, la trier par métier et par zone, et l'enrichir avec l'identité du repreneur et, quand on le trouve et qu'on le vérifie, le téléphone de l'établissement. Chaque ligne reste vérifiable publiquement, gratuitement, pour toujours." },
   { q: "Pourquoi payer, si le BODACC est public ?", a: "Parce que le BODACC est public, mais pas exploitable. Ce que vous achetez, ce n'est pas l'accès à l'information : c'est la fiche prête à appeler, le matin même de la publication, avant votre concurrent. Un repreneur choisit ses fournisseurs dans les 90 jours. Appeler le jour de la publication plutôt que des semaines après, c'est toute la différence entre signer et arriver après." },
   { q: "Comment démarcher ces repreneurs dans les règles ?", a: "Les reprises viennent d'annonces officielles, publiées au BODACC. Entre professionnels, la règle est simple : présentez-vous clairement, proposez une offre en rapport avec l'activité du repreneur, et respectez sa demande s'il ne souhaite plus être contacté. Le démarchage reste sous votre responsabilité, comme tout démarchage commercial." },
-  { q: "Combien de reprises vais-je recevoir chaque jour ?", a: `Ça dépend de votre zone et de votre métier. Pour les restaurants, bars et hôtels, environ ${fmt(Math.round(parMois / 10) * 10)} reprises sont publiées chaque mois en France. Dans la moitié des départements de métropole, c'est plus de 6 par mois ; à Paris, plus de 70 ; dans les plus ruraux, moins de 2. La carte ci-dessus vous montre le volume réel de votre département.` },
+  { q: "Combien de reprises vais-je recevoir chaque jour ?", a: `Ça dépend de votre zone et de votre métier. Toutes activités confondues, environ ${fmt(Math.round(parMois / 100) * 100)} cessions de fonds sont publiées chaque mois en France, dont environ ${fmt(Math.round(chrParMois / 10) * 10)} restaurants, bars et hôtels. Dans la moitié des départements de métropole, c'est plus de 27 par mois ; à Paris, plus de 300 ; dans les plus ruraux, moins de 7. Votre volume dépend ensuite de votre métier. La carte ci-dessus vous montre le volume réel de votre département.` },
   { q: "Sans engagement, ça veut dire quoi concrètement ?", a: "Vous payez mois par mois et vous pouvez résilier en un clic depuis votre espace client, sans préavis ni justification. Si vous préférez vous engager sur 6 ou 12 mois, un ou deux mois vous sont offerts en échange." },
 ];
 
 export default async function Home() {
-  const [chr, flux] = await Promise.all([getChiffresChr(), getFlux()]);
+  const [ch, chr, flux] = await Promise.all([getChiffres(), getChiffresChr(), getFlux()]);
   const ex = EXEMPLE;
 
   return (
@@ -100,7 +100,7 @@ export default async function Home() {
         <div className="h-wrap h-hero-grid">
           <div className="h-hero-l">
             <div className="h-pill"><span className="h-dot" aria-hidden="true" />Chaque reprise est un acte officiel, vérifiable, jamais inventé</div>
-            <h1 className="h-h1"><span className="soft">{fmt(chr.chrParMois)}</span> restaurants, bars et hôtels changent de mains chaque mois. Appelez le repreneur <span className="soft">le jour de la publication.</span></h1>
+            <h1 className="h-h1"><span className="soft">{fmt(ch.parMois)}</span> fonds de commerce changent de mains chaque mois. Appelez le repreneur <span className="soft">le jour de la publication.</span></h1>
             <p className="h-hero-sub">Chaque matin avant 8h, recevez ceux de votre métier et de votre zone, avec le nom du repreneur <strong>et son numéro quand on l&apos;a vérifié</strong>.</p>
             <div className="h-ctas">
               <a href="#zone" className="h-btn h-btn-lg">Voir les reprises de ma zone <Fleche /></a>
@@ -181,7 +181,7 @@ export default async function Home() {
       </section>
 
       {/* ============ CARTE + CALCULATEUR ============ */}
-      <ZoneMap chrParMois={chr.chrParMois} />
+      <ZoneMap parMois={ch.parMois} />
       <Calculateur />
 
       {/* ============ EXEMPLE D'EMAIL ============ */}
@@ -257,7 +257,7 @@ export default async function Home() {
                       ))}
                     </div>
                     <div className="h-feed-veil">
-                      <div><span><strong>Les autres reprises du jour</strong>, avec le repreneur et son numéro, sont réservées aux abonnés</span><a href="#tarifs" className="h-btn">Débloquer le flux complet →</a></div>
+                      <div><span><strong>{fmt(flux.autres)} autres cessions</strong> publiées le même jour partout en France, toutes activités</span><a href="#tarifs" className="h-btn">Débloquer le flux complet →</a></div>
                     </div>
                   </div>
                 </div>
@@ -359,7 +359,7 @@ export default async function Home() {
           <p className="h-eyebrow">Questions fréquentes</p>
           <h2 className="h-h2 mb">Tout ce qu&apos;on nous demande avant de s&apos;abonner</h2>
           <div className="h-faq">
-            {faq(chr.chrParMois).map((q) => (
+            {faq(ch.parMois, chr.chrParMois).map((q) => (
               <details key={q.q}>
                 <summary><span>{q.q}</span><svg className="h-faq-plus" aria-hidden="true" width="22" height="22" viewBox="0 0 22 22"><path d="M11 4v14M4 11h14" fill="none" stroke="#0B1020" strokeWidth="2" strokeLinecap="round" /></svg></summary>
                 <p>{q.a}</p>
