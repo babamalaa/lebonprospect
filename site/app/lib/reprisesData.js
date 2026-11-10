@@ -1,4 +1,5 @@
-import { badgeAge } from "./badge";
+import { badgeAge, urlAnnonce } from "./badge";
+import { libellePublic } from "./activite";
 import { supabaseAdmin } from "./supabaseAdmin";
 
 // ---------- Référentiels ----------
@@ -68,11 +69,12 @@ export const VERTICALE_BY_SLUG = Object.fromEntries(Object.entries(VERTICALES).m
 
 // ---------- Helpers ----------
 
+// Même masquage que la home : seuls les 2 premiers chiffres restent visibles (« 04 72 ●● ●● ●● » → « 04 ●● ●● ●● ●● »).
 function maskTel(tel) {
   if (!tel) return null;
-  const parts = tel.trim().split(/\s+/);
-  if (parts.length >= 4) return [...parts.slice(0, 3), "██", "██"].join(" ");
-  return tel.slice(0, Math.max(0, tel.length - 5)) + " ██ ██";
+  const chiffres = String(tel).replace(/\D/g, "");
+  if (chiffres.length < 2) return null;
+  return `${chiffres.slice(0, 2)} ●● ●● ●● ●●`;
 }
 
 const iso = (d) => d.toISOString().slice(0, 10);
@@ -104,7 +106,7 @@ export async function getReprisesStats(verticale, region = null) {
 
   // dernières reprises (avec repreneur identifié)
   let rq = admin.from("cessions")
-    .select("id, date_parution, acheteur_nom, place_name, ville, departement, telephone, acheteur_date_creation")
+    .select("id, bodacc_id, date_parution, acheteur_nom, naf_fonds, fonds_activite, verticale, place_name, ville, fonds_ville, departement, telephone, acheteur_date_creation")
     .eq("verticale", verticale).not("acheteur_nom", "is", null)
     .order("date_parution", { ascending: false }).order("id", { ascending: false }).limit(6);
   if (region) rq = rq.eq("region", region);
@@ -114,9 +116,11 @@ export async function getReprisesStats(verticale, region = null) {
     if (r.acheteur_date_creation) {
       badge = badgeAge(r.acheteur_date_creation, r.date_parution);
     }
+    // Public : jamais le nom du repreneur (pour un entrepreneur individuel, la raison sociale EST son nom).
     return {
-      id: r.id, date: r.date_parution, acheteur: r.acheteur_nom, etablissement: r.place_name,
-      ville: (r.ville || "").split(",")[0], departement: r.departement, telMasque: maskTel(r.telephone), badge,
+      id: r.id, date: r.date_parution, libelle: libellePublic(r.acheteur_nom, r.naf_fonds, r.fonds_activite, r.verticale),
+      ville: (r.fonds_ville || r.ville || "").split(",")[0], departement: r.departement, telMasque: maskTel(r.telephone), badge,
+      annonce: urlAnnonce(r.bodacc_id),
     };
   });
 
