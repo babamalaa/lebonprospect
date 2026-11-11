@@ -1,11 +1,20 @@
-import Header from "./Header";
 import Reveal from "./Reveal";
-import { fmt, formatDateFr, slugify, REGIONS, VERTICALES } from "../lib/reprisesData";
+import { SiteNav, SiteFooter, Coche, Fleche } from "./SiteChrome";
+import { fmt, formatDateFr } from "../lib/reprisesData";
+import { TARIFS } from "../lib/tarifs";
 
 /**
- * Corps commun des pages /reprises/... (SEO programmatique).
+ * Corps commun des pages /reprises/... (SEO programmatique), dans la DA de la home (novembre 2026).
  * props : { verticaleKey, v (config verticale), region (string|null), stats, autres (liens vers pages sœurs) }
+ * Public : jamais le nom du repreneur ni son numéro complet (libellé = enseigne ou activité, téléphone masqué).
  */
+const FEAT = {
+  departement: ["1 département au choix", "Email chaque matin avant 8h", "Nom, société et adresse du repreneur", "Numéro de l'établissement, quand il est vérifié"],
+  region: ["Toutes les verticales de votre métier", "Export CSV pour votre CRM", "Support prioritaire"],
+  national: ["Chaque commercial reçoit son secteur", "Export CSV & intégration CRM", "Interlocuteur dédié"],
+};
+const badgeCls = (b) => (b === "acquéreur établi" ? "h-badge neutre" : "h-badge");
+
 export default function ReprisesPage({ verticaleKey, v, region, stats, autres }) {
   const zone = region ? `en ${region}` : "en France";
   const zoneCourt = region || "France";
@@ -23,155 +32,149 @@ export default function ReprisesPage({ verticaleKey, v, region, stats, autres })
   };
 
   return (
-    <>
+    <div className="h-page">
       <Reveal />
-      <Header />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <section className="hero wrap rp-hero">
-        <div className="stamp"><span className="dot" />Données officielles BODACC · mises à jour chaque jour</div>
-        <nav className="rp-crumbs" aria-label="Fil d'Ariane">
-          <a href="/">Accueil</a><span>/</span>
-          <a href="/reprises">Reprises</a><span>/</span>
-          {region ? <><a href={`/reprises/${v.slug}`}>{v.court}</a><span>/</span><b>{region}</b></> : <b>{v.court}</b>}
-        </nav>
-        <h1>
-          {v.h1} <span className="hl">{zone}</span>
-        </h1>
-        <p className="sub">
-          <b>{fmt(stats.n365)}</b> {v.nom} ont changé de propriétaire {zone} sur les 12 derniers mois, soit environ{" "}
-          <b>{fmt(stats.perMonth)} par mois</b>. Chaque reprise est publiée au Journal officiel. Chaque repreneur
-          équipe son établissement dans les 90 jours qui suivent.
-        </p>
-        <div className="cta-row">
-          <a className="btn" href="/#tarifs">Recevoir les reprises de ma zone</a>
-          <a className="btn inv" href="#dernieres">Voir les dernières</a>
-        </div>
-        <div className="small-note">Sans engagement · Données 100 % officielles · Aucun lead revendu</div>
-      </section>
-
-      <section className="proof-band" data-reveal>
-        <div className="wrap proof">
-          <div><div className="n">{fmt(stats.n365)}</div><div className="l">reprises {zone} sur 12 mois</div></div>
-          <div><div className="n">{fmt(stats.n30)}</div><div className="l">sur les 30 derniers jours</div></div>
-          <div><div className="n">0</div><div className="l">donnée inventée : tout est vérifiable au BODACC</div></div>
-          <div><div className="n">Avant 8h</div><div className="l">le matin même de la publication</div></div>
-        </div>
-      </section>
-
-      <section className="feed-sec wrap" id="dernieres" data-reveal>
-        <div className="sec-head">
-          <span className="eyebrow">En direct du Journal officiel</span>
-          <h2 className="disp">Les dernières reprises {zone}</h2>
-          <p className="center-sub">
-            {stats.lastDate ? <>Dernière édition : {formatDateFr(stats.lastDate)}. </> : null}
-            Chaque ligne est vérifiable publiquement au BODACC. Le numéro complet et l&apos;identité du repreneur sont réservés aux abonnés.
+      {/* ============ EN-TÊTE ============ */}
+      <section className="h-hero h-dots rp2-hero">
+        <SiteNav />
+        <div className="h-wrap rp2-hero-in">
+          <nav className="rp2-crumbs" aria-label="Fil d'Ariane">
+            <a href="/">Accueil</a><span aria-hidden="true">/</span>
+            <a href="/reprises">Reprises</a><span aria-hidden="true">/</span>
+            {region ? <><a href={`/reprises/${v.slug}`}>{v.court}</a><span aria-hidden="true">/</span><b>{region}</b></> : <b>{v.court}</b>}
+          </nav>
+          <h1 className="h-h1 rp2-h1">{v.h1} <span className="soft">{zone}</span></h1>
+          <p className="h-hero-sub">
+            <strong>{fmt(stats.n365)}</strong> {v.nom} ont changé de propriétaire {zone} sur les 12 derniers mois, soit environ{" "}
+            <strong>{fmt(stats.perMonth)} par mois</strong>. Chaque reprise est publiée au Journal officiel, et chaque repreneur
+            équipe son établissement dans les 90 jours qui suivent.
           </p>
-        </div>
-        <div className="feed">
-          <div className="feed-head">
-            <span className="live"><span className="dot" />Flux quotidien</span>
-            <span className="mono" style={{ fontSize: 12 }}>{v.court} · {zoneCourt}</span>
+          <div className="h-ctas">
+            <a href="/#zone" className="h-btn h-btn-lg">Recevoir les reprises de ma zone <Fleche /></a>
+            <a href="#dernieres" className="h-btn-outline">Voir les dernières {stats.lastDate && <span className="h-date">{short(stats.lastDate)}</span>}</a>
           </div>
-          {stats.dernieres.map((it) => (
-            <div className="row" key={it.id}>
-              <div className="date">{short(it.date)}<br />{it.ville}</div>
-              <div className="what">
-                <b>{it.acheteur}</b> reprend {it.etablissement ? <>« {it.etablissement} »</> : "un fonds de commerce"}{" "}
-                {it.badge && <span className={`badge-fresh${it.badge === "acquéreur établi" ? " exp" : ""}`}>{it.badge}</span>}
-                <br />
-                <span className="meta">
-                  {it.telMasque ? <>Repreneur identifié · ☎ {it.telMasque}</> : <>Repreneur identifié · numéro en recherche</>} · {it.departement}
-                </span>
-              </div>
+          <div className="h-chips">
+            <div><b>{fmt(stats.n365)}</b><span>reprises {zone} sur 12 mois</span></div>
+            <div><b>{fmt(stats.n30)}</b><span>sur les 30 derniers jours</span></div>
+            <div><b>Avant 8h</b><span>le jour de la publication</span></div>
+          </div>
+          <p className="h-hero-note">Sans engagement · Données 100 % officielles · Aucun lead revendu</p>
+        </div>
+      </section>
+
+      {/* ============ DERNIÈRES REPRISES ============ */}
+      <section id="dernieres" className="h-sec h-white" data-reveal>
+        <div className="h-wrap">
+          <p className="h-eyebrow">En direct du Journal officiel</p>
+          <h2 className="h-h2">Les dernières reprises {zone}</h2>
+          <p className="h-lead">
+            {stats.lastDate ? <>Dernière édition : {formatDateFr(stats.lastDate)}. </> : null}
+            Chaque ligne renvoie à son annonce officielle. L&apos;identité du repreneur et son numéro complet sont réservés aux abonnés.
+          </p>
+          <div className="h-feed">
+            <div className="h-feed-top">
+              <span><span className="h-dot" aria-hidden="true" />Flux quotidien</span>
+              <span className="h-mono">{v.court} · {zoneCourt}</span>
             </div>
-          ))}
-          <div className="feed-foot">
-            {fmt(Math.max(stats.n30 - stats.dernieres.length, 0))} autres reprises {zone} sur les 30 derniers jours.{" "}
-            <a href="/#tarifs">débloquer le flux complet →</a>
+            <ul className="rp2-feed">
+              {stats.dernieres.map((it) => (
+                <li key={it.id} className="rp2-row">
+                  <div className="rp2-date h-mono">{short(it.date)}</div>
+                  <div className="rp2-main">
+                    <div className="rp2-t"><b>{it.libelle}</b>{it.badge && <span className={badgeCls(it.badge)}>{it.badge}</span>}</div>
+                    <span className="rp2-m">{it.ville}{it.departement ? ` · ${it.departement}` : ""}</span>
+                    <span className="rp2-lock">
+                      Repreneur identifié · {it.telMasque ? <>téléphone {it.telMasque}</> : "numéro en recherche"}
+                      {it.annonce && <> · <a href={it.annonce} target="_blank" rel="noopener noreferrer">annonce officielle</a></>}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <div className="rp2-feed-foot">
+              <span><strong>{fmt(Math.max(stats.n30 - stats.dernieres.length, 0))} autres reprises</strong> {zone} sur les 30 derniers jours</span>
+              <a href="/#tarifs" className="h-btn">Débloquer le flux complet <Fleche /></a>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* ============ DÉPARTEMENTS ============ */}
       {stats.depts.length > 0 && (
-        <section className="cibles-sec" data-reveal>
-          <div className="wrap">
-            <div className="sec-head">
-              <span className="eyebrow">Là où ça se passe</span>
-              <h2 className="disp">Reprises de {v.nom} par département, sur 12 mois</h2>
-            </div>
-            <div className="rp-dept-grid">
+        <section className="h-sec" data-reveal>
+          <div className="h-wrap">
+            <p className="h-eyebrow">Là où ça se passe</p>
+            <h2 className="h-h2 mb">Reprises de {v.nom} par département, sur 12 mois</h2>
+            <div className="rp2-depts">
               {stats.depts.map((d) => (
-                <div className="rp-dept" key={d.nom}>
-                  <div className="n">{fmt(d.n)}</div>
-                  <div className="l">{d.nom}</div>
-                </div>
+                <div key={d.nom} className="rp2-dept"><b>{fmt(d.n)}</b><span>{d.nom}</span></div>
               ))}
             </div>
           </div>
         </section>
       )}
 
-      <section className="why-sec wrap" data-reveal>
-        <div className="sec-head">
-          <span className="eyebrow">Pour qui</span>
-          <h2 className="disp">Qui vend à un repreneur de {v.singulier} ?</h2>
-          <p className="center-sub">Dans les 90 jours qui suivent une reprise, le nouveau propriétaire remet tout à plat : {v.achats}.</p>
-        </div>
-        <div className="why-grid">
-          <div className="why"><div className="why-n">01</div><h3>Son financement est validé</h3><p>Pour racheter un fonds, il a convaincu une banque. Ce n&apos;est pas un projet sur papier, c&apos;est un budget disponible.</p></div>
-          <div className="why"><div className="why-n">02</div><h3>Il achète maintenant, pas dans un an</h3><p>Les fournisseurs concernés : {v.fournisseurs}. Le premier qui appelle prend une longueur d&apos;avance.</p></div>
-          <div className="why"><div className="why-n">03</div><h3>Vous l&apos;apprenez le jour même</h3><p>La cession est publiée au Journal officiel. Le matin même, avant 8h, son nom, son adresse et, quand on l&apos;a vérifié, le numéro de l&apos;établissement sont dans votre boîte mail.</p></div>
+      {/* ============ POUR QUI ============ */}
+      <section className="h-sec h-dark h-dots" data-reveal>
+        <div className="h-wrap">
+          <p className="h-eyebrow soft">Pour qui</p>
+          <h2 className="h-h2 w">Qui vend à un repreneur de {v.singulier} ?</h2>
+          <p className="h-lead d">Dans les 90 jours qui suivent une reprise, le nouveau propriétaire remet tout à plat : {v.achats}.</p>
+          <div className="h-grid3">
+            <div className="h-card dark"><div className="h-why-n">01</div><h3>Son financement est réuni</h3><p>Pour racheter un fonds, il a réuni un financement : banque ou apport personnel. Ce n&apos;est pas un projet sur papier.</p></div>
+            <div className="h-card dark"><div className="h-why-n">02</div><h3>Il achète maintenant, pas dans un an</h3><p>Les fournisseurs concernés : {v.fournisseurs}. Le premier qui appelle prend une longueur d&apos;avance.</p></div>
+            <div className="h-card dark"><div className="h-why-n">03</div><h3>Vous l&apos;apprenez le jour même</h3><p>La cession est publiée au Journal officiel. Le jour de la publication, avant 8h, son nom, son adresse et, quand on l&apos;a vérifié, le numéro de l&apos;établissement sont dans votre boîte mail.</p></div>
+          </div>
         </div>
       </section>
 
-      <section className="pricing wrap" id="tarifs" data-reveal>
-        <div className="sec-head">
-          <span className="eyebrow">Tarifs</span>
-          <h2 className="disp">Recevoir les reprises de {v.nom} {zone}</h2>
+      {/* ============ TARIFS ============ */}
+      <section id="tarifs" className="h-sec h-white" data-reveal>
+        <div className="h-wrap">
+          <p className="h-eyebrow">Tarifs</p>
+          <h2 className="h-h2 mb">Recevoir les reprises de {v.nom} {zone}</h2>
+          <div className="h-plans">
+            <div className="h-plan">
+              <div className="h-plan-t">{TARIFS.departement.label}</div>
+              <div className="h-plan-p"><b>{TARIFS.departement.prix} €</b><span>/mois</span></div>
+              <div className="h-plan-s">un département au choix, sans engagement</div>
+              <ul>{FEAT.departement.map((t) => <li key={t}><Coche c="#31777A" /><span>{t}</span></li>)}</ul>
+              <a href={TARIFS.departement.stripe} className="h-plan-btn">Surveiller mon département</a>
+            </div>
+            <div className="h-plan dark">
+              <div className="h-plan-t"><span>{TARIFS.region.label}</span></div>
+              <div className="h-plan-p"><b>{TARIFS.region.prix} €</b><span>/mois</span></div>
+              <div className="h-plan-s">{region ? `toute la région ${region}` : "tous les départements de votre région"}</div>
+              <ul>{FEAT.region.map((t) => <li key={t}><Coche /><span>{t}</span></li>)}</ul>
+              <a href={TARIFS.region.stripe} className="h-plan-btn fill">Prendre ma région</a>
+            </div>
+            <div className="h-plan">
+              <div className="h-plan-t">{TARIFS.national.label}</div>
+              <div className="h-plan-p devis"><b>Sur devis</b></div>
+              <div className="h-plan-s">multi-régions, équipes commerciales</div>
+              <ul>{FEAT.national.map((t) => <li key={t}><Coche c="#31777A" /><span>{t}</span></li>)}</ul>
+              <a href={TARIFS.national.mailto} className="h-plan-btn">Parler à un humain</a>
+            </div>
+          </div>
+          <div className="h-engage">Sans engagement, résiliable en 1 clic · engagement 6 mois : <strong>1 mois offert</strong> · engagement 12 mois : <strong>2 mois offerts</strong></div>
         </div>
-        <div className="plans">
-          <div className="plan">
-            <h3>Mon département</h3>
-            <div className="price">149 € <small>/mois</small></div>
-            <div className="vol">1 département au choix</div>
-            <ul><li>Email chaque matin avant 8h</li><li>Nom, société et adresse du repreneur</li><li>Numéro de l&apos;établissement, quand il est vérifié</li></ul>
-            <a className="btn inv" href="https://buy.stripe.com/8x26oH2sN1i4gpv0b78N200">Surveiller mon département</a>
-          </div>
-          <div className="plan mid">
-            <span className="tag2">Le plus choisi</span>
-            <h3>Ma région</h3>
-            <div className="price">299 € <small>/mois</small></div>
-            <div className="vol">{region ? `toute la région ${region}` : "1 région complète"}</div>
-            <ul><li>Toutes les verticales de votre métier</li><li>Export CSV pour votre CRM</li><li>Support prioritaire</li></ul>
-            <a className="btn" href="https://buy.stripe.com/14A5kD4AVe4Q7SZe1X8N201">Prendre ma région</a>
-          </div>
-          <div className="plan">
-            <h3>Toute la France</h3>
-            <div className="price price-devis">Sur devis</div>
-            <div className="vol">multi-régions, équipes commerciales</div>
-            <ul><li>Chaque commercial reçoit son secteur</li><li>Export CSV &amp; intégration CRM</li><li>Interlocuteur dédié</li></ul>
-            <a className="btn inv" href="mailto:contact@lebonprospect.fr?subject=Offre%20nationale%20LeBonProspect">Parler à un humain</a>
-          </div>
-        </div>
-        <p className="engage">Sans engagement, résiliable en 1 clic · engagement 6 mois : <b>1 mois offert</b> · engagement 12 mois : <b>2 mois offerts</b></p>
       </section>
 
+      {/* ============ PAGES SŒURS ============ */}
       {autres && autres.length > 0 && (
-        <section className="rp-links wrap" data-reveal>
-          <h2 className="disp" style={{ fontSize: 26 }}>{region ? `Autres métiers ${zone}` : `${v.h1}, région par région`}</h2>
-          <div className="rp-links-grid">
-            {autres.map((a) => <a key={a.href} href={a.href}>{a.label}<span>{fmt(a.n)} / an</span></a>)}
+        <section className="h-sec" data-reveal>
+          <div className="h-wrap">
+            <h2 className="h-h2 mb">{region ? `Autres métiers ${zone}` : `${v.h1}, région par région`}</h2>
+            <div className="rp2-links">
+              {autres.map((a) => <a key={a.href} href={a.href}><span>{a.label}</span><span className="h-mono">{fmt(a.n)} / an</span></a>)}
+            </div>
           </div>
         </section>
       )}
 
-      <footer>
-        <div className="wrap">
-          <span>© 2026 LeBonProspect · données publiques BODACC (licence ouverte)</span>
-          <span><a href="/mentions-legales" style={{ color: "inherit" }}>Mentions légales</a> · <a href="/cgv" style={{ color: "inherit" }}>CGV</a> · <a href="/confidentialite" style={{ color: "inherit" }}>Confidentialité</a> · <a href="mailto:contact@lebonprospect.fr" style={{ color: "inherit" }}>Contact</a></span>
-        </div>
-      </footer>
-    </>
+      <SiteFooter />
+    </div>
   );
 }
