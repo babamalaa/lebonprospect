@@ -109,7 +109,7 @@ export default async function Home() {
             <div className="h-chips">
               <div><b>Avant 8h</b><span>le matin même de la publication</span></div>
               <div><b>{TARIFS.departement.prix} €</b><span>par mois pour un département</span></div>
-              <a href="#calculateur" className="h-chip-link"><b>Votre point mort</b><span>calculez-le avec vos chiffres</span></a>
+              <a href="#calculateur" className="h-chip-link"><b>Votre potentiel</b><span>calculez-le avec vos chiffres</span></a>
             </div>
             <p className="h-hero-note">Sans engagement · Données 100 % officielles · Aucun lead revendu</p>
           </div>
@@ -182,7 +182,6 @@ export default async function Home() {
 
       {/* ============ CARTE + CALCULATEUR ============ */}
       <ZoneMap parMois={ch.parMois} />
-      <Calculateur />
 
       {/* ============ EXEMPLE D'EMAIL ============ */}
       <section id="exemple" className="h-sec" data-reveal>
@@ -286,6 +285,9 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* ============ CALCULATEUR (sous « Pour qui ») ============ */}
+      <Calculateur />
+
       {/* ============ POURQUOI LE REPRENEUR ============ */}
       <section className="h-sec h-dark" data-reveal>
         <div className="h-wrap">
@@ -315,7 +317,7 @@ export default async function Home() {
             <div className="h-vs-col dark">
               <div className="h-mono-l soft">Ce que vous recevez avant 8h</div>
               <ul>{LBP.map((t) => <li key={t}><Coche /><span>{t}</span></li>)}</ul>
-              <a href="#calculateur" className="h-vs-foot link">Combien de clients pour rentabiliser ? Faites le calcul avec vos chiffres →</a>
+              <a href="#calculateur" className="h-vs-foot link">Combien ces reprises peuvent-elles vous rapporter ? Faites le calcul avec vos chiffres →</a>
             </div>
           </div>
         </div>

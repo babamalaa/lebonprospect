@@ -32,4 +32,14 @@ import { readFileSync } from "node:fs";
 const src = readFileSync(new URL("./Calculateur.js", import.meta.url), "utf8");
 for (const f of ["Math.max(1, Math.ceil(coutAnnuel / contrat))", "(appels * taux) / 100", "clientsParMois * contrat", "Math.max(caMois, prix, 1)", "caMois >= prix"])
   assert.ok(src.includes(f), `formule absente du composant : ${f}`);
-console.log(`calculateur : ${cas.length} jeux de valeurs OK, formules identiques au brief`);
+// Phrase « en un deal » (décision du 11 nov. 2026), recalculée à la main
+const unDeal = (plan, contrat) => {
+  const prix = plan === "region" ? 299 : 149, an = prix * 12, m = Math.floor(contrat / prix);
+  return contrat >= an ? "annee" : m >= 1 ? `${m} mois` : `${Math.ceil(prix / contrat)} contrats`;
+};
+assert.equal(unDeal("departement", 3000), "annee");      // 3 000 >= 1 788
+assert.equal(unDeal("departement", 500), "3 mois");      // 500 / 149 = 3,4
+assert.equal(unDeal("region", 3000), "10 mois");         // 3 000 / 299 = 10,03
+assert.equal(unDeal("region", 3588), "annee");
+for (const f of ["contrat >= coutAnnuel", "Math.floor(contrat / prix)", "caMois * 12"]) assert.ok(src.includes(f), `formule absente : ${f}`);
+console.log(`calculateur : ${cas.length} jeux de valeurs OK + phrase « un deal » OK, formules identiques au brief`);
