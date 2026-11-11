@@ -555,9 +555,10 @@ html:has(.h-page) { scroll-behavior: smooth; }
 .zx::before { content: ""; position: absolute; inset: -20% -10% auto auto; width: 70vw; height: 70vw; background: radial-gradient(closest-side, rgba(49,119,122,0.22), transparent 70%); z-index: -1; pointer-events: none; }
 .zx::after { content: ""; position: absolute; inset: auto auto -30% -15%; width: 55vw; height: 55vw; background: radial-gradient(closest-side, rgba(49,119,122,0.10), transparent 70%); z-index: -1; pointer-events: none; }
 .zx-grain { position: absolute; inset: 0; z-index: -1; background-image: radial-gradient(rgba(255,255,255,0.045) 1px, transparent 1px); background-size: 22px 22px; mask-image: linear-gradient(to bottom, transparent, #000 15%, #000 85%, transparent); pointer-events: none; }
-.zx-in { max-width: 1440px; margin: 0 auto; min-height: inherit; display: flex; align-items: center; gap: 24px; padding: 48px 40px; }
-.zx-panel { flex: 0 1 460px; min-width: 0; position: relative; z-index: 2; }
-.zx-map-col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.zx-in { max-width: 1200px; margin: 0 auto; min-height: inherit; display: flex; align-items: center; gap: 40px; padding: 48px 24px; }
+.zx-panel { flex: 0 1 440px; min-width: 0; position: relative; z-index: 2; }
+.zx-map-col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+.zx-map-col .zx-legend, .zx-map-col .zx-credit { align-self: center; }
 .zx-stack { display: flex; flex-direction: column; gap: 20px; animation: zx-up .5s ease both; }
 @keyframes zx-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 .zx-eyebrow { display: inline-flex; align-items: center; gap: 10px; margin: 0; font-family: var(--f-mono), "JetBrains Mono", monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #7CC3C6; }
@@ -634,7 +635,8 @@ html:has(.h-page) { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { .zx-layer, .zx-dep { transition: none; } .zx-stack, .zx-row, .zx-pin, .zx-sel, .zx-live { animation: none; } }
 @media (max-width: 1000px) {
   .zx { min-height: 0; }
-  .zx-in { flex-direction: column; align-items: stretch; padding: 56px 20px 40px; gap: 28px; }
+  .zx-in { flex-direction: column; align-items: stretch; padding: 56px 24px 40px; gap: 28px; }
+  .zx-map-col { align-items: center; }
   .zx-panel { flex: none; }
   .zx-map { width: 100%; }
   .zx-lead { max-width: none; }
