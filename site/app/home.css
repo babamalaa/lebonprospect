@@ -548,3 +548,102 @@ html:has(.h-page) { scroll-behavior: smooth; }
 .rp2-block-head h2 a:hover { color: #31777A; }
 .rp2-more { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 8px; font-weight: 600; color: #31777A !important; }
 @media (max-width: 760px) { .rp2-row { padding: 14px 16px; } .rp2-date { width: 44px; } .rp2-feed-foot .h-btn { width: 100%; } }
+
+/* ============ VOTRE ZONE, version immersive pleine page (novembre 2026) ============
+   Bord à bord, plein écran, fond nuit plus profond que les autres sections sombres. Aucun cadre : la carte EST la section. */
+.zx { position: relative; isolation: isolate; overflow: hidden; min-height: 100vh; min-height: 100svh; background: #05070D; color: #E8ECF5; scroll-margin-top: 0; }
+.zx::before { content: ""; position: absolute; inset: -20% -10% auto auto; width: 70vw; height: 70vw; background: radial-gradient(closest-side, rgba(49,119,122,0.22), transparent 70%); z-index: -1; pointer-events: none; }
+.zx::after { content: ""; position: absolute; inset: auto auto -30% -15%; width: 55vw; height: 55vw; background: radial-gradient(closest-side, rgba(49,119,122,0.10), transparent 70%); z-index: -1; pointer-events: none; }
+.zx-grain { position: absolute; inset: 0; z-index: -1; background-image: radial-gradient(rgba(255,255,255,0.045) 1px, transparent 1px); background-size: 22px 22px; mask-image: linear-gradient(to bottom, transparent, #000 15%, #000 85%, transparent); pointer-events: none; }
+.zx-in { max-width: 1440px; margin: 0 auto; min-height: inherit; display: flex; align-items: center; gap: 24px; padding: 48px 40px; }
+.zx-panel { flex: 0 1 460px; min-width: 0; position: relative; z-index: 2; }
+.zx-map-col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.zx-stack { display: flex; flex-direction: column; gap: 20px; animation: zx-up .5s ease both; }
+@keyframes zx-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.zx-eyebrow { display: inline-flex; align-items: center; gap: 10px; margin: 0; font-family: var(--f-mono), "JetBrains Mono", monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #7CC3C6; }
+.zx-live { width: 8px; height: 8px; border-radius: 50%; background: #7CC3C6; box-shadow: 0 0 0 0 rgba(124,195,198,0.6); animation: zx-pulse 2s infinite; }
+@keyframes zx-pulse { 70% { box-shadow: 0 0 0 9px rgba(124,195,198,0); } 100% { box-shadow: 0 0 0 0 rgba(124,195,198,0); } }
+.zx-h2 { font-family: var(--f-tight), "Inter Tight", Inter, sans-serif; font-weight: 700; font-size: clamp(34px, 4vw, 56px); line-height: 1.02; letter-spacing: -0.04em; margin: 0; color: #FFFFFF; }
+.zx-lead { margin: 0; font-size: 17px; line-height: 1.6; color: #9AA5BD; max-width: 440px; }
+.zx-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.zx-cp { display: flex; gap: 8px; padding: 8px; border-radius: 16px; background: rgba(255,255,255,0.04); border: 1px solid #222B42; }
+.zx-cp:focus-within { border-color: #31777A; box-shadow: 0 0 0 4px rgba(49,119,122,0.25); }
+.zx-cp input { flex: 1 1 auto; min-width: 0; min-height: 56px; padding: 0 16px; border: none; background: transparent; color: #FFFFFF; font-size: 20px; font-family: var(--f-tight), "Inter Tight", Inter, sans-serif; font-weight: 600; letter-spacing: 0.02em; }
+.zx-cp input::placeholder { color: #6B7690; font-weight: 500; letter-spacing: 0; }
+.zx-cp input:focus { outline: none; }
+.zx-go { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; padding: 0 22px; border: none; border-radius: 12px; background: #31777A; color: #FFFFFF !important; font-family: inherit; font-weight: 600; font-size: 16px; cursor: pointer; white-space: nowrap; }
+.zx-go:hover { background: #3A8A8D; opacity: 1 !important; }
+.zx-go.big { width: 100%; min-height: 58px; font-size: 16px; }
+.zx-err { margin-top: -10px; font-size: 14px; color: #FCA5A5; }
+.zx-chips { display: flex; flex-direction: column; gap: 10px; }
+.zx-chips-l { font-size: 13px; color: #8792AB; }
+.zx-chips > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.zx-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid #222B42; background: rgba(255,255,255,0.03); color: #C5CEE3; font-family: inherit; font-size: 14px; cursor: pointer; transition: border-color .15s, background .15s; }
+.zx-chip:hover { border-color: #31777A; background: rgba(49,119,122,0.14); }
+.zx-chip b { font-family: var(--f-mono), "JetBrains Mono", monospace; font-weight: 500; font-size: 12px; color: #7CC3C6; }
+.zx-total { display: flex; flex-direction: column; gap: 6px; padding-top: 20px; border-top: 1px solid #1B2440; }
+.zx-total b { flex: none; white-space: nowrap; }
+.zx-total b { font-family: var(--f-tight), "Inter Tight", Inter, sans-serif; font-weight: 700; font-size: 44px; line-height: 1; letter-spacing: -0.03em; color: #FFFFFF; }
+.zx-total span { font-size: 14px; line-height: 1.45; color: #9AA5BD; }
+.zx-back { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px 0 10px; border-radius: 10px; border: 1px solid #222B42; background: rgba(255,255,255,0.03); color: #C5CEE3; font-family: inherit; font-size: 14px; cursor: pointer; }
+.zx-back:hover { border-color: #31777A; }
+.zx-name { font-family: var(--f-tight), "Inter Tight", Inter, sans-serif; font-weight: 700; font-size: clamp(40px, 4.8vw, 64px); line-height: 1; letter-spacing: -0.04em; margin: 8px 0 0; color: #FFFFFF; }
+.zx-big { display: flex; flex-direction: column; gap: 6px; }
+.zx-big b { font-family: var(--f-tight), "Inter Tight", Inter, sans-serif; font-weight: 700; font-size: clamp(72px, 8vw, 112px); line-height: 0.9; letter-spacing: -0.05em; margin-left: -0.04em; }
+.zx-big span { font-size: 16px; color: #9AA5BD; }
+.zx-big em { font-style: normal; color: #FFFFFF; font-family: var(--f-mono), "JetBrains Mono", monospace; font-size: 15px; }
+.zx-spark { display: flex; align-items: flex-end; gap: 3px; height: 40px; }
+.zx-spark i { flex: 1 1 0; min-width: 3px; border-radius: 2px 2px 0 0; background: #1B2440; transition: background .2s; }
+.zx-spark i.on { background: #31777A; }
+.zx-spark i.on:last-child { background: #7CC3C6; }
+.zx-sub { font-size: 14px; color: #9AA5BD; }
+.zx-sub b { color: #FFFFFF; font-weight: 600; }
+.zx-list { display: flex; flex-direction: column; border-top: 1px solid #1B2440; }
+.zx-row { padding: 12px 0; border-bottom: 1px solid #1B2440; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 16px; animation: zx-up .45s ease both; }
+.zx-row-t { min-width: 0; }
+.zx-row-t b { display: block; font-weight: 600; color: #FFFFFF; font-size: 15px; }
+.zx-row-t span { display: block; font-size: 13px; color: #8792AB; margin-top: 2px; }
+.zx-row-l { display: flex; align-items: center; gap: 12px; font-size: 12px; }
+.zx-lock { display: inline-flex; align-items: center; gap: 6px; color: #6B7690; }
+.zx-row-l a { color: #7CC3C6 !important; text-decoration: underline; text-underline-offset: 2px; padding: 6px 0; }
+.zx-ph { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.zx-ph i { display: block; height: 12px; border-radius: 6px; background: #1B2440; }
+.zx-ctas { display: flex; flex-direction: column; gap: 12px; }
+.zx-note { text-align: center; font-size: 13px; color: #8792AB; }
+.zx-note a { color: #C5CEE3 !important; text-decoration: underline; text-underline-offset: 2px; }
+.zx-map { position: relative; width: min(100%, calc((100vh - 150px) * 1.03)); aspect-ratio: 680 / 660; }
+.zx-layer { position: absolute; inset: 0; transform-origin: 0 0; transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.zx-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.zx-dep { stroke: #05070D; stroke-linejoin: round; pointer-events: visiblePainted; cursor: pointer; transition: fill .6s ease, filter .15s; }
+.zx:not(.is-zone) .zx-dep:hover { filter: brightness(1.35); }
+.zx.is-zone .zx-dep { stroke: #141B2E; }
+.zx-sel { animation: zm-in .5s ease .45s both; }
+.zx-pin { position: absolute; transform: translate(-50%, -50%) scale(1); border-radius: 50%; background: #9AA5BD; pointer-events: none; animation: zx-pop .35s cubic-bezier(0.2, 0.9, 0.3, 1.4) both; }
+.zx-pin.hot { background: #7CC3C6; }
+@keyframes zx-pop { from { transform: translate(-50%, -50%) scale(0); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+.zx-tip { position: absolute; transform: translate(14px, -50%); pointer-events: none; padding: 8px 12px; border-radius: 10px; background: #0F1424; border: 1px solid #2B3550; box-shadow: 0 12px 30px rgba(0,0,0,0.45); white-space: nowrap; z-index: 3; }
+.zx-tip b { display: block; font-size: 14px; color: #FFFFFF; }
+.zx-tip span { display: block; font-size: 12px; color: #9AA5BD; font-family: var(--f-mono), "JetBrains Mono", monospace; }
+.zx-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #6B7690; font-size: 14px; }
+.zx-legend { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; font-size: 12px; color: #8792AB; }
+.zx-legend > span { display: inline-flex; align-items: center; gap: 6px; }
+.zx-grad { display: inline-block; width: 140px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, rgb(18,24,41), rgb(49,119,122) 75%, rgb(124,195,198)); }
+.zx-dot { width: 9px; height: 9px; border-radius: 50%; background: #9AA5BD; display: inline-block; }
+.zx-dot.hot { background: #7CC3C6; }
+.zx-credit { font-size: 11px; color: #4F5A73; }
+@media (prefers-reduced-motion: reduce) { .zx-layer, .zx-dep { transition: none; } .zx-stack, .zx-row, .zx-pin, .zx-sel, .zx-live { animation: none; } }
+@media (max-width: 1000px) {
+  .zx { min-height: 0; }
+  .zx-in { flex-direction: column; align-items: stretch; padding: 56px 20px 40px; gap: 28px; }
+  .zx-panel { flex: none; }
+  .zx-map { width: 100%; }
+  .zx-lead { max-width: none; }
+}
+@media (max-width: 480px) {
+  .zx-cp { flex-direction: column; }
+  .zx-go { width: 100%; }
+  .zx-total b { font-size: 36px; }
+  .zx-total { flex-direction: column; gap: 6px; }
+}
+
+@media (min-width: 1001px) and (max-height: 960px) { .zx-lead { font-size: 16px; } .zx-total b { font-size: 36px; } .zx-chips > div { gap: 6px; } }

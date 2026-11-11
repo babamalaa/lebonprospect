@@ -1,6 +1,7 @@
 import { supabaseAdmin } from "../../lib/supabaseAdmin";
 import geo from "../../lib/geo/geoData.json";
 import { libellePublic } from "../../lib/activite";
+import { urlAnnonce } from "../../lib/badge";
 
 export const revalidate = 3600;
 
@@ -29,15 +30,20 @@ export async function GET(req) {
   const base = () => admin.from("cessions").select("id", { count: "exact", head: true })
     .eq("departement", nom).neq("type_avis", "Avis d’annulation");
 
-  const [{ data: last }, { count: n30 }] = await Promise.all([
+  // Série jour par jour (30 jours) : sert au compteur et au « replay » de la carte. n30 = sa somme, pour que le compteur,
+  // la carte de chaleur (zone_heat) et la série racontent exactement le même chiffre.
+  const [{ data: last }, { data: serieRows }] = await Promise.all([
     admin.from("cessions").select("date_parution").order("date_parution", { ascending: false }).limit(1),
-    base().gte("date_parution", depuis),
+    admin.rpc("zone_serie", { p_dep: nom, p_jours: 30 }),
   ]);
+  const serie = (serieRows || []).map((r) => ({ d: r.jour, n: Number(r.n) }));
+  const n30 = serie.reduce((s, x) => s + x.n, 0);
+  const debut = serie[0]?.d || depuis;
   const derniere = last?.[0]?.date_parution || null;
   const { count: nDernier } = derniere ? await base().eq("date_parution", derniere) : { count: 0 };
 
   const { data: rows } = await admin.from("cessions")
-    .select("id, date_parution, acheteur_nom, naf_fonds, fonds_activite, verticale, fonds_cp, cp, fonds_ville, ville, type_avis")
+    .select("id, bodacc_id, date_parution, acheteur_nom, naf_fonds, fonds_activite, verticale, fonds_cp, cp, fonds_ville, ville, type_avis")
     .eq("departement", nom).gte("date_parution", depuis).neq("type_avis", "Avis d’annulation")
     .order("date_parution", { ascending: false }).order("id", { ascending: false }).limit(200);
 
@@ -50,8 +56,9 @@ export async function GET(req) {
     const [x, y] = projeter(c);
     const k = `${x},${y}`;
     const p = parLieu.get(k);
-    if (p) { p.n += 1; p.hier = p.hier || r.date_parution === derniere; }
-    else if (parLieu.size < MAX_PINS) parLieu.set(k, { x, y, n: 1, hier: r.date_parution === derniere });
+    // d0 = première date de publication à cet endroit dans la fenêtre : le point apparaît à cette date pendant le replay
+    if (p) { p.n += 1; p.hier = p.hier || r.date_parution === derniere; if (r.date_parution < p.d0) p.d0 = r.date_parution; }
+    else if (parLieu.size < MAX_PINS) parLieu.set(k, { x, y, n: 1, hier: r.date_parution === derniere, d0: r.date_parution });
   }
   const pins = [...parLieu.values()];
   // 4 dernières reprises, en privilégiant celles dont on sait dire l'activité (sinon « Fonds de commerce »)
@@ -63,7 +70,8 @@ export async function GET(req) {
     nom: lib(r),
     commune: (r.fonds_ville || r.ville || "").split(",")[0].trim(),
     date: r.date_parution,
+    annonce: urlAnnonce(r.bodacc_id),
   }));
-  return Response.json({ code, nom, n30: n30 || 0, nDernier: nDernier || 0, derniere, pins, liste },
+  return Response.json({ code, nom, n30, nDernier: nDernier || 0, derniere, debut, serie, pins, liste },
     { headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" } });
 }
