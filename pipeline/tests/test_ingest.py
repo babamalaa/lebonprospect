@@ -78,3 +78,39 @@ def test_process_day_sans_enrichissement(fixture, monkeypatch):
     monkeypatch.setattr(ingest, "enrich_siren", interdit)
     out = ingest.process_day("2026-09-23", enrich=False)
     assert len(out) == 4 and "verticale" not in out[0]
+
+
+# --- Correctif du 14 nov. 2026 (ingestion bloquée, envoi de l'essai à 8h37) ---
+
+def test_process_day_ignore_les_annonces_deja_completes(fixture, monkeypatch):
+    """Une annonce déjà en base et classée n'est ni ré-enrichie ni renvoyée à load_db."""
+    rows = fixture("bodacc_rows.json")
+    appels = []
+    monkeypatch.setattr(ingest, "fetch_day", lambda day: rows)
+    monkeypatch.setattr(ingest, "enrich_siren", lambda siren, c: appels.append(siren))
+    deja = {rows[0]["id"], rows[1]["id"]}
+    out = ingest.process_day("2026-09-23", deja_complets=deja)
+    assert [r["bodacc_id"] for r in out] == [rows[2]["id"], rows[3]["id"]]
+    assert "123456789" not in appels and "987654321" not in appels      # SIREN de la ligne 1 jamais interrogés
+
+def test_enrich_siren_respecte_l_echeance(monkeypatch):
+    """Passé l'échéance, plus aucun appel réseau, et rien n'est mis en cache (retenté au passage suivant)."""
+    def reseau(*a, **k):
+        raise AssertionError("aucun appel réseau après l'échéance")
+    monkeypatch.setattr(ingest, "http_json", reseau)
+    monkeypatch.setitem(ingest.ECHEANCE, "t", 0)                    # échéance déjà passée
+    monkeypatch.setitem(ingest.ECHEANCE, "depassee", 0)
+    cache = {}
+    assert ingest.enrich_siren("123456789", cache) is None
+    assert "123456789" not in cache and ingest.ECHEANCE["depassee"] == 1
+
+def test_enrich_siren_appel_court(monkeypatch):
+    """Appel à l'annuaire : 10 s maximum et 2 tentatives (au lieu de 30 s et 3)."""
+    vu = {}
+    def faux(url, retries=3, timeout=30):
+        vu.update(retries=retries, timeout=timeout); return {"results": []}
+    monkeypatch.setattr(ingest, "http_json", faux)
+    monkeypatch.setattr(ingest.time, "sleep", lambda s: None)
+    monkeypatch.setitem(ingest.ECHEANCE, "t", None)
+    ingest.enrich_siren("999888777", {})
+    assert vu == {"retries": 2, "timeout": 10}

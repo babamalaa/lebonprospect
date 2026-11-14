@@ -4,10 +4,11 @@ Contrairement au cron local, le runner GitHub n'a pas l'historique JSONL.
 Stratégie: demander à la DB le dernier jour présent, ingérer les jours
 manquants jusqu'à hier (avec enrichissement), charger, rafraîchir stats.
 """
-import datetime, os, sys, json
+import datetime, os, sys, json, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+import ingest
 from ingest import process_day, save_day
 from load_db import sql_exec
 
@@ -36,6 +37,8 @@ def envoyer_digests():
     if rr.returncode != 0:
         print(rr.stderr[-800:]); sys.exit(1)
 
+BUDGET_ENRICHISSEMENT_S = 8 * 60
+
 def main():
     r = sql_exec("select coalesce(max(date_parution), current_date - 3) as last from cessions;")
     last = datetime.date.fromisoformat(str(r[0]["last"]))
@@ -51,14 +54,22 @@ def main():
         print(f"Rien à ingérer: base à jour jusqu'au {last}. Envoi des digests quand même.")
         envoyer_digests()
         return
-    print(f"Jours à ingérer: {days}")
+    print(f"Jours à ingérer: {days}", flush=True)
     cache = {}
     total = 0
+    # Annonces déjà en base et classées : inutile de les ré-enrichir (voir process_day).
+    lst = ",".join("'" + d + "'" for d in days)
+    deja = {r["bodacc_id"] for r in sql_exec(f"select bodacc_id from cessions where date_parution in ({lst}) and verticale <> 'inconnu';")}
+    # Budget d'enrichissement : au-delà, on enregistre sans classer et on envoie quand même (rattrapage au passage suivant).
+    ingest.ECHEANCE["t"] = time.monotonic() + BUDGET_ENRICHISSEMENT_S
+    t0 = time.monotonic()
     for day in days:
-        recs = process_day(day, enrich=True, cache=cache)
+        recs = process_day(day, enrich=True, cache=cache, deja_complets=deja)
         save_day(day, recs)
         total += len(recs)
-        print(f"{day}: {len(recs)} cessions", flush=True)
+        print(f"{day}: {len(recs)} cessions à enregistrer (déjà complètes ignorées) · {round(time.monotonic() - t0)} s", flush=True)
+    if ingest.ECHEANCE["depassee"]:
+        print(f"::warning::budget d'enrichissement dépassé : {ingest.ECHEANCE['depassee']} SIREN non interrogés, rattrapés au prochain passage", flush=True)
     # Import
     import subprocess
     rr = subprocess.run([sys.executable, "load_db.py"], capture_output=True, text=True, cwd=HERE)

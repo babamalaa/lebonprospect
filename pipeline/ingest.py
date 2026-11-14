@@ -34,10 +34,10 @@ def classify(naf: str) -> str:
             return vert
     return "autres"
 
-def http_json(url: str, retries: int = 3):
+def http_json(url: str, retries: int = 3, timeout: int = 30):
     for i in range(retries):
         try:
-            with urllib.request.urlopen(url, timeout=30) as r:
+            with urllib.request.urlopen(url, timeout=timeout) as r:
                 return json.loads(r.read().decode())
         except Exception:
             if i == retries - 1:
@@ -129,11 +129,19 @@ def fonds_info(raw):
     return {"fonds_adresse": adresse or None, "fonds_cp": str(cp) if cp else None, "fonds_ville": ville,
             "fonds_activite": (_flat(et.get("activite")) or "")[:300] or None, "fonds_origine": (_flat(et.get("origineFonds")) or "")[:200] or None}
 
+# Échéance de l'enrichissement (time.monotonic), fixée par cron_github.py. Passé ce délai, on n'appelle plus l'annuaire :
+# l'annonce est enregistrée « inconnu » et sera enrichie au passage suivant. L'envoi du matin ne doit JAMAIS attendre l'annuaire
+# (14 nov. 2026 : appels lents, ingestion bloquée plus de 45 min, mails de l'essai partis à 8h37 au lieu de 7h30).
+ECHEANCE = {"t": None, "depassee": 0}
+
 def enrich_siren(siren: str, cache: dict):
     if not siren or siren in cache:
         return cache.get(siren)
+    if ECHEANCE["t"] is not None and time.monotonic() > ECHEANCE["t"]:
+        ECHEANCE["depassee"] += 1
+        return None                                   # pas mis en cache : retenté au prochain passage
     try:
-        d = http_json(f"{RECH}?q={siren}&per_page=1&page=1")
+        d = http_json(f"{RECH}?q={siren}&per_page=1&page=1", retries=2, timeout=10)
         res = d.get("results", [])
         if res:
             r = res[0]
@@ -153,11 +161,17 @@ def enrich_siren(siren: str, cache: dict):
     time.sleep(0.13)
     return cache[siren]
 
-def process_day(day: str, enrich: bool = True, cache: dict = None):
+def process_day(day: str, enrich: bool = True, cache: dict = None, deja_complets: set = None):
+    """deja_complets : bodacc_id déjà en base ET déjà classés (verticale connue). Ils sont ignorés : load_db ne les
+    mettrait pas à jour de toute façon (clause where de l'upsert), et les ré-enrichir coûtait des centaines d'appels
+    à l'annuaire à chaque passage (ré-ingestion de la veille)."""
     cache = cache if cache is not None else {}
+    deja_complets = deja_complets or set()
     rows = fetch_day(day)
     out = []
     for r in rows:
+        if r.get("id") in deja_complets:
+            continue
         personnes = [person_summary(p) for p in parse_personnes(r.get("listepersonnes"))]
         acte = {}
         try:
